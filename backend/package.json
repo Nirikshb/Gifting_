@@ -17,7 +17,12 @@
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "node --env-file=.env ./node_modules/typeorm/cli-ts-node-commonjs.js",
+    "migration:create": "npm run typeorm -- migration:create",
+    "migration:generate": "npm run typeorm -- -d src/data-source.ts migration:generate",
+    "migration:run": "npm run typeorm -- -d src/data-source.ts migration:run",
+    "migration:revert": "npm run typeorm -- -d src/data-source.ts migration:revert"
   },
   "dependencies": {
     "@nestjs/common": "^12.0.0",
@@ -58,6 +63,9 @@
     "typescript-eslint": "^8.20.0",
     "unplugin-swc": "^2.0.0",
     "vitest": "^5.0.4"
+  },
+  "overrides": {
+    "ora": "5.4.1"
   },
   "jest": {
     "moduleFileExtensions": [

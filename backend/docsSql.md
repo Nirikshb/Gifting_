@@ -104,3 +104,25 @@ Describes the database change in version-controlled code.
 PostgreSQL
 
 Stores and enforces the actual table structure and constraints.
+
+
+
+POST /orders, we need two tables:
+orders
+
+One record per customer order
+- Unique, non-guessable public order reference
+- Customer and delivery details
+- Total amount stored as a database decimal
+- Order status, initially pending
+- Payment status, initially unpaid
+- Created and updated timestamps
+
+
+order_items
+
+The products purchased in each order
+- Reference to the order and product
+- Product name and SKU/identifier snapshot as appropriate
+- Unit price at the time of ordering
+- Quantity and line total

@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PaginatedResult } from '../interfaces/paginated-result.interface';
 
-function isSuccessEnvelope(
+function hasSuccessFlag(
   value: unknown,
 ): value is { success: true; data: unknown } {
   return (
@@ -34,12 +34,13 @@ function isPaginatedResult<T>(value: unknown): value is PaginatedResult<T> {
   );
 }
 
+
 @Injectable()
 export class TransformResponseInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     return next.handle().pipe(
       map((data) => {
-        if (isSuccessEnvelope(data)) {
+        if (hasSuccessFlag(data)) {
           return data;
         }
 

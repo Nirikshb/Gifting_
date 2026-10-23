@@ -19,6 +19,11 @@ export type ProductsListSuccess = {
   pagination: PaginationMeta;
 };
 
+export type ProductSuccess = {
+  success: true;
+  data: Product;
+};
+
 export class ApiError extends Error {
   readonly statusCode: number;
 
@@ -97,4 +102,43 @@ export async function fetchProducts(
   }
 
   return body;
+}
+
+function isProductSuccess(body: unknown): body is ProductSuccess {
+  if (typeof body !== "object" || body === null) {
+    return false;
+  }
+
+  const candidate = body as ProductSuccess;
+  return (
+    candidate.success === true &&
+    typeof candidate.data === "object" &&
+    candidate.data !== null &&
+    "slug" in candidate.data
+  );
+}
+
+export async function fetchProduct(slug: string): Promise<Product> {
+  const url = `${getApiBaseUrl()}/products/${encodeURIComponent(slug)}`;
+  const response = await fetch(url, { cache: "no-store" });
+  const body = await parseJsonBody(response);
+
+  if (!response.ok) {
+    throw messageFromErrorBody(body, response.status);
+  }
+
+  if (
+    typeof body === "object" &&
+    body !== null &&
+    "success" in body &&
+    (body as { success: unknown }).success === false
+  ) {
+    throw messageFromErrorBody(body, response.status);
+  }
+
+  if (!isProductSuccess(body)) {
+    throw new ApiError("Unexpected API response shape", 500);
+  }
+
+  return body.data;
 }

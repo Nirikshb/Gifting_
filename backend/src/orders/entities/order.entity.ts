@@ -17,6 +17,14 @@ export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 
 @Entity('orders')
 @Check('orders_total_non_negative', 'total_amount >= 0')
+@Check(
+  'orders_order_status_valid',
+  "order_status IN ('pending', 'confirmed', 'cancelled')",
+)
+@Check(
+  'orders_payment_status_valid',
+  "payment_status IN ('unpaid', 'paid', 'failed')",
+)
 export class Order {
   @PrimaryGeneratedColumn()
   id!: number;

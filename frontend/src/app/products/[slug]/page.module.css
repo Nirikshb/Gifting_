@@ -1,0 +1,232 @@
+.page {
+  --catalog-bg: #f7f3ee;
+  --catalog-surface: #ffffff;
+  --catalog-text: #2c241c;
+  --catalog-muted: #6b5f54;
+  --catalog-accent: #8b4a3b;
+  --catalog-accent-soft: #f3e8e4;
+  --catalog-border: #e8ddd3;
+  --catalog-shadow: 0 12px 32px rgba(44, 36, 28, 0.08);
+
+  flex: 1;
+  width: 100%;
+  background: var(--catalog-bg);
+  color: var(--catalog-text);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.inner {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+.backRow {
+  margin-bottom: 1.5rem;
+}
+
+.backRow a {
+  color: var(--catalog-accent);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 2rem;
+  background: var(--catalog-surface);
+  border: 1px solid var(--catalog-border);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: var(--catalog-shadow);
+}
+
+.media {
+  min-height: 18rem;
+  background: linear-gradient(145deg, var(--catalog-accent-soft), #faf6f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mediaPlaceholder {
+  color: var(--catalog-muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.5rem 1.5rem 1.5rem 0;
+}
+
+.body h1 {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.category {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--catalog-accent);
+}
+
+.availability {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--catalog-muted);
+}
+
+.availabilityInStock {
+  color: #3d6b4f;
+}
+
+.availabilityOutOfStock {
+  color: #9a4b42;
+}
+
+.price {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.description {
+  color: var(--catalog-muted);
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.cartAction {
+  margin-top: 0.5rem;
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0 1.25rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--catalog-accent);
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.addButton:disabled {
+  background: #c4b8ae;
+  cursor: not-allowed;
+}
+
+.cartNote {
+  margin-top: 0.75rem;
+  color: var(--catalog-muted);
+  font-size: 0.95rem;
+}
+
+.statePanel {
+  margin-top: 0.5rem;
+  padding: 2rem;
+  border-radius: 1rem;
+  border: 1px dashed var(--catalog-border);
+  background: var(--catalog-surface);
+  text-align: center;
+}
+
+.statePanel h1 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.statePanel p {
+  color: var(--catalog-muted);
+  line-height: 1.6;
+}
+
+.statePanelError {
+  border-color: #e8c4bc;
+  background: #fff8f6;
+}
+
+.skeleton {
+  min-height: 22rem;
+  border-radius: 1rem;
+  background: linear-gradient(90deg, #efe7de 0%, #f8f4ef 50%, #efe7de 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .detail {
+    grid-template-columns: 1fr;
+  }
+
+  .body {
+    padding: 1.25rem;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .page {
+    --catalog-bg: #14110f;
+    --catalog-surface: #1f1a17;
+    --catalog-text: #f5efe8;
+    --catalog-muted: #b9aea3;
+    --catalog-accent: #d18a7a;
+    --catalog-accent-soft: #2a211d;
+    --catalog-border: #342c27;
+    --catalog-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  .addButton {
+    color: #1f1a17;
+  }
+
+  .addButton:disabled {
+    background: #4a403a;
+    color: #b9aea3;
+  }
+
+  .statePanelError {
+    background: #241915;
+    border-color: #5c3b34;
+  }
+
+  .skeleton {
+    background: linear-gradient(90deg, #241f1b 0%, #2d2621 50%, #241f1b 100%);
+    background-size: 200% 100%;
+  }
+}

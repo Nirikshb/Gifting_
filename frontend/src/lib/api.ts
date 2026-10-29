@@ -24,6 +24,24 @@ export type ProductSuccess = {
   data: Product;
 };
 
+export type CustomerProfile = {
+  id: number;
+  email: string;
+  displayName: string;
+};
+
+type CsrfSuccess = {
+  success: true;
+  data: {
+    csrfToken: string;
+  };
+};
+
+type AuthProfileSuccess = {
+  success: true;
+  data: CustomerProfile;
+};
+
 export class ApiError extends Error {
   readonly statusCode: number;
 
@@ -137,6 +155,98 @@ export async function fetchProduct(slug: string): Promise<Product> {
   }
 
   if (!isProductSuccess(body)) {
+    throw new ApiError("Unexpected API response shape", 500);
+  }
+
+  return body.data;
+}
+
+function isCsrfSuccess(body: unknown): body is CsrfSuccess {
+  if (typeof body !== "object" || body === null) {
+    return false;
+  }
+
+  const candidate = body as CsrfSuccess;
+  return (
+    candidate.success === true &&
+    typeof candidate.data === "object" &&
+    candidate.data !== null &&
+    typeof candidate.data.csrfToken === "string" &&
+    candidate.data.csrfToken.trim() !== ""
+  );
+}
+
+function isAuthProfileSuccess(body: unknown): body is AuthProfileSuccess {
+  if (typeof body !== "object" || body === null) {
+    return false;
+  }
+
+  const candidate = body as AuthProfileSuccess;
+  return (
+    candidate.success === true &&
+    typeof candidate.data === "object" &&
+    candidate.data !== null &&
+    typeof candidate.data.id === "number" &&
+    typeof candidate.data.email === "string" &&
+    typeof candidate.data.displayName === "string"
+  );
+}
+
+function assertSuccessEnvelope(body: unknown, response: Response): void {
+  if (
+    typeof body === "object" &&
+    body !== null &&
+    "success" in body &&
+    (body as { success: unknown }).success === false
+  ) {
+    throw messageFromErrorBody(body, response.status);
+  }
+}
+
+export async function fetchAuthCsrf(): Promise<string> {
+  const url = `${getApiBaseUrl()}/auth/csrf`;
+  const response = await fetch(url, {
+    credentials: "include",
+    cache: "no-store",
+  });
+  const body = await parseJsonBody(response);
+
+  if (!response.ok) {
+    throw messageFromErrorBody(body, response.status);
+  }
+
+  assertSuccessEnvelope(body, response);
+
+  if (!isCsrfSuccess(body)) {
+    throw new ApiError("Unexpected API response shape", 500);
+  }
+
+  return body.data.csrfToken;
+}
+
+export async function signInWithGoogle(
+  credential: string,
+  csrfToken: string,
+): Promise<CustomerProfile> {
+  const url = `${getApiBaseUrl()}/auth/google`;
+  const response = await fetch(url, {
+    method: "POST",
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": csrfToken,
+    },
+    body: JSON.stringify({ credential }),
+  });
+  const body = await parseJsonBody(response);
+
+  if (!response.ok) {
+    throw messageFromErrorBody(body, response.status);
+  }
+
+  assertSuccessEnvelope(body, response);
+
+  if (!isAuthProfileSuccess(body)) {
     throw new ApiError("Unexpected API response shape", 500);
   }
 

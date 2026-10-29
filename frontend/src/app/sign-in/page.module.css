@@ -1,0 +1,84 @@
+.page {
+  --sign-in-bg: #f7f3ee;
+  --sign-in-surface: #ffffff;
+  --sign-in-text: #2c241c;
+  --sign-in-muted: #6b5f54;
+  --sign-in-border: #e8ddd3;
+  --sign-in-success: #2f5a42;
+  --sign-in-success-bg: #eef6f0;
+
+  flex: 1;
+  width: 100%;
+  background: var(--sign-in-bg);
+  color: var(--sign-in-text);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.inner {
+  width: 100%;
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+.panel {
+  padding: 2rem;
+  border-radius: 1rem;
+  border: 1px solid var(--sign-in-border);
+  background: var(--sign-in-surface);
+}
+
+.panel h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+
+.intro {
+  color: var(--sign-in-muted);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.buttonHost {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+}
+
+.status {
+  margin-top: 1rem;
+  line-height: 1.5;
+}
+
+.statusMuted {
+  color: var(--sign-in-muted);
+}
+
+.statusError {
+  color: #8b4a3b;
+}
+
+.statusSuccess {
+  color: var(--sign-in-success);
+  background: var(--sign-in-success-bg);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  .page {
+    --sign-in-bg: #171411;
+    --sign-in-surface: #211c18;
+    --sign-in-text: #f5efe8;
+    --sign-in-muted: #b8aea3;
+    --sign-in-border: #3a322c;
+    --sign-in-success: #a8d5b8;
+    --sign-in-success-bg: #1f2b24;
+  }
+
+  .statusError {
+    color: #e8b4a8;
+  }
+}

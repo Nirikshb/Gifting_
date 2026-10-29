@@ -42,6 +42,39 @@ a {
   text-decoration: none;
 }
 
+/* Custom local fonts — use class names like font-patung on any element */
+.font-fraunces {
+  font-family: var(--font-fraunces), Georgia, serif;
+}
+
+.font-testimonia {
+  font-family: var(--font-testimonia), cursive;
+}
+
+.font-devina-garden {
+  font-family: var(--font-devina-garden), cursive;
+}
+
+.font-blue-ridge {
+  font-family: var(--font-blue-ridge), serif;
+}
+
+.font-patung {
+  font-family: var(--font-patung), sans-serif;
+}
+
+.font-de-valencia {
+  font-family: var(--font-de-valencia), serif;
+}
+
+.font-tirelessly-love-you {
+  font-family: var(--font-tirelessly-love-you), cursive;
+}
+
+.font-sansilk {
+  font-family: var(--font-sansilk), sans-serif;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

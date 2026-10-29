@@ -1,4 +1,6 @@
 import { DataSource } from 'typeorm';
+import { CustomerSession } from './customers/entities/customer-session.entity';
+import { Customer } from './customers/entities/customer.entity';
 import { OrderItem } from './orders/entities/order-item.entity';
 import { Order } from './orders/entities/order.entity';
 import { Product } from './products/entities/product.entity';
@@ -10,7 +12,7 @@ export default new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
-  entities: [Product, Order, OrderItem],
+  entities: [Product, Order, OrderItem, Customer, CustomerSession],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,
 });

@@ -3,6 +3,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { validateEnvironment } from './config/validate-environment';
+import { AuthModule } from './auth/auth.module';
+import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
 import { ProductsModule } from './products/products.module';
 
@@ -10,6 +13,7 @@ import { ProductsModule } from './products/products.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      validate: validateEnvironment,
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
@@ -26,6 +30,8 @@ import { ProductsModule } from './products/products.module';
     }),
     ProductsModule,
     OrdersModule,
+    CustomersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

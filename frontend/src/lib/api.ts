@@ -224,6 +224,172 @@ export async function fetchAuthCsrf(): Promise<string> {
   return body.data.csrfToken;
 }
 
+export async function fetchAuthMe(): Promise<CustomerProfile> {
+  const url = `${getApiBaseUrl()}/auth/me`;
+  const response = await fetch(url, {
+    credentials: "include",
+    cache: "no-store",
+  });
+  const body = await parseJsonBody(response);
+
+  if (!response.ok) {
+    throw messageFromErrorBody(body, response.status);
+  }
+
+  assertSuccessEnvelope(body, response);
+
+  if (!isAuthProfileSuccess(body)) {
+    throw new ApiError("Unexpected API response shape", 500);
+  }
+
+  return body.data;
+}
+
+export type CreateOrderItemInput = {
+  productId: number;
+  quantity: number;
+};
+
+export type CreateOrderInput = {
+  customerName: string;
+  customerEmail: string;
+  deliveryLine1: string;
+  deliveryLine2?: string;
+  deliveryCity: string;
+  deliveryPostcode: string;
+  deliveryCountry: string;
+  items: CreateOrderItemInput[];
+};
+
+export type OrderLine = {
+  productName: string;
+  quantity: number;
+  unitPrice: string;
+  lineTotal: string;
+};
+
+export type CreatedOrder = {
+  orderReference: string;
+  orderStatus: string;
+  paymentStatus: string;
+  totalAmount: string;
+  items: Array<OrderLine & { productSlug: string }>;
+};
+
+export type OrderDetails = {
+  orderReference: string;
+  orderStatus: string;
+  paymentStatus: string;
+  totalAmount: string;
+  createdAt: string;
+  items: OrderLine[];
+};
+
+function isOrderLine(value: unknown, requireSlug: boolean): value is OrderLine {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const line = value as OrderLine & { productSlug?: unknown };
+  return (
+    typeof line.productName === "string" &&
+    typeof line.quantity === "number" &&
+    typeof line.unitPrice === "string" &&
+    typeof line.lineTotal === "string" &&
+    (!requireSlug || typeof line.productSlug === "string")
+  );
+}
+
+function isCreatedOrder(value: unknown): value is CreatedOrder {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const order = value as CreatedOrder;
+  return (
+    typeof order.orderReference === "string" &&
+    typeof order.orderStatus === "string" &&
+    typeof order.paymentStatus === "string" &&
+    typeof order.totalAmount === "string" &&
+    Array.isArray(order.items) &&
+    order.items.every((item) => isOrderLine(item, true))
+  );
+}
+
+function isOrderDetails(value: unknown): value is OrderDetails {
+  if (typeof value !== "object" || value === null) {
+    return false;
+  }
+
+  const order = value as OrderDetails;
+  return (
+    typeof order.orderReference === "string" &&
+    typeof order.orderStatus === "string" &&
+    typeof order.paymentStatus === "string" &&
+    typeof order.totalAmount === "string" &&
+    typeof order.createdAt === "string" &&
+    Array.isArray(order.items) &&
+    order.items.every((item) => isOrderLine(item, false))
+  );
+}
+
+function readSuccessData(body: unknown, response: Response): unknown {
+  if (!response.ok) {
+    throw messageFromErrorBody(body, response.status);
+  }
+
+  if (
+    typeof body === "object" &&
+    body !== null &&
+    "success" in body &&
+    (body as { success: unknown }).success === false
+  ) {
+    throw messageFromErrorBody(body, response.status);
+  }
+
+  if (
+    typeof body !== "object" ||
+    body === null ||
+    (body as { success?: unknown }).success !== true ||
+    !("data" in body)
+  ) {
+    throw new ApiError("Unexpected API response shape", 500);
+  }
+
+  return (body as { data: unknown }).data;
+}
+
+export async function createOrder(input: CreateOrderInput): Promise<CreatedOrder> {
+  const url = `${getApiBaseUrl()}/orders`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(input),
+    cache: "no-store",
+  });
+  const body = await parseJsonBody(response);
+  const data = readSuccessData(body, response);
+
+  if (!isCreatedOrder(data)) {
+    throw new ApiError("Unexpected API response shape", 500);
+  }
+
+  return data;
+}
+
+export async function fetchOrder(orderReference: string): Promise<OrderDetails> {
+  const url = `${getApiBaseUrl()}/orders/${encodeURIComponent(orderReference)}`;
+  const response = await fetch(url, { cache: "no-store" });
+  const body = await parseJsonBody(response);
+  const data = readSuccessData(body, response);
+
+  if (!isOrderDetails(data)) {
+    throw new ApiError("Unexpected API response shape", 500);
+  }
+
+  return data;
+}
+
 export async function signInWithGoogle(
   credential: string,
   csrfToken: string,

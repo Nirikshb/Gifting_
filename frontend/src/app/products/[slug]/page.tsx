@@ -111,7 +111,16 @@ export default async function ProductDetailPage({
             <h1>{product.name}</h1>
             <p className={styles.price}>{formatProductPrice(product.price)}</p>
             <p className={styles.description}>{product.description}</p>
-            <AddToCartButton inStock={inStock} />
+            <AddToCartButton
+              product={{
+                id: product.id,
+                name: product.name,
+                slug: product.slug,
+                price: product.price,
+                imageUrl: product.imageUrl,
+                stockQuantity: product.stockQuantity,
+              }}
+            />
           </div>
         </article>
       </div>

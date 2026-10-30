@@ -51,6 +51,46 @@
 - Commit/push: you staged a large commit earlier; current git state not re-checked here
 - No deployment/CI story in scope
 
+### Google Login – Remaining Setup & Verification
+
+**A. Google OAuth configuration**
+
+1. Create or obtain a Google OAuth 2.0 Web Client ID in Google Cloud Console.
+2. Add `http://localhost:3000` as an authorized JavaScript origin.
+3. Set `NEXT_PUBLIC_GOOGLE_CLIENT_ID` in `frontend/.env.local`.
+4. Set the same `GOOGLE_CLIENT_ID` in `backend/.env`.
+5. Configure `SESSION_SECRET` in `backend/.env` with a secure random secret.
+6. Verify `FRONTEND_ORIGIN=http://localhost:3000` in `backend/.env`.
+7. Verify `NEXT_PUBLIC_API_URL` points to the backend URL.
+8. Restart both development servers.
+
+**B. Google sign-in verification**
+
+1. Open `http://localhost:3000/sign-in`.
+2. Confirm the Google sign-in button renders.
+3. Complete Google sign-in.
+4. Confirm the user is redirected to `/products`.
+5. Confirm the customer's display name appears in the header.
+6. Refresh the page and verify the session persists.
+7. Navigate between product pages and verify the header remains correct.
+
+**C. Logout UI – implementation still pending**
+
+1. Add a Log out control to the authenticated header.
+2. Reuse the existing `POST /auth/logout` backend endpoint.
+3. Fetch a CSRF token using the existing `/auth/csrf` endpoint.
+4. Send the CSRF token in the `X-CSRF-Token` header with credentials included.
+5. On successful logout, clear the local customer state.
+6. Keep the user on the current page.
+7. Verify the header displays Sign in afterward.
+
+**D. Logout verification**
+
+1. Sign in with Google.
+2. Click Log out.
+3. Confirm the header returns to Sign in.
+4. Refresh the page and confirm the session remains signed out.
+
 ---
 
 **Short version:** Backend guest order **create + lookup** is in place. Frontend stops at **browse + product page**. **Cart → checkout → confirmation** and **payments/email/hardening** are still ahead.

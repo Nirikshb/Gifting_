@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import Link from "next/link";
 import { Geist, Geist_Mono } from "next/font/google";
 import { customFontVariables } from "@/src/lib/fonts";
+import { SiteHeader } from "./SiteHeader";
 import "./globals.css";
 import styles from "./layout.module.css";
 
@@ -28,11 +28,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body>
         <div className={styles.shell}>
-          <header className={styles.header}>
-            <Link className={styles.brand} href="/products">
-              Gift Packaging
-            </Link>
-          </header>
+          <SiteHeader />
           <main className={styles.main}>{children}</main>
         </div>
       </body>

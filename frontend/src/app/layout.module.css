@@ -10,17 +10,39 @@
   backdrop-filter: blur(8px);
 }
 
+.headerInner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem;
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
-  max-width: 1120px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 1rem 1.25rem;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   font-size: 1.05rem;
   font-weight: 600;
   letter-spacing: -0.02em;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.accountName,
+.signIn {
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 0.95rem;
+}
+
+.signIn {
+  font-weight: 600;
 }
 
 .main {

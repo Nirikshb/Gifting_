@@ -1,0 +1,118 @@
+.page {
+  --catalog-bg: #f7f3ee;
+  --catalog-surface: #ffffff;
+  --catalog-text: #2c241c;
+  --catalog-muted: #6b5f54;
+  --catalog-accent: #8b4a3b;
+  --catalog-border: #e8ddd3;
+
+  flex: 1;
+  width: 100%;
+  background: var(--catalog-bg);
+  color: var(--catalog-text);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.inner {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+.inner h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+}
+
+.muted {
+  color: var(--catalog-muted);
+  line-height: 1.5;
+}
+
+.panel,
+.list {
+  background: var(--catalog-surface);
+  border: 1px solid var(--catalog-border);
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+.panel p + p {
+  margin-top: 0.75rem;
+}
+
+.panel a,
+.line a {
+  color: var(--catalog-accent);
+  font-weight: 600;
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 1rem;
+  align-items: center;
+}
+
+.qty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: var(--catalog-muted);
+}
+
+.qty input {
+  width: 4.5rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--catalog-border);
+  border-radius: 0.4rem;
+  background: var(--catalog-surface);
+  color: var(--catalog-text);
+}
+
+.remove {
+  border: 0;
+  background: transparent;
+  color: var(--catalog-accent);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.total {
+  margin: 1.25rem 0;
+  font-weight: 600;
+}
+
+.checkout {
+  color: var(--catalog-accent);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .line {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .page {
+    --catalog-bg: #14110f;
+    --catalog-surface: #1f1a17;
+    --catalog-text: #f5efe8;
+    --catalog-muted: #b9aea3;
+    --catalog-accent: #d18a7a;
+    --catalog-border: #342c27;
+  }
+}

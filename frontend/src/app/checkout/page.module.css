@@ -1,0 +1,137 @@
+.page {
+  --catalog-bg: #f7f3ee;
+  --catalog-surface: #ffffff;
+  --catalog-text: #2c241c;
+  --catalog-muted: #6b5f54;
+  --catalog-accent: #8b4a3b;
+  --catalog-border: #e8ddd3;
+
+  flex: 1;
+  width: 100%;
+  background: var(--catalog-bg);
+  color: var(--catalog-text);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+.inner {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 4rem;
+}
+
+.inner h1 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.25rem;
+}
+
+.muted {
+  color: var(--catalog-muted);
+  line-height: 1.5;
+}
+
+.muted a {
+  color: var(--catalog-accent);
+  font-weight: 600;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.8fr);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.form,
+.summary {
+  background: var(--catalog-surface);
+  border: 1px solid var(--catalog-border);
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+}
+
+.form input {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--catalog-border);
+  border-radius: 0.45rem;
+  background: var(--catalog-surface);
+  color: var(--catalog-text);
+  font: inherit;
+}
+
+.form button {
+  margin-top: 0.4rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.75rem 1.1rem;
+  background: var(--catalog-accent);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.form button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.error {
+  color: #8b4a3b;
+  line-height: 1.5;
+}
+
+.summary h2 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+}
+
+.summary ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.summary li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.total {
+  margin: 1rem 0 0.5rem;
+  font-weight: 600;
+}
+
+@media (max-width: 800px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .page {
+    --catalog-bg: #14110f;
+    --catalog-surface: #1f1a17;
+    --catalog-text: #f5efe8;
+    --catalog-muted: #b9aea3;
+    --catalog-accent: #d18a7a;
+    --catalog-border: #342c27;
+  }
+}

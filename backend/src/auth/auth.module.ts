@@ -11,6 +11,6 @@ import { SessionService } from './session.service';
   imports: [CustomersModule],
   controllers: [AuthController],
   providers: [AuthService, SessionService, SessionGuard, CsrfService, CsrfGuard],
-  exports: [SessionGuard, SessionService],
+  exports: [SessionGuard, SessionService, CsrfGuard],
 })
 export class AuthModule {}

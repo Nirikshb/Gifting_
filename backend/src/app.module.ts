@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { validateEnvironment } from './config/validate-environment';
 import { AuthModule } from './auth/auth.module';
+import { CartsModule } from './carts/carts.module';
 import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
 import { ProductsModule } from './products/products.module';
@@ -32,6 +33,7 @@ import { ProductsModule } from './products/products.module';
     OrdersModule,
     CustomersModule,
     AuthModule,
+    CartsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

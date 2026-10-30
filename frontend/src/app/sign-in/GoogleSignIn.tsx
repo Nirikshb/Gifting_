@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ApiError,
   fetchAuthCsrf,
@@ -109,14 +110,12 @@ async function signInWithFreshCsrf(credential: string): Promise<CustomerProfile>
 }
 
 export function GoogleSignIn({ clientId }: GoogleSignInProps) {
+  const router = useRouter();
   const buttonHostRef = useRef<HTMLDivElement>(null);
   const submittingRef = useRef(false);
   const [loading, setLoading] = useState(false);
   const [scriptError, setScriptError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [signedInProfile, setSignedInProfile] = useState<CustomerProfile | null>(
-    null,
-  );
 
   useEffect(() => {
     let cancelled = false;
@@ -159,8 +158,8 @@ export function GoogleSignIn({ clientId }: GoogleSignInProps) {
             setActionError(null);
 
             signInWithFreshCsrf(credential)
-              .then((profile) => {
-                setSignedInProfile(profile);
+              .then(() => {
+                router.push("/products");
               })
               .catch((error) => {
                 setActionError(getSignInErrorMessage(error));
@@ -190,7 +189,7 @@ export function GoogleSignIn({ clientId }: GoogleSignInProps) {
       cancelled = true;
       window.google?.accounts?.id?.cancel();
     };
-  }, [clientId]);
+  }, [clientId, router]);
 
   const statusMessage = loading
     ? "Signing you in…"
@@ -198,15 +197,10 @@ export function GoogleSignIn({ clientId }: GoogleSignInProps) {
       ? scriptError
       : actionError
         ? actionError
-        : signedInProfile
-          ? `Signed in as ${signedInProfile.displayName}.`
-          : null;
+        : null;
 
-  const statusClassName = signedInProfile
-    ? styles.statusSuccess
-    : scriptError || actionError
-      ? styles.statusError
-      : styles.statusMuted;
+  const statusClassName =
+    scriptError || actionError ? styles.statusError : styles.statusMuted;
 
   return (
     <div className={styles.panel}>
@@ -218,7 +212,7 @@ export function GoogleSignIn({ clientId }: GoogleSignInProps) {
       <div
         className={styles.buttonHost}
         ref={buttonHostRef}
-        aria-hidden={loading || Boolean(signedInProfile)}
+        aria-hidden={loading}
       />
       {statusMessage ? (
         <p

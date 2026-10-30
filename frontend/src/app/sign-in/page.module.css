@@ -4,8 +4,6 @@
   --sign-in-text: #2c241c;
   --sign-in-muted: #6b5f54;
   --sign-in-border: #e8ddd3;
-  --sign-in-success: #2f5a42;
-  --sign-in-success-bg: #eef6f0;
 
   flex: 1;
   width: 100%;
@@ -60,13 +58,6 @@
   color: #8b4a3b;
 }
 
-.statusSuccess {
-  color: var(--sign-in-success);
-  background: var(--sign-in-success-bg);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-}
-
 @media (prefers-color-scheme: dark) {
   .page {
     --sign-in-bg: #171411;
@@ -74,8 +65,6 @@
     --sign-in-text: #f5efe8;
     --sign-in-muted: #b8aea3;
     --sign-in-border: #3a322c;
-    --sign-in-success: #a8d5b8;
-    --sign-in-success-bg: #1f2b24;
   }
 
   .statusError {

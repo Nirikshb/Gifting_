@@ -68,6 +68,34 @@ export class CartsService {
     return options;
   }
 
+  async initialize(request: Request): Promise<{
+    initialized: { initialized: true };
+    cookie: CartCookieAction;
+  }> {
+    const owner = await this.resolveOwner(request);
+    if (owner.type === 'customer') {
+      return {
+        initialized: { initialized: true },
+        cookie: { type: 'none' },
+      };
+    }
+
+    if (owner.token && (await this.guestCookieIsReusable(owner.token))) {
+      return {
+        initialized: { initialized: true },
+        cookie: { type: 'set', token: owner.token },
+      };
+    }
+
+    return {
+      initialized: { initialized: true },
+      cookie: {
+        type: 'set',
+        token: randomBytes(32).toString('base64url'),
+      },
+    };
+  }
+
   async getCart(request: Request): Promise<{
     cart: CartResponse;
     cookie: CartCookieAction;
@@ -247,6 +275,18 @@ export class CartsService {
       type: 'guest',
       token: this.readGuestCartToken(request.cookies),
     };
+  }
+
+  private async guestCookieIsReusable(token: string): Promise<boolean> {
+    const cart = await this.dataSource.getRepository(Cart).findOne({
+      where: { guestTokenHash: this.sessionService.hashSessionToken(token) },
+    });
+
+    if (!cart) {
+      return true;
+    }
+
+    return cart.expiresAt === null || cart.expiresAt.getTime() > Date.now();
   }
 
   private readGuestCartToken(

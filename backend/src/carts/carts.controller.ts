@@ -43,6 +43,17 @@ export class CartsController {
     return result.cart;
   }
 
+  @Post('initialize')
+  @UseGuards(CsrfGuard)
+  async initialize(
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ) {
+    const result = await this.cartsService.initialize(request);
+    this.applyCookie(response, result.cookie);
+    return result.initialized;
+  }
+
   @Post('items')
   @UseGuards(CsrfGuard)
   async addItem(

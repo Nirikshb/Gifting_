@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/src/types/product";
 import {
@@ -19,7 +20,14 @@ export function ProductCard({ product }: ProductCardProps) {
     <article className={styles.card}>
       <div className={styles.media}>
         {product.imageUrl ? (
-          <img src={product.imageUrl} alt={product.name} />
+          <Image
+            src={product.imageUrl}
+            alt={product.name}
+            fill
+            sizes="(max-width: 640px) 100vw, 18rem"
+            className={styles.mediaImage}
+            unoptimized
+          />
         ) : (
           <span className={styles.mediaPlaceholder}>No image</span>
         )}

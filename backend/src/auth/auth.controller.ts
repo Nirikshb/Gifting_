@@ -10,6 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
+import { GUEST_CART_COOKIE_NAME } from '../carts/cart.constants';
+import { CartsService } from '../carts/carts.service';
 import { Customer } from '../customers/entities/customer.entity';
 import { AuthService } from './auth.service';
 import { CSRF_COOKIE_NAME } from './csrf.constants';
@@ -27,6 +29,7 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly sessionService: SessionService,
     private readonly csrfService: CsrfService,
+    private readonly cartsService: CartsService,
   ) {}
 
   @Get('csrf')
@@ -47,17 +50,27 @@ export class AuthController {
   @UseGuards(CsrfGuard)
   async signInWithGoogle(
     @Body() googleSignInDto: GoogleSignInDto,
+    @Req() request: Request,
     @Res({ passthrough: true }) response: Response,
   ) {
-    const { profile, sessionToken } = await this.authService.signInWithGoogle(
-      googleSignInDto.credential,
-    );
+    const { profile, sessionToken, guestCartCookie } =
+      await this.authService.signInWithGoogle(
+        googleSignInDto.credential,
+        request,
+      );
 
     response.cookie(
       SESSION_COOKIE_NAME,
       sessionToken,
       this.sessionService.getSessionCookieOptions(),
     );
+
+    if (guestCartCookie.type === 'clear') {
+      response.clearCookie(
+        GUEST_CART_COOKIE_NAME,
+        this.cartsService.getGuestCartClearCookieOptions(),
+      );
+    }
 
     return profile;
   }

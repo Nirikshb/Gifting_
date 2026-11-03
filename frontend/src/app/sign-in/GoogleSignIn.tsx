@@ -159,7 +159,7 @@ export function GoogleSignIn({ clientId }: GoogleSignInProps) {
 
             signInWithFreshCsrf(credential)
               .then(() => {
-                router.push("/products");
+                router.push("/");
               })
               .catch((error) => {
                 setActionError(getSignInErrorMessage(error));

@@ -6,16 +6,17 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
+import type { Request } from 'express';
 import { OAuth2Client } from 'google-auth-library';
-import { Repository } from 'typeorm';
-import { QueryFailedError } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
+import { CartsService } from '../carts/carts.service';
+import { CartCookieAction } from '../carts/dto/cart-response';
 import {
   getGoogleClientId,
   GOOGLE_SIGN_IN_NOT_CONFIGURED_MESSAGE,
   isGoogleSignInConfigured,
 } from '../config/auth-configuration';
 import { Customer } from '../customers/entities/customer.entity';
-import { SessionService } from './session.service';
 
 export type CustomerProfile = {
   id: number;
@@ -26,6 +27,7 @@ export type CustomerProfile = {
 export type GoogleSignInResult = {
   profile: CustomerProfile;
   sessionToken: string;
+  guestCartCookie: CartCookieAction;
 };
 
 const GOOGLE_SUB_UNIQUE_CONSTRAINT = 'customers_google_sub_unique';
@@ -37,12 +39,15 @@ export class AuthService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly sessionService: SessionService,
+    private readonly cartsService: CartsService,
     @InjectRepository(Customer)
     private readonly customerRepository: Repository<Customer>,
   ) {}
 
-  async signInWithGoogle(credential: string): Promise<GoogleSignInResult> {
+  async signInWithGoogle(
+    credential: string,
+    request: Request,
+  ): Promise<GoogleSignInResult> {
     if (!isGoogleSignInConfigured(this.configService)) {
       throw new ServiceUnavailableException(
         GOOGLE_SIGN_IN_NOT_CONFIGURED_MESSAGE,
@@ -58,12 +63,16 @@ export class AuthService {
       displayName: payload.displayName,
     });
 
-    const sessionToken =
-      await this.sessionService.createSessionForCustomer(customer.id);
+    const { sessionToken, cookie } =
+      await this.cartsService.createSessionAndMergeGuestCart(
+        customer.id,
+        request,
+      );
 
     return {
       profile: this.toProfile(customer),
       sessionToken,
+      guestCartCookie: cookie,
     };
   }
 

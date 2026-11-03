@@ -68,6 +68,21 @@ export class CartsService {
     return options;
   }
 
+  async createSessionAndMergeGuestCart(
+    customerId: number,
+    request: Request,
+  ): Promise<{ sessionToken: string; cookie: CartCookieAction }> {
+    return this.dataSource.transaction(async (manager) => {
+      const cookie = await this.mergeGuestCart(manager, customerId, request);
+      const sessionToken = await this.sessionService.createSessionForCustomer(
+        customerId,
+        manager,
+      );
+
+      return { sessionToken, cookie };
+    });
+  }
+
   async initialize(request: Request): Promise<{
     initialized: { initialized: true };
     cookie: CartCookieAction;
@@ -299,6 +314,85 @@ export class CartsService {
 
     const trimmed = value.trim();
     return trimmed === '' ? undefined : trimmed;
+  }
+
+  private async mergeGuestCart(
+    manager: EntityManager,
+    customerId: number,
+    request: Request,
+  ): Promise<CartCookieAction> {
+    await this.deleteExpiredGuestCarts(manager);
+
+    const guestToken = this.readGuestCartToken(request.cookies);
+    if (!guestToken) {
+      return { type: 'none' };
+    }
+
+    const guestCart = await this.lockCart(manager, {
+      guestTokenHash: this.sessionService.hashSessionToken(guestToken),
+    });
+    if (!guestCart) {
+      return { type: 'clear' };
+    }
+
+    await this.attachItems(manager, guestCart);
+    const guestItems = guestCart.items ?? [];
+    if (guestItems.length === 0) {
+      await manager.getRepository(Cart).delete({ id: guestCart.id });
+      return { type: 'clear' };
+    }
+
+    let customerCart = await this.lockCart(manager, { customerId });
+    if (!customerCart) {
+      const resolved = await this.findOrCreateCart(manager, {
+        type: 'customer',
+        customerId,
+      });
+      customerCart = resolved.cart;
+    } else {
+      await this.attachItems(manager, customerCart);
+    }
+
+    if (!customerCart) {
+      throw new NotFoundException('Cart was not found');
+    }
+
+    const customerItems = customerCart.items ?? [];
+    for (const guestItem of guestItems) {
+      const existing = customerItems.find(
+        (item) => item.productId === guestItem.productId,
+      );
+      const nextQuantity = (existing?.quantity ?? 0) + guestItem.quantity;
+      if (nextQuantity > POSTGRES_INTEGER_MAX) {
+        throw new BadRequestException(
+          `quantity must not be greater than ${POSTGRES_INTEGER_MAX}`,
+        );
+      }
+    }
+
+    const itemRepository = manager.getRepository(CartItem);
+    for (const guestItem of guestItems) {
+      const existing = customerItems.find(
+        (item) => item.productId === guestItem.productId,
+      );
+      const seenUnitPrice = guestItem.product?.price ?? guestItem.seenUnitPrice;
+      if (existing) {
+        existing.quantity = existing.quantity + guestItem.quantity;
+        existing.seenUnitPrice = seenUnitPrice;
+        await itemRepository.save(existing);
+      } else {
+        const created = itemRepository.create({
+          cartId: customerCart.id,
+          productId: guestItem.productId,
+          quantity: guestItem.quantity,
+          seenUnitPrice,
+        });
+        await itemRepository.save(created);
+      }
+    }
+
+    await manager.getRepository(Cart).delete({ id: guestCart.id });
+    return { type: 'clear' };
   }
 
   private async deleteExpiredGuestCarts(manager: EntityManager): Promise<void> {

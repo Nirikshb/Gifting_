@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { createHash, randomBytes } from 'crypto';
 import type { CookieOptions } from 'express';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { getSessionTtlDays, getSessionCookieSameSite } from '../config/auth-configuration';
 import { CustomerSession } from '../customers/entities/customer-session.entity';
 import { Customer } from '../customers/entities/customer.entity';
@@ -55,7 +55,10 @@ export class SessionService {
     return trimmed === '' ? undefined : trimmed;
   }
 
-  async createSessionForCustomer(customerId: number): Promise<string> {
+  async createSessionForCustomer(
+    customerId: number,
+    manager: EntityManager,
+  ): Promise<string> {
     const ttlDays = getSessionTtlDays(this.configService);
     const createdAt = new Date();
     const expiresAt = new Date(
@@ -64,14 +67,15 @@ export class SessionService {
 
     const sessionToken = randomBytes(32).toString('base64url');
     const tokenHash = this.hashSessionToken(sessionToken);
+    const repository = manager.getRepository(CustomerSession);
 
-    const session = this.customerSessionRepository.create({
+    const session = repository.create({
       customerId,
       tokenHash,
       expiresAt,
     });
 
-    await this.customerSessionRepository.save(session);
+    await repository.save(session);
     return sessionToken;
   }
 

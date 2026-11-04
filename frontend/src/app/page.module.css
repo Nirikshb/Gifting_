@@ -50,24 +50,10 @@
   line-height: 1.75;
 }
 
-.more {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7rem;
+.cta {
   margin-top: 2.1rem;
-  padding: 0.85rem 1.15rem;
-  border: 1px solid #dedad2;
-  background: transparent;
-  color: #6f6f6f;
-  font: inherit;
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  cursor: pointer;
 }
 
-.more svg,
 .arrow svg {
   width: 0.95rem;
   height: 0.95rem;
@@ -78,7 +64,6 @@
   stroke-linejoin: round;
 }
 
-.more:hover,
 .arrow:hover {
   border-color: #c8c3b8;
   color: #2d2d2d;

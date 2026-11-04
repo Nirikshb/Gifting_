@@ -3,7 +3,7 @@
 import { useState } from "react";
 import styles from "./SiteHeader.module.css";
 
-const links = ["Home", "About", "Pages", "Shop", "Articles", "Contact"];
+const links = ["Home", "About", "Shop"];
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -42,7 +42,7 @@ export function SiteHeader() {
       </div>
       <div className={styles.bar}>
         <a className={styles.logo} href="/">
-          BOOKSAW
+          Aapulki
         </a>
         <div className={styles.barEnd}>
           <nav className={open ? styles.navOpen : styles.nav} aria-label="Primary">

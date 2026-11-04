@@ -1,0 +1,177 @@
+.header {
+  position: relative;
+  color: #1c1c1c;
+}
+
+.top,
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: min(1180px, calc(100% - 4.5rem));
+  margin: 0 auto;
+}
+
+.top {
+  padding: 0.95rem 0 0.2rem;
+  color: #8d8d8d;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.social,
+.tools,
+.barEnd,
+.nav,
+.navOpen {
+  display: flex;
+  align-items: center;
+}
+
+.social {
+  gap: 0.85rem;
+}
+
+.social a,
+.tools a,
+.tools svg,
+.social svg {
+  color: #9a9a9a;
+}
+
+.social svg {
+  width: 0.82rem;
+  height: 0.82rem;
+  fill: currentColor;
+  stroke: none;
+}
+
+.tools svg {
+  width: 0.85rem;
+  height: 0.85rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.social a:hover,
+.tools a:hover {
+  color: #5f5f5f;
+}
+
+.tools {
+  gap: 1.15rem;
+}
+
+.tools a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.bar {
+  padding: 0.85rem 0 1.15rem;
+}
+
+.logo {
+  font-family: var(--font-prata), Georgia, serif;
+  font-size: 1.72rem;
+  letter-spacing: 0.14em;
+  line-height: 1;
+}
+
+.barEnd {
+  gap: 1.8rem;
+}
+
+.nav,
+.navOpen {
+  gap: 1.7rem;
+}
+
+.nav a,
+.navOpen a {
+  color: #9b9c86;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.nav a[aria-current="page"],
+.navOpen a[aria-current="page"] {
+  color: #74765f;
+}
+
+.nav a:hover,
+.navOpen a:hover {
+  color: #3f4034;
+}
+
+.menu {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.28rem;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.menu span {
+  display: block;
+  height: 1.5px;
+  background: #8d8d8d;
+}
+
+.menu span:nth-child(2) {
+  width: 78%;
+  margin-left: auto;
+}
+
+@media (max-width: 860px) {
+  .top,
+  .bar {
+    width: min(1180px, calc(100% - 2rem));
+  }
+
+  .tools a span,
+  .tools {
+    gap: 0.75rem;
+  }
+
+  .nav {
+    display: none;
+  }
+
+  .navOpen {
+    position: absolute;
+    top: calc(100% - 0.4rem);
+    right: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 0.4rem 1rem 1.1rem;
+    background: #f7f4ee;
+  }
+}
+
+@media (max-width: 640px) {
+  .top {
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+  }
+
+  .logo {
+    font-size: 1.55rem;
+  }
+}

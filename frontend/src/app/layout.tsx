@@ -1,18 +1,20 @@
 import type { ReactNode } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Nunito, Prata } from "next/font/google";
 import { customFontVariables } from "@/src/lib/fonts";
 import { SiteHeader } from "./SiteHeader";
 import "./globals.css";
 import styles from "./layout.module.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const prata = Prata({
+  weight: "400",
   subsets: ["latin"],
+  variable: "--font-prata",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const nunito = Nunito({
+  weight: ["400", "600", "700"],
   subsets: ["latin"],
+  variable: "--font-nunito",
 });
 
 export const metadata = {
@@ -24,7 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${customFontVariables}`}
+      className={`${prata.variable} ${nunito.variable} ${customFontVariables}`}
     >
       <body>
         <div className={styles.shell}>

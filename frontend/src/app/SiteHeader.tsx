@@ -9,7 +9,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className={styles.header}>
+    <header className={open ? `${styles.header} ${styles.headerOpen}` : styles.header}>
       <div className={styles.top}>
         <div className={styles.social}>
           <a href="/" aria-label="Facebook">
@@ -28,15 +28,15 @@ export function SiteHeader() {
         <div className={styles.tools}>
           <a href="/">
             <UserIcon />
-            Account
+            <span>Account</span>
           </a>
           <a href="/">
             <CartIcon />
-            Cart (0$)
+            <span>Cart (0$)</span>
           </a>
           <a href="/">
             <SearchIcon />
-            Search
+            <span>Search</span>
           </a>
         </div>
       </div>

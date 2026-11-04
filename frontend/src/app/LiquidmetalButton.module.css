@@ -43,3 +43,14 @@
   white-space: nowrap;
   font-feature-settings: "salt" 1;
 }
+
+@media (max-width: 640px) {
+  .button {
+    padding: 16px 18px;
+  }
+
+  .label {
+    font-size: 18px;
+    line-height: 22px;
+  }
+}

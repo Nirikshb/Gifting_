@@ -2,61 +2,56 @@
   position: relative;
   display: flex;
   flex: 1;
-  align-items: stretch;
-  min-height: 0;
+  align-items: center;
+  min-height: 560px;
 }
 
 .viewport {
-  display: flex;
-  flex: 1;
   width: 100%;
-  min-height: 0;
   overflow: hidden;
 }
 
 .track {
   display: flex;
   width: 100%;
-  height: 100%;
   transition: transform 420ms ease;
 }
 
 .slide {
   display: grid;
   flex: 0 0 100%;
-  grid-template-columns: minmax(260px, 420px) minmax(220px, 320px);
-  gap: clamp(2rem, 6vw, 5.5rem);
+  grid-template-columns: minmax(0, 420px) minmax(220px, 300px);
+  gap: clamp(32px, 6vw, 88px);
   align-items: center;
   justify-content: center;
-  height: 100%;
-  padding: 1rem 6.5rem 4.5rem;
+  padding: 24px 96px 72px;
 }
 
 .copy h1 {
-  max-width: 7.4em;
+  max-width: 340px;
   color: #1a1a1a;
   font-family: var(--font-prata), Georgia, serif;
-  font-size: clamp(2.7rem, 4.6vw, 4.15rem);
+  font-size: 66px;
   font-weight: 400;
   line-height: 1.12;
-  letter-spacing: -0.02em;
+  letter-spacing: -1px;
 }
 
 .copy p {
-  max-width: 36ch;
-  margin-top: 1.35rem;
+  max-width: 420px;
+  margin-top: 22px;
   color: #8d8d8d;
-  font-size: 0.92rem;
+  font-size: 15px;
   line-height: 1.75;
 }
 
 .cta {
-  margin-top: 2.1rem;
+  margin-top: 34px;
 }
 
 .arrow svg {
-  width: 0.95rem;
-  height: 0.95rem;
+  width: 15px;
+  height: 15px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.6;
@@ -92,10 +87,9 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  width: min(100%, 270px);
-  height: min(430px, 62vh);
-  min-height: 320px;
-  padding: 1.6rem 1.35rem 1.2rem 1.7rem;
+  width: 270px;
+  height: 430px;
+  padding: 26px 22px 19px 27px;
   border: 1px solid rgba(80, 70, 50, 0.06);
   background: linear-gradient(90deg, #efe8dc 0 12px, #fbf8f3 12px);
   box-shadow: 12px 22px 40px rgba(70, 58, 40, 0.12);
@@ -104,7 +98,7 @@
 .coverTitle {
   color: #1c1c1c;
   font-family: var(--font-prata), Georgia, serif;
-  font-size: 1.35rem;
+  font-size: 22px;
   line-height: 1.25;
 }
 
@@ -115,7 +109,7 @@
 .birds {
   width: 100%;
   height: 210px;
-  margin-top: 0.4rem;
+  margin-top: 6px;
   fill: none;
   stroke: #5d6a43;
   stroke-width: 1.6;
@@ -131,7 +125,7 @@
 .coverAuthor {
   margin-top: auto;
   color: #9a9a9a;
-  font-size: 0.72rem;
+  font-size: 12px;
   text-align: right;
 }
 
@@ -142,8 +136,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.7rem;
-  height: 2.7rem;
+  width: 43px;
+  height: 43px;
   border: 1px solid #e3dfd6;
   border-radius: 50%;
   background: rgba(247, 244, 238, 0.92);
@@ -153,23 +147,23 @@
 }
 
 .arrowLeft {
-  left: 1.4rem;
+  left: 22px;
 }
 
 .arrowRight {
-  right: 1.4rem;
+  right: 22px;
 }
 
 .dots {
   display: flex;
-  gap: 0.45rem;
-  margin-top: 2.5rem;
+  gap: 7px;
+  margin-top: 40px;
 }
 
 .dot,
 .dotActive {
-  width: 0.48rem;
-  height: 0.48rem;
+  width: 8px;
+  height: 8px;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -190,19 +184,32 @@
   }
 }
 
-@media (max-width: 860px) {
-  .hero,
-  .viewport,
-  .track {
+@media (max-width: 1100px) {
+  .slide {
+    padding: 24px 72px 64px;
+  }
+
+  .copy h1 {
+    font-size: 52px;
+  }
+
+  .book {
+    width: 240px;
+    height: 380px;
+  }
+}
+
+@media (max-width: 980px) {
+  .hero {
     display: block;
-    height: auto;
+    flex: none;
+    min-height: 0;
   }
 
   .slide {
     grid-template-columns: 1fr;
     justify-items: center;
-    height: auto;
-    padding: 2.5rem 4.2rem 4.5rem;
+    padding: 36px 72px 56px;
     text-align: center;
   }
 
@@ -211,15 +218,79 @@
     max-width: none;
   }
 
+  .copy h1 {
+    font-size: 48px;
+  }
+
   .dots {
     justify-content: center;
   }
 
+  .stage {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .slide {
+    padding: 28px 56px 40px;
+  }
+
+  .copy h1 {
+    font-size: 40px;
+  }
+
+  .copy p {
+    font-size: 14px;
+  }
+
+  .cta {
+    margin-top: 24px;
+  }
+
+  .book {
+    width: 220px;
+    height: 340px;
+    padding: 20px 16px 16px 22px;
+  }
+
+  .coverTitle {
+    font-size: 18px;
+  }
+
+  .birds {
+    height: 170px;
+  }
+
+  .arrow {
+    width: 36px;
+    height: 36px;
+  }
+
   .arrowLeft {
-    left: 0.6rem;
+    left: 10px;
   }
 
   .arrowRight {
-    right: 0.6rem;
+    right: 10px;
+  }
+
+  .dots {
+    margin-top: 28px;
+  }
+}
+
+@media (max-width: 420px) {
+  .slide {
+    padding: 24px 48px 36px;
+  }
+
+  .copy h1 {
+    font-size: 34px;
+  }
+
+  .book {
+    width: 200px;
+    height: 310px;
   }
 }

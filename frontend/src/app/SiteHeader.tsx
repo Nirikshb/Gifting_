@@ -40,14 +40,10 @@ export function SiteHeader() {
             <UserIcon />
             <span>Account</span>
           </a>
-          <a href="/">
+          <Link href="/cart" transitionTypes={["curtain"]}>
             <CartIcon />
             <span>Cart (0$)</span>
-          </a>
-          <a href="/">
-            <SearchIcon />
-            <span>Search</span>
-          </a>
+          </Link>
         </div>
       </div>
       <div className={styles.bar}>
@@ -143,11 +139,3 @@ function CartIcon() {
   );
 }
 
-function SearchIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="11" cy="11" r="5.5" />
-      <path d="M15.5 15.5L20 20" />
-    </svg>
-  );
-}

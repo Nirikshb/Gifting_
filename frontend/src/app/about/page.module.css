@@ -1,0 +1,43 @@
+.pageFill {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  width: 100%;
+  background: #f7f4ee;
+}
+
+.page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 560px;
+  padding: 48px 96px;
+}
+
+.page h1 {
+  color: #1a1a1a;
+  font-family: var(--font-prata), Georgia, serif;
+  font-size: 64px;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+.page p {
+  max-width: 420px;
+  margin-top: 20px;
+  color: #8d8d8d;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .page {
+    min-height: 480px;
+    padding: 40px 24px;
+  }
+
+  .page h1 {
+    font-size: 40px;
+  }
+}

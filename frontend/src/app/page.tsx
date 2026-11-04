@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ViewTransition } from "react";
 import { LiquidmetalButton } from "./LiquidmetalButton";
 import styles from "./page.module.css";
 
@@ -32,6 +32,8 @@ export default function Home() {
   }
 
   return (
+    <ViewTransition name="page-curtain" share="curtain" default="none">
+    <div className={styles.pageFill}>
     <section className={styles.hero} aria-roledescription="carousel" aria-label="Featured books">
       <button
         className={`${styles.arrow} ${styles.arrowLeft}`}
@@ -86,6 +88,8 @@ export default function Home() {
       </button>
 
     </section>
+    </div>
+    </ViewTransition>
   );
 }
 

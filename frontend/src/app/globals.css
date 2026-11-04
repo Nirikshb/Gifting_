@@ -69,3 +69,61 @@ a {
   font-family: var(--font-sansilk), sans-serif;
 }
 
+::view-transition-group(site-header) {
+  z-index: 100;
+  animation: none;
+}
+
+::view-transition-old(site-header) {
+  display: none;
+}
+
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+::view-transition-group(.curtain) {
+  animation: none;
+  overflow: clip;
+}
+
+::view-transition-image-pair(.curtain) {
+  animation: none;
+}
+
+::view-transition-old(.curtain),
+::view-transition-old(page-curtain) {
+  z-index: 1;
+  animation: none;
+  opacity: 1;
+  object-fit: none;
+  object-position: left top;
+}
+
+::view-transition-new(.curtain) {
+  z-index: 2;
+  object-fit: none;
+  object-position: left top;
+  transform-origin: top center;
+  animation: curtain-drop 1200ms cubic-bezier(0.76, 0, 0.24, 1) both;
+  filter: drop-shadow(0 16px 18px rgba(40, 30, 20, 0.22));
+}
+
+@keyframes curtain-drop {
+  from {
+    clip-path: inset(0 0 100% 0);
+    transform: translate3d(0, -18px, 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-new(.curtain) {
+    animation: none;
+  }
+}
+

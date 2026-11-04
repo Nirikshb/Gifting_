@@ -1,15 +1,25 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import styles from "./SiteHeader.module.css";
 
-const links = ["Home", "About", "Shop"];
+const links = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Shop", href: "/" },
+];
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
-    <header className={open ? `${styles.header} ${styles.headerOpen}` : styles.header}>
+    <header
+      className={open ? `${styles.header} ${styles.headerOpen}` : styles.header}
+      style={{ viewTransitionName: "site-header" }}
+    >
       <div className={styles.top}>
         <div className={styles.social}>
           <a href="/" aria-label="Facebook">
@@ -41,21 +51,27 @@ export function SiteHeader() {
         </div>
       </div>
       <div className={styles.bar}>
-        <a className={styles.logo} href="/">
+        <Link className={styles.logo} href="/" transitionTypes={["curtain"]}>
           Aapulki
-        </a>
+        </Link>
         <div className={styles.barEnd}>
           <nav className={open ? styles.navOpen : styles.nav} aria-label="Primary">
-            {links.map((link) => (
-              <a
-                key={link}
-                href="/"
-                aria-current={link === "Home" ? "page" : undefined}
-                onClick={() => setOpen(false)}
-              >
-                {link}
-              </a>
-            ))}
+            {links.map((link) => {
+              const current =
+                link.label === "About" ? pathname === "/about" : link.label === "Home" && pathname === "/";
+
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  transitionTypes={["curtain"]}
+                  aria-current={current ? "page" : undefined}
+                  onClick={() => setOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
           <button
             className={styles.menu}

@@ -1,3 +1,11 @@
+.pageFill {
+  display: flex;
+  flex: 1 0 auto;
+  flex-direction: column;
+  width: 100%;
+  background: #f7f4ee;
+}
+
 .hero {
   position: relative;
   display: flex;

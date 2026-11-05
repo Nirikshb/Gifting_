@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Nunito, Prata } from "next/font/google";
+import { Figtree, Nunito, Prata } from "next/font/google";
 import { customFontVariables } from "@/src/lib/fonts";
 import { SiteHeader } from "./SiteHeader";
 import "./globals.css";
@@ -17,6 +17,12 @@ const nunito = Nunito({
   variable: "--font-nunito",
 });
 
+const figtree = Figtree({
+  weight: ["400", "600"],
+  subsets: ["latin"],
+  variable: "--font-figtree",
+});
+
 export const metadata = {
   title: "Gift Packaging",
   description: "Gift boxes, wrapping, and packaging for thoughtful presents.",
@@ -26,7 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${prata.variable} ${nunito.variable} ${customFontVariables}`}
+      className={`${prata.variable} ${nunito.variable} ${figtree.variable} ${customFontVariables}`}
     >
       <body>
         <div className={styles.shell}>

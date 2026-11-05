@@ -2,6 +2,7 @@
 
 import { useState, ViewTransition } from "react";
 import { LiquidmetalButton } from "./LiquidmetalButton";
+import { NewsletterBanner } from "./NewsletterBanner";
 import styles from "./page.module.css";
 
 const slides = [
@@ -88,6 +89,7 @@ export default function Home() {
       </button>
 
     </section>
+    <NewsletterBanner />
     </div>
     </ViewTransition>
   );

@@ -1,0 +1,648 @@
+.dialog,
+.dialogClosing {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 24px 0;
+  border: 0;
+  background: transparent;
+  overflow: auto;
+}
+
+.dialog {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.dialog::backdrop {
+  background: rgba(28, 24, 20, 0.42);
+  animation: shade-in 480ms ease forwards;
+}
+
+.dialogClosing {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  pointer-events: none;
+}
+
+.dialogClosing::backdrop {
+  background: rgba(28, 24, 20, 0.42);
+  animation: shade-out 320ms ease forwards;
+}
+
+.dialogPoof::backdrop {
+  animation: shade-out 520ms ease 680ms forwards;
+}
+
+.dialog .banner.poof {
+  min-width: 0;
+  animation: signup-poof 1200ms cubic-bezier(0.45, 0, 0.2, 1) forwards;
+}
+
+.banner {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: stretch;
+  width: min(821px, calc(100% - 48px));
+  min-height: 260px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #f3f4f6;
+  font-family: var(--font-figtree), "Figtree", sans-serif;
+}
+
+.dialog .banner {
+  opacity: 0;
+  animation: fade-to-middle 560ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.dialogClosing .banner {
+  animation: fade-from-middle 320ms ease forwards;
+}
+
+.close {
+  position: absolute;
+  z-index: 2;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  color: #1e293b;
+  cursor: pointer;
+}
+
+.close svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+@keyframes shade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes shade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-to-middle {
+  from {
+    opacity: 0;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(calc(50vh - 50% - 24px));
+  }
+}
+
+@keyframes fade-from-middle {
+  from {
+    opacity: 1;
+    transform: translateY(calc(50vh - 50% - 24px));
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(calc(50vh - 50% - 48px));
+  }
+}
+
+@keyframes fade-to-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(max(0px, calc(100dvh - 100% - 48px)));
+  }
+}
+
+@keyframes fade-from-bottom {
+  from {
+    opacity: 1;
+    transform: translateY(max(0px, calc(100dvh - 100% - 48px)));
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(max(0px, calc(100dvh - 100% - 24px)));
+  }
+}
+
+@keyframes signup-poof {
+  0% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    transform: translateY(calc(50vh - 50% - 24px));
+  }
+
+  46% {
+    clip-path: inset(0 0 0 calc(100% - 343px));
+    opacity: 1;
+    transform: translateY(calc(50vh - 50% - 24px));
+  }
+
+  100% {
+    clip-path: inset(0 0 0 100%);
+    opacity: 0;
+    transform: translateY(calc(50vh - 50% - 24px));
+  }
+}
+
+@keyframes signup-poof-mobile {
+  0% {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+    transform: translateY(max(0px, calc(100dvh - 100% - 48px)));
+  }
+
+  100% {
+    clip-path: inset(0 0 0 100%);
+    opacity: 0;
+    transform: translateY(max(0px, calc(100dvh - 100% - 48px)));
+  }
+}
+
+@keyframes signup-fade {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.visual {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 343px;
+  pointer-events: none;
+}
+
+.wash {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.photo {
+  position: absolute;
+  inset: 0;
+  width: 340px;
+  height: 100%;
+  margin-left: auto;
+  object-fit: cover;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("/newsletter/de87f.png");
+  background-position: top left;
+  background-size: 512px 512px;
+  mix-blend-mode: overlay;
+  opacity: 0.4;
+}
+
+.fade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to left, rgba(243, 244, 246, 0) 79.3%, #f3f4f6);
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: min(523px, 100%);
+  padding: 32px;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.text h2 {
+  color: #1e293b;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 32px;
+}
+
+.text p {
+  color: #475569;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.form {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.input,
+.inputInvalid {
+  width: 100%;
+  height: 48px;
+  padding: 16px;
+  border: 1px solid rgba(148, 163, 184, 0.39);
+  border-radius: 8px;
+  background: #fff;
+  color: #1e293b;
+  font: 400 16px/16px var(--font-figtree), "Figtree", sans-serif;
+}
+
+.input::placeholder,
+.inputInvalid::placeholder {
+  color: #94a3b8;
+}
+
+.input:focus {
+  padding: 15px;
+  border: 2px solid #8b5cf6;
+  outline: none;
+}
+
+.inputInvalid,
+.inputInvalid:focus {
+  padding: 15px;
+  border: 2px solid #be123c;
+  outline: none;
+}
+
+.note,
+.error,
+.mobileNote {
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.error {
+  color: #be123c;
+}
+
+.mobileNote {
+  display: none;
+}
+
+.button {
+  flex: none;
+  height: 48px;
+  padding: 16px;
+  border: 0;
+  border-radius: 8px;
+  background: #8b5cf6;
+  color: #fff;
+  font: 600 16px/16px var(--font-figtree), "Figtree", sans-serif;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: #996efa;
+  box-shadow: 0 3px 4px -1px rgba(27, 7, 63, 0.15);
+}
+
+.button:focus-visible {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+.envelopes {
+  position: absolute;
+  inset: 0;
+}
+
+.closedWrap {
+  position: absolute;
+  top: 73px;
+  right: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 137px;
+  height: 108px;
+}
+
+.closed {
+  position: relative;
+  width: 120px;
+  height: 80px;
+  transform: rotate(-15deg);
+  opacity: 0.92;
+  filter: blur(1px);
+}
+
+.closedBody {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(71, 85, 105, 0.06);
+  border-radius: 7px;
+  background: linear-gradient(#eef0f1 13%, #f9fafa 85%);
+  box-shadow:
+    0 2px 3px rgba(30, 41, 59, 0.04),
+    0 7px 7px rgba(30, 41, 59, 0.03),
+    0 14px 8px rgba(30, 41, 59, 0.04);
+}
+
+.closedFolds {
+  position: absolute;
+  inset: 0;
+  mask-image: url("/newsletter/22d72.svg");
+  mask-repeat: no-repeat;
+  mask-size: 120px 80px;
+}
+
+.closedFolds img {
+  position: absolute;
+  max-width: none;
+}
+
+.closedShadow,
+.closedBottom {
+  left: -18px;
+  top: 2px;
+}
+
+.closedTop,
+.closedEdge {
+  left: 0;
+  top: -1px;
+}
+
+.openWrap {
+  position: absolute;
+  top: 90px;
+  right: -21px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 155px;
+  height: 114px;
+}
+
+.open {
+  position: relative;
+  width: 144px;
+  height: 96px;
+  transform: rotate(7.5deg);
+}
+
+.open img {
+  position: absolute;
+  max-width: none;
+}
+
+.base {
+  left: -12px;
+  top: -26px;
+  transform: rotate(180deg) scaleX(-1);
+}
+
+.paperShadow {
+  left: 0;
+  top: -30px;
+}
+
+.paper {
+  left: 20px;
+  top: -40px;
+}
+
+.letter {
+  left: 28px;
+  top: -30px;
+}
+
+.paperEdge {
+  left: 20px;
+  top: -40px;
+}
+
+.front {
+  position: absolute;
+  left: -5px;
+  top: -4px;
+  width: 154px;
+  height: 142px;
+  mask-image: url("/newsletter/37dd7.svg");
+  mask-repeat: no-repeat;
+  mask-position: center bottom;
+  mask-size: 144px 142px;
+}
+
+.front img {
+  position: absolute;
+  max-width: none;
+}
+
+.leftFold {
+  left: -28px;
+  top: 36px;
+  transform: rotate(-90deg) scaleX(-1);
+}
+
+.leftStroke {
+  left: -18px;
+  top: 44px;
+  transform: rotate(-90deg) scaleX(-1);
+}
+
+.rightFold {
+  right: -28px;
+  top: 36px;
+  transform: rotate(90deg);
+}
+
+.rightStroke {
+  right: -18px;
+  top: 44px;
+  transform: rotate(90deg);
+}
+
+.bottomShadow {
+  left: -16px;
+  top: 28px;
+  mix-blend-mode: multiply;
+}
+
+.bottomFold {
+  left: 5px;
+  top: 48px;
+  transform: rotate(180deg) scaleX(-1);
+}
+
+.bottomEdge {
+  left: 6px;
+  top: 46px;
+}
+
+.openFade {
+  left: -11px;
+  top: 22px;
+}
+
+.openBorder {
+  left: 4px;
+  top: 14px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialog::backdrop,
+  .dialogClosing::backdrop,
+  .dialog .banner,
+  .dialogClosing .banner {
+    animation: none;
+  }
+
+  .dialog .banner,
+  .dialogClosing .banner {
+    opacity: 1;
+    transform: translateY(calc(50vh - 50% - 24px));
+  }
+
+  .dialog .banner.poof {
+    animation: signup-fade 280ms ease forwards;
+  }
+}
+
+@media (max-width: 760px) {
+  .dialog .banner {
+    animation-name: fade-to-bottom;
+  }
+
+  .dialogClosing .banner {
+    animation-name: fade-from-bottom;
+  }
+
+  .dialog .banner.poof {
+    animation-name: signup-poof-mobile;
+  }
+
+  .banner {
+    flex-direction: column;
+    width: min(340px, calc(100% - 32px));
+    min-height: 472px;
+  }
+
+  .visual {
+    right: 0;
+    bottom: auto;
+    left: 0;
+    width: auto;
+    height: 282px;
+  }
+
+  .photo {
+    width: 142.81%;
+    height: 120.48%;
+    margin-left: -42.81%;
+    margin-top: -10.24%;
+  }
+
+  .fade {
+    background: linear-gradient(
+      to bottom,
+      rgba(243, 244, 246, 0) 39%,
+      #f3f4f6 74.5%
+    );
+  }
+
+  .content {
+    width: 100%;
+    gap: 24px;
+    padding: 156px 20px 24px;
+  }
+
+  .form {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .note {
+    display: none;
+  }
+
+  .error {
+    display: block;
+  }
+
+  .mobileNote {
+    display: block;
+    text-align: center;
+  }
+
+  .button {
+    width: 100%;
+  }
+
+  .closedWrap {
+    top: -19px;
+    right: 145px;
+  }
+
+  .openWrap {
+    top: -2px;
+    right: 57px;
+  }
+}
+
+@media (max-width: 760px) and (prefers-reduced-motion: reduce) {
+  .dialog .banner,
+  .dialogClosing .banner {
+    transform: translateY(max(0px, calc(100dvh - 100% - 48px)));
+  }
+}

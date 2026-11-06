@@ -8,6 +8,7 @@ import styles from "./SiteHeader.module.css";
 const links = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
+  { label: "Process", href: "/process" },
   { label: "Shop", href: "/" },
 ];
 
@@ -56,7 +57,11 @@ export function SiteHeader() {
           <nav className={open ? styles.navOpen : styles.nav} aria-label="Primary">
             {links.map((link) => {
               const current =
-                link.label === "About" ? pathname === "/about" : link.label === "Home" && pathname === "/";
+                link.href === "/process"
+                  ? pathname === "/process"
+                  : link.label === "About"
+                    ? pathname === "/about"
+                    : link.label === "Home" && pathname === "/";
 
               return (
                 <Link

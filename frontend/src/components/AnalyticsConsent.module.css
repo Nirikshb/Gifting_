@@ -1,0 +1,77 @@
+.banner {
+  position: fixed;
+  z-index: 200;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: space-between;
+  width: min(760px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 16px 18px;
+  background: #1c1c1c;
+  color: #f7f4ee;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.actions {
+  display: flex;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.allow,
+.decline,
+.reopen {
+  font: inherit;
+  cursor: pointer;
+}
+
+.allow,
+.decline {
+  border: 0;
+  padding: 10px 14px;
+}
+
+.allow {
+  background: #f7f4ee;
+  color: #1c1c1c;
+}
+
+.decline {
+  background: transparent;
+  color: #f7f4ee;
+}
+
+.reopen {
+  position: fixed;
+  z-index: 200;
+  left: 16px;
+  bottom: 12px;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #8d8d8d;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+}
+
+.reopen:hover {
+  color: #5f5f5f;
+}
+
+@media (max-width: 640px) {
+  .banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .actions {
+    justify-content: flex-end;
+  }
+}

@@ -40,8 +40,30 @@ export function NewsletterBanner() {
   const [phase, setPhase] = useState<"hidden" | "open" | "closing">("hidden");
 
   useEffect(() => {
-    const id = window.setTimeout(() => setPhase("open"), 400);
-    return () => window.clearTimeout(id);
+    let started = false;
+    let opened = false;
+    const open = () => {
+      if (opened) return;
+      opened = true;
+      setPhase("open");
+    };
+    const onStart = () => {
+      started = true;
+    };
+    const onExit = () => {
+      if (started) open();
+    };
+    window.addEventListener("swarm:start", onStart);
+    window.addEventListener("swarm:exit", onExit);
+    const fallback = window.setTimeout(() => {
+      if (!started) open();
+    }, 2500);
+    return () => {
+      opened = true;
+      window.removeEventListener("swarm:start", onStart);
+      window.removeEventListener("swarm:exit", onExit);
+      window.clearTimeout(fallback);
+    };
   }, []);
 
   useLayoutEffect(() => {
@@ -170,6 +192,7 @@ export function NewsletterBanner() {
               type="email"
               name="email"
               autoComplete="email"
+              data-clarity-mask="true"
               placeholder="Your email address…"
               value={email}
               disabled={signedUp || submitting}

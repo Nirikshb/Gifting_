@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Figtree, Nunito, Prata } from "next/font/google";
+import { Analytics } from "@/components/Analytics";
 import { SiteHeader } from "@/components/SiteHeader";
 import { customFontVariables } from "@/lib/fonts";
 import "./globals.css";
@@ -39,6 +40,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <SiteHeader />
           <main className={styles.main}>{children}</main>
         </div>
+        <Analytics />
       </body>
     </html>
   );

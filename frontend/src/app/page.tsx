@@ -7,8 +7,9 @@ import styles from "./page.module.css";
 
 function pageWindow() {
   return window as Window & {
-    SwarmCursorsConfig?: { trigger: string; paths: string };
+    SwarmCursorsConfig?: { trigger: string; paths: string; delay: number };
     SwarmCursors?: {
+      start?: () => void;
       showTrigger?: () => void;
       hideTrigger?: () => void;
       isRunning?: () => boolean;
@@ -18,7 +19,7 @@ function pageWindow() {
 }
 
 if (typeof window !== "undefined") {
-  pageWindow().SwarmCursorsConfig = { trigger: "button", paths: "/" };
+  pageWindow().SwarmCursorsConfig = { trigger: "auto", paths: "/", delay: 800 };
 }
 
 const slides = [
@@ -45,15 +46,22 @@ export default function Home() {
   const count = slides.length;
 
   useEffect(() => {
-    const timer = window.setInterval(() => {
-      const showTrigger = pageWindow().SwarmCursors?.showTrigger;
-      if (!showTrigger) return;
-      showTrigger();
-      window.clearInterval(timer);
-    }, 50);
+    let cancelled = false;
+    let delay = 0;
+
+    if (pageWindow().SwarmCursors?.start) {
+      delay = window.setTimeout(() => {
+        if (cancelled) return;
+        const swarm = pageWindow().SwarmCursors;
+        if (!swarm?.start || swarm.isRunning?.()) return;
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        swarm.start();
+      }, 800);
+    }
 
     return () => {
-      window.clearInterval(timer);
+      cancelled = true;
+      window.clearTimeout(delay);
       const swarm = pageWindow().SwarmCursors;
       if (swarm?.isRunning?.()) swarm.stop?.(false);
       swarm?.hideTrigger?.();
@@ -120,7 +128,7 @@ export default function Home() {
       </button>
 
     </section>
-    <NewsletterBanner />
+    {/* <NewsletterBanner /> */}
     </div>
     </ViewTransition>
     </>

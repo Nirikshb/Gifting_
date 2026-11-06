@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Figtree, Nunito, Prata } from "next/font/google";
-import { customFontVariables } from "@/src/lib/fonts";
-import { SiteHeader } from "./SiteHeader";
+import { SiteHeader } from "@/components/SiteHeader";
+import { customFontVariables } from "@/lib/fonts";
 import "./globals.css";
 import styles from "./layout.module.css";
 

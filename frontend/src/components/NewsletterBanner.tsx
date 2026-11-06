@@ -10,6 +10,7 @@ import {
   type FormEvent,
   type MouseEvent,
 } from "react";
+import Image from "next/image";
 import styles from "./NewsletterBanner.module.css";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -239,137 +240,137 @@ function Envelopes() {
         <div className={styles.closed}>
           <div className={styles.closedBody} />
           <div className={styles.closedFolds}>
-            <img
+            <Image
               className={styles.closedShadow}
               src="/newsletter/0d66b.svg"
               alt=""
-              width="155"
-              height="98.5577"
+              width={155}
+              height={98.5577}
             />
-            <img
+            <Image
               className={styles.closedBottom}
               src="/newsletter/8899c.svg"
               alt=""
-              width="155"
-              height="98.5577"
+              width={155}
+              height={98.5577}
             />
-            <img
+            <Image
               className={styles.closedTop}
               src="/newsletter/0c772.svg"
               alt=""
-              width="120"
-              height="49.5356"
+              width={120}
+              height={49.5356}
             />
-            <img
+            <Image
               className={styles.closedEdge}
               src="/newsletter/774b2.svg"
               alt=""
-              width="118.876"
-              height="49.86"
+              width={118.876}
+              height={49.86}
             />
           </div>
         </div>
       </div>
       <div className={styles.openWrap}>
         <div className={styles.open}>
-          <img
+          <Image
             className={styles.base}
             src="/newsletter/8a113.svg"
             alt=""
-            width="168"
-            height="164"
+            width={168}
+            height={164}
           />
-          <img
+          <Image
             className={styles.paperShadow}
             src="/newsletter/42cbf.svg"
             alt=""
-            width="144.28"
-            height="85.538"
+            width={144.28}
+            height={85.538}
           />
-          <img
+          <Image
             className={styles.paper}
             src="/newsletter/7ab61.svg"
             alt=""
-            width="105.5"
-            height="108.5"
+            width={105.5}
+            height={108.5}
           />
-          <img
+          <Image
             className={styles.letter}
             src="/newsletter/1a4e8.svg"
             alt=""
-            width="86.9238"
-            height="77.7129"
+            width={86.9238}
+            height={77.7129}
           />
-          <img
+          <Image
             className={styles.paperEdge}
             src="/newsletter/cf5f8.svg"
             alt=""
-            width="103.75"
-            height="60.875"
+            width={103.75}
+            height={60.875}
           />
           <div className={styles.front}>
-            <img
+            <Image
               className={styles.leftFold}
               src="/newsletter/8a53a.svg"
               alt=""
-              width="116"
-              height="76.9318"
+              width={116}
+              height={76.9318}
             />
-            <img
+            <Image
               className={styles.leftStroke}
               src="/newsletter/8f6ce.svg"
               alt=""
-              width="100.078"
-              height="58.9318"
+              width={100.078}
+              height={58.9318}
             />
-            <img
+            <Image
               className={styles.rightFold}
               src="/newsletter/935fa.svg"
               alt=""
-              width="116"
-              height="76.9318"
+              width={116}
+              height={76.9318}
             />
-            <img
+            <Image
               className={styles.rightStroke}
               src="/newsletter/7c8ea.svg"
               alt=""
-              width="100.078"
-              height="58.9318"
+              width={100.078}
+              height={58.9318}
             />
-            <img
+            <Image
               className={styles.bottomShadow}
               src="/newsletter/0e388.svg"
               alt=""
-              width="186"
-              height="118.269"
+              width={186}
+              height={118.269}
             />
-            <img
+            <Image
               className={styles.bottomFold}
               src="/newsletter/daab7.svg"
               alt=""
-              width="144"
-              height="59.4429"
+              width={144}
+              height={59.4429}
             />
-            <img
+            <Image
               className={styles.bottomEdge}
               src="/newsletter/0f3fe.svg"
               alt=""
-              width="142.652"
-              height="59.7922"
+              width={142.652}
+              height={59.7922}
             />
-            <img
+            <Image
               className={styles.openFade}
               src="/newsletter/b3d36.svg"
               alt=""
-              width="176"
-              height="101.5"
+              width={176}
+              height={101.5}
             />
-            <img
+            <Image
               className={styles.openBorder}
               src="/newsletter/8efeb.svg"
               alt=""
-              width="146"
-              height="94"
+              width={146}
+              height={94}
             />
           </div>
         </div>

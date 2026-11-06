@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, ViewTransition } from "react";
-import { LiquidmetalButton } from "./LiquidmetalButton";
-import { NewsletterBanner } from "./NewsletterBanner";
+import { NewsletterBanner } from "@/components/NewsletterBanner";
 import styles from "./page.module.css";
 
 const slides = [
@@ -55,9 +54,6 @@ export default function Home() {
               <div className={styles.copy}>
                 <h1>{slide.title}</h1>
                 <p>{slide.copy}</p>
-                <div className={styles.cta}>
-                  <LiquidmetalButton />
-                </div>
                 <div className={styles.dots}>
                   {slides.map((item, dotIndex) => (
                     <button

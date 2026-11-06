@@ -53,10 +53,6 @@
   line-height: 1.75;
 }
 
-.cta {
-  margin-top: 34px;
-}
-
 .arrow svg {
   width: 15px;
   height: 15px;
@@ -250,10 +246,6 @@
 
   .copy p {
     font-size: 14px;
-  }
-
-  .cta {
-    margin-top: 24px;
   }
 
   .book {

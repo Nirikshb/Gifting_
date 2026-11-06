@@ -121,8 +121,40 @@ a {
   }
 }
 
+::view-transition-group(.account) {
+  animation: none;
+  overflow: clip;
+}
+
+::view-transition-image-pair(.account) {
+  animation: none;
+}
+
+::view-transition-old(.account),
+::view-transition-old(account-panel) {
+  z-index: 1;
+  animation: none;
+  opacity: 1;
+}
+
+::view-transition-new(.account) {
+  z-index: 2;
+  animation: account-in 680ms ease-in 120ms both;
+}
+
+@keyframes account-in {
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-new(.curtain) {
+  ::view-transition-new(.curtain),
+  ::view-transition-new(.account) {
     animation: none;
   }
 }

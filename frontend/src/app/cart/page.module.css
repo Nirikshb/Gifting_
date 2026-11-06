@@ -13,11 +13,70 @@
 }
 
 .intro h1 {
-  color: #1a1a1a;
-  font-family: var(--font-prata), Georgia, serif;
-  font-size: 56px;
-  font-weight: 400;
-  line-height: 1.1;
+  color: #1c1c1c;
+  font-family: var(--font-nunito), "Nunito", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.shipping {
+  width: min(440px, 100%);
+  margin: 16px auto 0;
+}
+
+.shipping p {
+  max-width: none;
+  margin-top: 0;
+  color: #9a9a9a;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.shipping strong {
+  color: #4a4a4a;
+  font-weight: 700;
+}
+
+.meter {
+  position: relative;
+  height: 28px;
+  margin-top: 14px;
+}
+
+.track {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  left: 0;
+  height: 7px;
+  overflow: hidden;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: #e6e6e6;
+}
+
+.fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #2ec9a0;
+}
+
+.truck {
+  position: absolute;
+  top: 50%;
+  width: 44px;
+  height: 26px;
+  transform: translate(-50%, -46%);
+  pointer-events: none;
+}
+
+.truck svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .intro p {
@@ -143,7 +202,7 @@
   }
 
   .intro h1 {
-    font-size: 40px;
+    font-size: 28px;
   }
 
   .bag h2,

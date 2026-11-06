@@ -36,10 +36,10 @@ export function SiteHeader() {
           </a>
         </div>
         <div className={styles.tools}>
-          <a href="/">
+          <Link href="/account" transitionTypes={["account"]}>
             <UserIcon />
             <span>Account</span>
-          </a>
+          </Link>
           <Link href="/cart" transitionTypes={["curtain"]}>
             <CartIcon />
             <span>Cart (0$)</span>

@@ -17,7 +17,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  if (pathname === "/detail" || pathname === "/style") return null;
+  if (pathname === "/detail") return null;
 
   return (
     <header

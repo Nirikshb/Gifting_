@@ -8,6 +8,10 @@
   color: #1c1c1c;
 }
 
+:global(body) > :global(div) > :global(header) {
+  display: none;
+}
+
 .header,
 .headerEnd,
 .links {

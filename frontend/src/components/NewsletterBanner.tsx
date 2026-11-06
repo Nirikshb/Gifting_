@@ -115,6 +115,7 @@ export function NewsletterBanner() {
   return (
     <dialog
       ref={dialogRef}
+      data-swarm-ignore=""
       className={
         phase === "closing"
           ? styles.dialogClosing

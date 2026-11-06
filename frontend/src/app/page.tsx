@@ -1,8 +1,25 @@
 "use client";
 
-import { useState, ViewTransition } from "react";
+import { useEffect, useState, ViewTransition } from "react";
+import Script from "next/script";
 import { NewsletterBanner } from "@/components/NewsletterBanner";
 import styles from "./page.module.css";
+
+function pageWindow() {
+  return window as Window & {
+    SwarmCursorsConfig?: { trigger: string; paths: string };
+    SwarmCursors?: {
+      showTrigger?: () => void;
+      hideTrigger?: () => void;
+      isRunning?: () => boolean;
+      stop?: (reveal: boolean) => void;
+    };
+  };
+}
+
+if (typeof window !== "undefined") {
+  pageWindow().SwarmCursorsConfig = { trigger: "button", paths: "/" };
+}
 
 const slides = [
   {
@@ -27,11 +44,29 @@ export default function Home() {
   const [index, setIndex] = useState(0);
   const count = slides.length;
 
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      const showTrigger = pageWindow().SwarmCursors?.showTrigger;
+      if (!showTrigger) return;
+      showTrigger();
+      window.clearInterval(timer);
+    }, 50);
+
+    return () => {
+      window.clearInterval(timer);
+      const swarm = pageWindow().SwarmCursors;
+      if (swarm?.isRunning?.()) swarm.stop?.(false);
+      swarm?.hideTrigger?.();
+    };
+  }, []);
+
   function show(nextIndex) {
     setIndex((nextIndex + count) % count);
   }
 
   return (
+    <>
+    <Script src="/swarm-cursors.js" strategy="afterInteractive" />
     <ViewTransition name="page-curtain" share="curtain" default="none">
     <div className={styles.pageFill}>
     <section className={styles.hero} aria-roledescription="carousel" aria-label="Featured books">
@@ -88,6 +123,7 @@ export default function Home() {
     <NewsletterBanner />
     </div>
     </ViewTransition>
+    </>
   );
 }
 

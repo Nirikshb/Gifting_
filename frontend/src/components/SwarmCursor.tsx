@@ -122,6 +122,14 @@ const random = seed => {
   };
 };
 
+const heartPoint = t => {
+  const s = Math.sin(t);
+  return [
+    16 * s * s * s,
+    13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t),
+  ];
+};
+
 const rectField = (x, y, hx, hy, r, out) => {
   const sx = x < 0 ? -1 : 1;
   const sy = y < 0 ? -1 : 1;
@@ -291,6 +299,7 @@ export const SwarmCursor = ({
     let hovered = null;
     let time = 0;
     let presence = 1;
+  let rest = 0;
     let introClock = settingsRef.current.intro && !reduce ? 0 : 1;
     let raf = 0;
     let last = 0;
@@ -368,8 +377,9 @@ export const SwarmCursor = ({
       const inv = 1 / (radius * radius * 0.55);
       const moving = Math.hypot(anchor.moveX, anchor.moveY);
       const grab = (1 - Math.exp(-dt * 20)) * clamp(moving / 240, 0, 1) * presence;
-      const whirl = ring.active ? 0 : radius * (0.5 + 4 * (1 - ease)) * (0.35 + 0.65 * s.speed);
-      const churn = s.wander * radius * 14 * (0.4 + 0.6 * s.speed);
+      const settle = s.idle === 'heart' ? 1 - rest : 1;
+      const whirl = (ring.active ? 0 : radius * (0.5 + 4 * (1 - ease)) * (0.35 + 0.65 * s.speed)) * settle;
+      const churn = s.wander * radius * 14 * (0.4 + 0.6 * s.speed) * settle;
       const fk = 1.4 / radius;
       const ft = time * 0.75 * (0.4 + 0.6 * s.speed);
       for (let j = j0; j <= j1; j++) {
@@ -534,8 +544,9 @@ export const SwarmCursor = ({
         const x = px[i];
         const y = py[i];
         const k = 10 * (1 - 0.6 * s.tail * heft[i]);
-        let ax = (sample(flowX, x, y) - vx[i]) * k;
-        let ay = (sample(flowY, x, y) - vy[i]) * k;
+        const drift = s.idle === 'heart' ? 1 - rest : 1;
+        let ax = (sample(flowX, x, y) * drift - vx[i]) * k;
+        let ay = (sample(flowY, x, y) * drift - vy[i]) * k;
         const cx = clamp(Math.floor(x / gap) + 1, 0, gc - 1);
         const cy = clamp(Math.floor(y / gap) + 1, 0, crowdRows - 1);
         for (let oy = -1; oy <= 1; oy++) {
@@ -563,6 +574,28 @@ export const SwarmCursor = ({
           const hold = e > 0 ? 70 : 140;
           ax -= field[1] * e * hold;
           ay -= field[2] * e * hold;
+        } else if (s.idle === 'heart' && rest > 0.02) {
+          const [hx, hy] = heartPoint(((i + 0.5) / n) * Math.PI * 2);
+          const heartWidth = Math.min(Math.min(w, h) * 0.42, 360);
+          const scale = heartWidth / 32;
+          const fill = 0.28 + 0.72 * home[i];
+          const tx = anchor.x + hx * scale * fill;
+          const ty = anchor.y - (hy * fill + 2.5) * scale;
+          const dx = tx - x;
+          const dy = ty - y;
+          const d = Math.hypot(dx, dy) + 0.001;
+          const hold = (d * gather + Math.max(0, d - 8) * pull) * rest;
+          ax += (dx / d) * hold;
+          ay += (dy / d) * hold;
+          if (rest < 1) {
+            const adx = anchor.x - x;
+            const ady = anchor.y - y;
+            const ad = Math.hypot(adx, ady) + 0.001;
+            const over = Math.max(0, ad - radius);
+            const follow = 1 - rest;
+            ax += (adx / ad) * (ad * gather + over * pull) * follow;
+            ay += (ady / ad) * (ad * gather + over * pull) * follow;
+          }
         } else {
           const dx = anchor.x - x;
           const dy = anchor.y - y;
@@ -657,6 +690,17 @@ export const SwarmCursor = ({
       if (pointer.inside) {
         anchor.x = pointer.x;
         anchor.y = pointer.y;
+      } else if (s.idle === 'heart') {
+        const tx = w * (w < 720 ? 0.5 : 0.7);
+        const ty = h * 0.5;
+        if (dt <= 0) {
+          anchor.x = tx;
+          anchor.y = ty;
+        } else {
+          const blend = 1 - Math.exp(-dt * 3);
+          anchor.x += (tx - anchor.x) * blend;
+          anchor.y += (ty - anchor.y) * blend;
+        }
       } else if (s.idle === 'gather') {
         anchor.x = w * 0.5;
         anchor.y = h * 0.5;
@@ -675,6 +719,9 @@ export const SwarmCursor = ({
       }
       anchor.lastX = anchor.x;
       anchor.lastY = anchor.y;
+      const moving = Math.hypot(anchor.moveX, anchor.moveY);
+      const still = s.idle === 'heart' && (!pointer.inside || moving < 120);
+      rest += ((still ? 1 : 0) - rest) * (1 - Math.exp(-dt / (still ? 0.55 : 0.16)));
       presence += (goal - presence) * (1 - Math.exp(-dt / 0.25));
     };
 
@@ -927,7 +974,6 @@ export const SwarmCursor = ({
       gl.deleteBuffer(extraBuffer);
       gl.deleteVertexArray(vao);
       gl.deleteProgram(shader.program);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
   }, []);
 

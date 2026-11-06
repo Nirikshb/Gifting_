@@ -9,6 +9,7 @@ const links = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Process", href: "/process" },
+  { label: "Style", href: "/style" },
   { label: "Shop", href: "/" },
 ];
 
@@ -16,7 +17,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
-  if (pathname === "/detail") return null;
+  if (pathname === "/detail" || pathname === "/style") return null;
 
   return (
     <header
@@ -61,7 +62,9 @@ export function SiteHeader() {
                   ? pathname === "/process"
                   : link.label === "About"
                     ? pathname === "/about"
-                    : link.label === "Home" && pathname === "/";
+                    : link.label === "Style"
+                      ? pathname === "/style"
+                      : link.label === "Home" && pathname === "/";
 
               return (
                 <Link

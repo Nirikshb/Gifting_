@@ -11,6 +11,7 @@ import {
   type MouseEvent,
 } from "react";
 import Image from "next/image";
+import { api } from "@/lib/api";
 import styles from "./NewsletterBanner.module.css";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,31 +21,11 @@ const failedMessage = "Something went wrong. Please try again.";
 async function subscribeToNewsletter(
   email: string,
 ): Promise<"ok" | "invalid" | "failed"> {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL?.trim().replace(/\/$/, "");
-  if (!baseUrl) return "failed";
-
   try {
-    const response = await fetch(`${baseUrl}/newsletter`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-
-    if (response.status === 400) return "invalid";
-    if (!response.ok) return "failed";
-
-    const body: unknown = await response.json();
-    if (
-      typeof body === "object" &&
-      body !== null &&
-      "success" in body &&
-      (body as { success: unknown }).success === true
-    ) {
-      return "ok";
-    }
-
-    return "failed";
-  } catch {
+    await api.post("/newsletter", { email });
+    return "ok";
+  } catch (error: any) {
+    if (error.statusCode === 400) return "invalid";
     return "failed";
   }
 }

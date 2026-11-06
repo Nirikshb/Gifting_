@@ -2,13 +2,13 @@ import { ViewTransition } from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
 
-const freeShippingGoal = 34;
+const freeShippingGoal = 499;
 const subtotal = 0;
 const remaining = Math.max(0, freeShippingGoal - subtotal);
 const progress = Math.min(100, (subtotal / freeShippingGoal) * 100);
 const remainingText = Number.isInteger(remaining)
-  ? `$${remaining}`
-  : `$${remaining.toFixed(2)}`;
+  ? `₹${remaining}`
+  : `₹${remaining.toFixed(2)}`;
 
 export const metadata = {
   title: "Cart",
@@ -84,15 +84,15 @@ export default function CartPage() {
               </div>
               <div className={styles.row}>
                 <span>Subtotal</span>
-                <span>0$</span>
+                <span>₹0</span>
               </div>
               <div className={styles.row}>
                 <span>Shipping</span>
-                <span>0$</span>
+                <span>₹0</span>
               </div>
               <div className={`${styles.row} ${styles.total}`}>
                 <span>Total</span>
-                <span>0$</span>
+                <span>₹0</span>
               </div>
               <Link className={styles.action} href="/" transitionTypes={["curtain"]}>
                 Home page

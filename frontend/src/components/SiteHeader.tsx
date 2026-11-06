@@ -15,6 +15,8 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
 
+  if (pathname === "/detail") return null;
+
   return (
     <header
       className={open ? `${styles.header} ${styles.headerOpen}` : styles.header}
@@ -42,7 +44,7 @@ export function SiteHeader() {
           </Link>
           <Link href="/cart" transitionTypes={["curtain"]}>
             <CartIcon />
-            <span>Cart (0$)</span>
+            <span>Cart (₹0)</span>
           </Link>
         </div>
       </div>

@@ -54,7 +54,7 @@ export function AccountFrame({ children }: { children: ReactNode }) {
     <div className={styles.page}>
       <header className={styles.bar}>
         <div>
-          <p className={styles.hello}>{greeting()},</p>
+          <p className={styles.hello}>Hello,</p>
           <h1 className={styles.name}>{name || "Account"}</h1>
         </div>
         <nav className={styles.tabs} aria-label="Account">
@@ -106,13 +106,6 @@ export function AccountFrame({ children }: { children: ReactNode }) {
 function isCurrent(href: string, pathname: string) {
   if (href === "/account") return pathname === "/account";
   return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-function greeting() {
-  const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 17) return "Good afternoon";
-  return "Good evening";
 }
 
 function TabIcon({ name }: { name: string }) {

@@ -53,27 +53,18 @@
 }
 
 .face {
-  display: inline-flex;
-  width: 16px;
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
+  font-size: 16px;
+  line-height: 1;
   opacity: 0;
   transform: scale(0.7);
-  transition: opacity 240ms ease, transform 240ms ease;
-}
-
-.face svg {
-  width: 16px;
-  height: 16px;
-  fill: none;
-  stroke: #1c1c1c;
-  stroke-width: 1.2;
-}
-
-.face svg circle:not(:first-child) {
-  fill: #1c1c1c;
-  stroke: none;
+  transition: opacity 240ms ease, transform 240ms ease, width 240ms ease;
 }
 
 .faceOn {
+  width: 16px;
   opacity: 1;
   transform: none;
 }
@@ -132,7 +123,7 @@
   font-size: clamp(42px, 6vw, 76px);
   font-weight: 800;
   letter-spacing: -0.045em;
-  line-height: 0.86;
+  line-height: 0.95;
   text-transform: uppercase;
 }
 
@@ -145,7 +136,7 @@
 
 .stepBody {
   min-height: 46vh;
-  padding: 36px clamp(20px, 4vw, 56px) 72px  calc(clamp(20px, 4vw, 56px) + 116px);
+  padding: 52px clamp(20px, 4vw, 56px) 72px calc(clamp(20px, 4vw, 56px) + 116px);
 }
 
 .stepBody:last-child {
@@ -199,44 +190,58 @@
 .gift::before {
   content: "";
   position: absolute;
-  left: 18%;
-  right: 18%;
-  bottom: 16%;
-  height: 46%;
-  background: linear-gradient(180deg, #6e7c68, #556352);
-  box-shadow: 0 18px 0 #4c5948;
+  left: 16%;
+  right: 16%;
+  bottom: 18%;
+  height: 42%;
+  background: linear-gradient(180deg, #7d8b76, #5d6b5a);
 }
 
 .ribbonDown,
-.ribbonAcross,
-.bow {
+.ribbonAcross {
   position: absolute;
   background: #f4efe4;
 }
 
 .ribbonDown {
-  left: calc(50% - 7px);
-  bottom: 16%;
-  width: 14px;
-  height: 46%;
+  left: calc(50% - 6px);
+  bottom: 18%;
+  width: 12px;
+  height: 42%;
 }
 
 .ribbonAcross {
-  left: 18%;
-  right: 18%;
-  bottom: calc(16% + 20%);
-  height: 14px;
+  left: 16%;
+  right: 16%;
+  bottom: calc(18% + 24%);
+  height: 12px;
 }
 
 .bow {
-  left: calc(50% - 22px);
-  bottom: calc(16% + 46% - 10px);
-  width: 44px;
+  position: absolute;
+  left: calc(50% - 34px);
+  bottom: calc(18% + 42% - 16px);
+  width: 68px;
   height: 28px;
-  border-radius: 40% 40% 46% 46%;
-  background:
-    radial-gradient(circle at 30% 50%, transparent 0 9px, #f4efe4 10px),
-    radial-gradient(circle at 70% 50%, transparent 0 9px, #f4efe4 10px);
+}
+
+.bow::before,
+.bow::after {
+  content: "";
+  position: absolute;
+  top: 4px;
+  width: 28px;
+  height: 20px;
+  border: 4px solid #f4efe4;
+  border-radius: 50%;
+}
+
+.bow::before {
+  left: 0;
+}
+
+.bow::after {
+  right: 0;
 }
 
 .cursor {

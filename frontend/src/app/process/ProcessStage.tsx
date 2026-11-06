@@ -113,12 +113,7 @@ export function ProcessStage() {
         </Link>
         <p className={styles.pill}>
           <span className={finale ? `${styles.face} ${styles.faceOn}` : styles.face} aria-hidden="true">
-            <svg viewBox="0 0 16 16">
-              <circle cx="8" cy="8" r="7" />
-              <circle cx="6" cy="7" r="0.7" />
-              <circle cx="10" cy="7" r="0.7" />
-              <path d="M5.5 9.2c.7.9 1.5 1.3 2.5 1.3s1.8-.4 2.5-1.3" />
-            </svg>
+            ☺
           </span>
           <span>{finale ? "From box to keepsake" : "We measure. We wrap. We tie."}</span>
         </p>

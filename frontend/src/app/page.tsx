@@ -1,26 +1,9 @@
 "use client";
 
-import { useEffect, useState, ViewTransition } from "react";
-import Script from "next/script";
+import { useState, ViewTransition } from "react";
+import { IntersectingMarquee } from "@/components/IntersectingMarquee";
 import { NewsletterBanner } from "@/components/NewsletterBanner";
 import styles from "./page.module.css";
-
-function pageWindow() {
-  return window as Window & {
-    SwarmCursorsConfig?: { trigger: string; paths: string; delay: number };
-    SwarmCursors?: {
-      start?: () => void;
-      showTrigger?: () => void;
-      hideTrigger?: () => void;
-      isRunning?: () => boolean;
-      stop?: (reveal: boolean) => void;
-    };
-  };
-}
-
-if (typeof window !== "undefined") {
-  pageWindow().SwarmCursorsConfig = { trigger: "auto", paths: "/", delay: 800 };
-}
 
 const slides = [
   {
@@ -45,38 +28,15 @@ export default function Home() {
   const [index, setIndex] = useState(0);
   const count = slides.length;
 
-  useEffect(() => {
-    let cancelled = false;
-    let delay = 0;
-
-    if (pageWindow().SwarmCursors?.start) {
-      delay = window.setTimeout(() => {
-        if (cancelled) return;
-        const swarm = pageWindow().SwarmCursors;
-        if (!swarm?.start || swarm.isRunning?.()) return;
-        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-        swarm.start();
-      }, 800);
-    }
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(delay);
-      const swarm = pageWindow().SwarmCursors;
-      if (swarm?.isRunning?.()) swarm.stop?.(false);
-      swarm?.hideTrigger?.();
-    };
-  }, []);
-
   function show(nextIndex) {
     setIndex((nextIndex + count) % count);
   }
 
   return (
     <>
-    <Script src="/swarm-cursors.js" strategy="afterInteractive" />
     <ViewTransition name="page-curtain" share="curtain" default="none">
     <div className={styles.pageFill}>
+    <IntersectingMarquee />
     <section className={styles.hero} aria-roledescription="carousel" aria-label="Featured books">
       <button
         className={`${styles.arrow} ${styles.arrowLeft}`}

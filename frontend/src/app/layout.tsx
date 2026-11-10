@@ -25,8 +25,9 @@ const figtree = Figtree({
 });
 
 export const metadata = {
-  title: "Gift Packaging",
-  description: "Gift boxes, wrapping, and packaging for thoughtful presents.",
+  title: "Aapulki | Gift Hampers Online",
+  description:
+    "Shop thoughtfully curated gift hampers online, personalized gifts, birthday and anniversary gifts, festive gift hampers, and unique gift ideas for every occasion.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

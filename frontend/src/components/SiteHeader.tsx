@@ -10,7 +10,7 @@ const links = [
   { label: "About", href: "/about" },
   { label: "Process", href: "/process" },
   { label: "Style", href: "/style" },
-  { label: "Shop", href: "/" },
+  { label: "Shop", href: "/shop" },
 ];
 
 export function SiteHeader() {
@@ -64,7 +64,9 @@ export function SiteHeader() {
                     ? pathname === "/about"
                     : link.label === "Style"
                       ? pathname === "/style"
-                      : link.label === "Home" && pathname === "/";
+                      : link.label === "Shop"
+                        ? pathname === "/shop"
+                        : link.label === "Home" && pathname === "/";
 
               return (
                 <Link

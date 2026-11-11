@@ -29,6 +29,10 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
+## Production site URL
+
+`SITE_URL` is required before a production launch. It is server-only. Set it to the purchased site origin, with no path and no trailing slash. Do not set it to localhost. While it is unset, the app still runs locally, and it does not emit production canonical URLs, sitemap URLs, or a sitemap line in `robots.txt`.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.

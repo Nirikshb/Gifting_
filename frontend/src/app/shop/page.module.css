@@ -37,6 +37,7 @@
   border: 1px solid #ddd8d0;
   background: #f7f4ee;
   break-inside: avoid;
+  overflow: hidden;
   color: #1c1c1c;
 }
 

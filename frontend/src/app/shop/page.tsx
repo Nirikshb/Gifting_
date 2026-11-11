@@ -1,5 +1,8 @@
 import { ViewTransition } from "react";
+import { api } from "@/lib/api";
 import styles from "./page.module.css";
+
+const listingPath = "";
 
 const products = [
   {
@@ -83,6 +86,8 @@ export const metadata = {
 };
 
 export default function ShopPage() {
+  if (listingPath) api.get(listingPath);
+
   return (
     <ViewTransition name="page-curtain" share="curtain" default="none">
       <div className={styles.pageFill}>

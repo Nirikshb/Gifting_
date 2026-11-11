@@ -185,3 +185,89 @@ Cart-backed checkout. Line items come only from the caller's cart; prices, stock
 - Backend `npx tsc --noEmit`; `npx vitest run` → 7 files / 26 tests.
 - Frontend `npx tsc --noEmit`; `npm run build` → 20 routes, `/orders/[reference]` partial prerender.
 - Browser (dev DB): guest checkout ₹4.50 + ₹49 shipping = ₹53.50; confirmation reload with token; wrong/missing token → not found; cart cleared and header count 0; `/checkout` empty state; empty cart rejected by the API; invalid email/pincode blocked client-side; out-of-stock rejected by the API and disabled in the UI; changed price accepted at the new DB price; idempotent replay returned the same reference with no extra order; signed-in customer order stored `customer_id`; backend stopped → friendly "could not reach the server" error with the form preserved; temporary DB trigger on `orders` proved rollback (stock, cart and orders unchanged).
+
+
+
+
+
+
+
+
+
+<!-- TO BE VERIFIED -->
+
+Done. Guest-first checkout is implemented end to end and verified against the dev database.
+
+## 1. Files created
+
+**Backend**
+- `backend/src/migrations/1792900000000-AddCheckoutFieldsToOrders.ts`
+- `backend/src/orders/dto/create-checkout.dto.ts`
+- `backend/src/orders/dto/checkout-response.dto.ts`
+- `backend/src/orders/utils/shipping.ts` + `shipping.spec.ts`
+- `backend/src/orders/utils/order-confirmation-token.ts` + `order-confirmation-token.spec.ts`
+- `backend/src/orders/orders.service.spec.ts`
+
+**Frontend**
+- `frontend/src/app/checkout/page.tsx`
+- `frontend/src/app/orders/[reference]/page.tsx`
+- `frontend/src/lib/api/orders.ts`
+- `frontend/src/components/CheckoutView.tsx` + `CheckoutView.module.css`
+- `frontend/src/components/OrderConfirmation.tsx` + `OrderConfirmation.module.css`
+
+## 2. Files modified
+- Backend: `orders/orders.service.ts`, `orders/orders.controller.ts`, `orders/orders.module.ts`, `orders/entities/order.entity.ts`, `orders/utils/money.ts` (added `compareMoney`), `carts/carts.service.ts`, `carts/dto/cart-response.dto.ts`
+- Frontend: `lib/api/cart.ts`, `components/CartView.tsx`, `components/CartView.module.css`
+- Docs: `docs/tasks.md` (Task 2 change log)
+
+## 3. Database migration
+`AddCheckoutFieldsToOrders1792900000000` (applied to `gifting_dev`):
+- `orders.customer_id` — FK to `customers`, `ON DELETE SET NULL` + index
+- `orders.recipient_name`, `orders.gift_message`
+- `orders.subtotal_amount` (backfilled from `total_amount`, then NOT NULL), `orders.shipping_amount`
+- `orders.idempotency_key` (unique), `orders.confirmation_token_hash`
+- Checks: subtotal ≥ 0, shipping ≥ 0, `subtotal + shipping = total`
+
+No new tables. Recipient, address, gift message and amounts are one-per-order snapshots, so columns model them directly. Orders stay the single source of truth for purchase data.
+
+## 4. API changes
+- **New** `POST /orders/checkout` (CSRF-guarded). Accepts customer/recipient/delivery/gift/idempotency fields only — no product IDs, prices or totals. Resolves the caller's cart, revalidates active/stock, prices from the DB, snapshots items, computes subtotal + shipping + total, associates the signed-in customer when present, clears the cart in the same transaction, and returns the order plus a one-time confirmation token. Guest cart cookie is cleared on success.
+- **New** `GET /orders/:orderReference/confirmation?token=…` — returns full details only when the token hashes to the stored value; otherwise 404.
+- **Changed (additive)** cart responses now include backend `shipping` and `total`.
+- Legacy `POST /orders` and `GET /orders/:reference` are unchanged (the public lookup still exposes only reference/status/totals/items — no email, address or gift message).
+
+## 5. Architectural decisions
+- **Cart as the only line-item source.** The frontend never sends products, prices or totals; the existing `POST /orders` (which trusts client line items) is deliberately not used by the cart.
+- **One transaction:** cart row lock → product row locks → validation → conditional stock decrement (`UPDATE … WHERE stock_quantity >= :quantity`) → order + item inserts → cart clear. Any failure rolls back everything.
+- **Shipping policy in one place** (`orders/utils/shipping.ts`): ₹0 empty, ₹49 below ₹499, free at/above — used by cart, checkout and orders.
+- **Stock reserved at order creation** because payments are not integrated; all orders are `pending`/`unpaid`. Restoring stock on cancellation is a follow-up requirement.
+- **Duplicate-safe checkout:** client-generated idempotency key with a unique constraint, fast path + in-transaction re-check + unique-violation (`23505`) fallback returning the original order. A replay issues a fresh confirmation token.
+- **Guest confirmation without accounts:** 32-byte bearer token, only its SHA-256 hash stored, so a database read cannot reconstruct links. No dependence on `SESSION_SECRET` (unset in this environment).
+- **No new dependencies.**
+
+## 6. Tests performed
+- Backend: `npx tsc --noEmit` clean; `npx vitest run` → **7 files / 26 tests passed** (shipping thresholds, token hashing, DB-price totals, customer association, empty cart, out-of-stock, inactive product, conditional-update failure, idempotent replay, confirmation token match/mismatch/missing).
+- Frontend: `npx tsc --noEmit` clean; `npm run build` succeeds (20 routes; `/orders/[reference]` partial prerender with `instant = false` so the token query is read per request).
+
+## 7. Browser verification (real dev DB)
+- Guest checkout: item ₹4.50 + ₹49 shipping = ₹53.50, order created, confirmation rendered with real response data.
+- Confirmation survives reload with the token; wrong or missing token → "Order not found".
+- Cart cleared after success (header 0, `/checkout` shows the empty-bag recovery state).
+- Empty cart rejected by the API (`400 Your cart is empty.`).
+- Invalid email/pincode blocked client-side with inline errors and zero API calls.
+- Out-of-stock: UI disables submission and the API rejects with `400 "…" is out of stock` while nothing is created.
+- Price change: cart updated to the new DB price and the order stored ₹15.00 (not the seen ₹12.00), with the price-change note shown.
+- Idempotent replay returned the same reference/total with no extra order or stock change.
+- Signed-in path (temporary DB-created session): cart loaded for the customer, order stored `customer_id`, cart cleared, session cookie untouched.
+- Backend stopped mid-form → friendly "We could not reach the server…" error, form preserved, no order.
+- Rollback proven with a temporary trigger on `orders` (since removed): failed insert left stock, cart items and order counts unchanged.
+- Test orders, carts and the temporary customer/session were removed and seed products restored (`4.50`/stock 5, `12.00`/stock 3). Dev servers stopped; temp scripts deleted.
+
+## 8. Remaining limitations
+- No payments: every order is `pending`/`unpaid`, and stock is reserved immediately. Cancelling an unpaid order does not yet restore stock (follow-up task).
+- Confirmation links rotate on a retried checkout request; a client that already displayed the older link would need the newest token. The UI serializes submissions, so this only affects a genuine lost-response retry.
+- Pincode validation is format-level only (`A-Za-z0-9`, 2–20 chars); no serviceability or address autocomplete.
+- Confirmation token is carried in the URL query string, so it can appear in browser history; it is single-order scoped but long-lived until rotated.
+- No order history for guests or customers on the account pages yet.
+- Responsive rules exist for ≤980px and ≤640px, but browser verification was done at desktop width only (the browser tool has no viewport override).
+- `docs/tasks.md` still contains pre-existing mojibake from an earlier session; left untouched to avoid unrelated churn.

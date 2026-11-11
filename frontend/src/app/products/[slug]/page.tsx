@@ -10,6 +10,8 @@ import {
 import { getSiteUrl, publicPageMetadata } from "@/lib/site-url";
 import styles from "./page.module.css";
 
+export const instant = false;
+
 type ProductParams = {
   params: Promise<{ slug: string }>;
 };

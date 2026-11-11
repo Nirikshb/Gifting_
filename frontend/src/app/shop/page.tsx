@@ -11,6 +11,8 @@ import styles from "./page.module.css";
 
 const description = "Gifts currently listed by Aapulki.";
 
+export const instant = false;
+
 type ShopSearch = {
   page?: string | string[];
 };

@@ -141,3 +141,47 @@ Connected the customer-facing cart to the existing backend cart APIs. No backend
 - All cart totals/warnings come from the backend (`unitPrice`, `seenUnitPrice`, `priceChanged`, `lineTotal`, `subtotal`, `requiresAttention`, `attentionMessage`); no client-side price math
 - CSRF via the existing same-origin `/api` proxy + `lib/api/client.ts` double-submit handling, unchanged
 - Guest cart persists through the existing httpOnly `gp_guest_cart` cookie (verified across full page reloads)
+
+---
+
+## openCodeGo Deepseek v4.1 flash changes — Phase 1, Task 2: guest-first checkout
+
+Cart-backed checkout. Line items come only from the caller's cart; prices, stock and totals are resolved from the database inside one transaction. Guests do not need an account or Google sign-in.
+
+### Backend (new)
+- `src/migrations/1792900000000-AddCheckoutFieldsToOrders.ts`: `orders.customer_id` (FK `customers`, ON DELETE SET NULL), `recipient_name`, `gift_message`, `subtotal_amount` (backfilled from `total_amount`, then NOT NULL), `shipping_amount`, `idempotency_key` (unique), `confirmation_token_hash`; checks `subtotal >= 0`, `shipping >= 0`, `subtotal + shipping = total`; index on `customer_id`. No new tables: recipient/address/gift are one-per-order snapshots, so columns are enough.
+- `src/orders/dto/create-checkout.dto.ts` — validated checkout payload (trimmed strings, optional recipient/gift/idempotency key).
+- `src/orders/dto/checkout-response.dto.ts` — checkout and confirmation response contracts.
+- `src/orders/utils/shipping.ts` — single server-side shipping policy: ₹49 flat below ₹499, free at/above, ₹0 for an empty cart.
+- `src/orders/utils/order-confirmation-token.ts` — 32-byte random token; only its SHA-256 hash is stored.
+- Specs: `src/orders/utils/shipping.spec.ts`, `src/orders/utils/order-confirmation-token.spec.ts`, `src/orders/orders.service.spec.ts`.
+
+### Backend (modified)
+- `src/orders/orders.service.ts`: new `createCheckoutOrder()` (cart load + row locks, active/stock revalidation, DB prices, stock reservation via conditional `UPDATE ... stock_quantity >= :quantity`, snapshot `order_items`, totals and shipping server-side, customer association, cart clear in the same transaction, idempotency fast-path + in-transaction re-check + unique-violation fallback) and `findOrderConfirmation()` (reference + token hash). Legacy `createGuestOrder()` untouched except for the new subtotal/shipping columns.
+- `src/orders/orders.controller.ts`: `POST /orders/checkout` (CSRF-guarded, clears the guest cart cookie on success) and `GET /orders/:orderReference/confirmation?token=…`. Public `GET /orders/:orderReference` unchanged.
+- `src/orders/orders.module.ts`: imports `CartsModule`.
+- `src/orders/entities/order.entity.ts`: new columns, relation and matching checks.
+- `src/orders/utils/money.ts`: added `compareMoney`.
+- `src/carts/carts.service.ts`: `loadCheckoutCart()` / `clearCheckoutCart()` reuse `resolveOwner()` + cart row locking; cart responses now include backend `shipping` and `total`.
+- `src/carts/dto/cart-response.dto.ts`: `CartResponse` gains `shipping` and `total`.
+
+### Frontend (new)
+- `src/app/checkout/page.tsx` (noindex) and `src/app/orders/[reference]/page.tsx` (`instant = false`; reads `reference` + `token` from `params`/`searchParams`).
+- `src/lib/api/orders.ts` — typed `createCheckoutOrder()` / `getOrderConfirmation()`.
+- `src/components/CheckoutView.tsx` + `CheckoutView.module.css` — customer, recipient, delivery/pincode, gift message, order summary, shipping, submit; inline validation, loading/submitting/error states, empty-cart recovery, blocked/price-change notices, signed-in prefill from `GET /auth/me`, one idempotency key per attempt.
+- `src/components/OrderConfirmation.tsx` + `OrderConfirmation.module.css` — reference, items and quantities, customer, delivery, gift message, subtotal/shipping/total, order and payment status, invalid-token state.
+
+### Frontend (modified)
+- `src/lib/api/cart.ts`: `Cart` gains `shipping`/`total`.
+- `src/components/CartView.tsx` + `.module.css`: backend shipping/total, Checkout action, Continue shopping link.
+
+### Behaviour and decisions
+- Transaction: cart lock → product locks → validate active/stock → decrement stock → insert order + items → clear cart. Any failure rolls everything back.
+- Payments are not integrated, so stock is reserved at order creation and every order is `pending`/`unpaid`; cancelling an unpaid order must restore stock in a later task.
+- Idempotency: client sends a UUID; the unique key makes retries return the original order without a second reservation. A retry issues a fresh confirmation token (the lost response had the old one).
+- Confirmation links are bearer links: full order data is only returned when the reference and token hash match.
+
+### Verification
+- Backend `npx tsc --noEmit`; `npx vitest run` → 7 files / 26 tests.
+- Frontend `npx tsc --noEmit`; `npm run build` → 20 routes, `/orders/[reference]` partial prerender.
+- Browser (dev DB): guest checkout ₹4.50 + ₹49 shipping = ₹53.50; confirmation reload with token; wrong/missing token → not found; cart cleared and header count 0; `/checkout` empty state; empty cart rejected by the API; invalid email/pincode blocked client-side; out-of-stock rejected by the API and disabled in the UI; changed price accepted at the new DB price; idempotent replay returned the same reference with no extra order; signed-in customer order stored `customer_id`; backend stopped → friendly "could not reach the server" error with the form preserved; temporary DB trigger on `orders` proved rollback (stock, cart and orders unchanged).

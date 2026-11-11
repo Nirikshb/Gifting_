@@ -185,6 +185,20 @@
   background: #3f4034;
 }
 
+.secondary {
+  display: block;
+  margin-top: 12px;
+  color: #8d8d8d;
+  font-size: 13px;
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.secondary:hover {
+  color: #1a1a1a;
+}
+
 .bagHead {
   display: flex;
   align-items: baseline;

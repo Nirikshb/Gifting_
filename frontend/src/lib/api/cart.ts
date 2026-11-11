@@ -19,6 +19,8 @@ export type CartItem = {
 export type Cart = {
   items: CartItem[];
   subtotal: string;
+  shipping: string;
+  total: string;
 };
 
 export type CartCount = {

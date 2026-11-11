@@ -42,3 +42,12 @@ export function addMoney(...amounts: string[]): string {
   const total = amounts.reduce((sum, amount) => sum + toCents(amount), 0n);
   return formatCents(total);
 }
+
+/** Compares two money values without floating point arithmetic. */
+export function compareMoney(left: string, right: string): number {
+  const leftCents = toCents(left);
+  const rightCents = toCents(right);
+
+  if (leftCents === rightCents) return 0;
+  return leftCents < rightCents ? -1 : 1;
+}

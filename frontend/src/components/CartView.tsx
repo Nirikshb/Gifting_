@@ -22,6 +22,8 @@ export function CartView() {
 
   const items = cart?.items ?? [];
   const subtotal = cart?.subtotal ?? "0.00";
+  const shipping = cart?.shipping ?? "0.00";
+  const total = cart?.total ?? subtotal;
   const itemCount = items.reduce((total, item) => total + item.quantity, 0);
   const subtotalValue = Number.parseFloat(subtotal) || 0;
   const remaining = Math.max(0, FREE_SHIPPING_GOAL - subtotalValue);
@@ -30,6 +32,11 @@ export function CartView() {
     ? `₹${remaining}`
     : `₹${remaining.toFixed(2)}`;
   const subtotalText = formatInr(subtotal) ?? `₹${subtotal}`;
+  const shippingText =
+    Number.parseFloat(shipping) === 0
+      ? "Free"
+      : (formatInr(shipping) ?? `₹${shipping}`);
+  const totalText = formatInr(total) ?? `₹${total}`;
   const busy = pendingAction !== null;
   const loading = status === "loading" && cart === null;
   const failed = status === "error" && cart === null;
@@ -245,19 +252,34 @@ export function CartView() {
             </div>
             <div className={styles.row}>
               <span>Shipping</span>
-              <span>₹0</span>
+              <span>{shippingText}</span>
             </div>
             <div className={`${styles.row} ${styles.total}`}>
               <span>Total</span>
-              <span>{subtotalText}</span>
+              <span>{totalText}</span>
             </div>
-            <Link
-              className={styles.action}
-              href={items.length > 0 ? "/shop" : "/"}
-              transitionTypes={["curtain"]}
-            >
-              {items.length > 0 ? "Continue shopping" : "Home page"}
-            </Link>
+            {items.length > 0 ? (
+              <>
+                <Link
+                  className={styles.action}
+                  href="/checkout"
+                  transitionTypes={["curtain"]}
+                >
+                  Checkout
+                </Link>
+                <Link className={styles.secondary} href="/shop">
+                  Continue shopping
+                </Link>
+              </>
+            ) : (
+              <Link
+                className={styles.action}
+                href="/"
+                transitionTypes={["curtain"]}
+              >
+                Home page
+              </Link>
+            )}
           </aside>
         </div>
       </section>

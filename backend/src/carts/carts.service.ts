@@ -27,6 +27,7 @@ import {
 import type { CartCookieAction } from './types/cart-cookie-action';
 import { CartItem } from './entities/cart-item.entity';
 import { Cart } from './entities/cart.entity';
+import { calculateShippingAmount } from '../orders/utils/shipping';
 
 type CartOwner =
   | { type: 'customer'; customerId: number }
@@ -40,6 +41,8 @@ type ResolvedCart = {
 const EMPTY_CART: CartResponse = {
   items: [],
   subtotal: '0.00',
+  shipping: '0.00',
+  total: '0.00',
 };
 
 @Injectable()
@@ -273,6 +276,37 @@ export class CartsService {
         cookie: resolved.cookie,
       };
     });
+  }
+
+  /**
+   * Loads the caller's cart inside an existing transaction, locking the cart
+   * row so concurrent checkouts cannot both consume the same items.
+   */
+  async loadCheckoutCart(
+    manager: EntityManager,
+    request: Request,
+  ): Promise<{
+    cart: Cart | null;
+    customerId: number | null;
+    cookie: CartCookieAction;
+  }> {
+    await this.deleteExpiredGuestCarts(manager);
+    const owner = await this.resolveOwner(request);
+    const resolved = await this.findCart(manager, owner);
+
+    return {
+      cart: resolved.cart,
+      customerId: owner.type === 'customer' ? owner.customerId : null,
+      cookie: resolved.cookie,
+    };
+  }
+
+  /** Empties the cart after a successful checkout within the same transaction. */
+  async clearCheckoutCart(
+    manager: EntityManager,
+    cartId: number,
+  ): Promise<void> {
+    await manager.getRepository(CartItem).delete({ cartId });
   }
 
   private async resolveOwner(request: Request): Promise<CartOwner> {
@@ -561,8 +595,14 @@ export class CartsService {
     const subtotal = addMoney(
       ...items.filter((item) => item.isActive).map((item) => item.lineTotal),
     );
+    const shipping = calculateShippingAmount(subtotal);
 
-    return { items, subtotal };
+    return {
+      items,
+      subtotal,
+      shipping,
+      total: addMoney(subtotal, shipping),
+    };
   }
 
   private toItemResponse(item: CartItem): CartItemResponse {

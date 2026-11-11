@@ -3,10 +3,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Customer } from '../../customers/entities/customer.entity';
 import { OrderItem } from './order-item.entity';
 
 export const ORDER_STATUSES = ['pending', 'confirmed', 'cancelled'] as const;
@@ -17,6 +20,12 @@ export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 
 @Entity('orders')
 @Check('orders_total_non_negative', 'total_amount >= 0')
+@Check('orders_subtotal_non_negative', 'subtotal_amount >= 0')
+@Check('orders_shipping_non_negative', 'shipping_amount >= 0')
+@Check(
+  'orders_total_matches',
+  'subtotal_amount + shipping_amount = total_amount',
+)
 @Check(
   'orders_order_status_valid',
   "order_status IN ('pending', 'confirmed', 'cancelled')",
@@ -32,11 +41,21 @@ export class Order {
   @Column({ name: 'order_reference', unique: true, length: 36 })
   orderReference!: string;
 
+  @Column({ name: 'customer_id', type: 'integer', nullable: true })
+  customerId!: number | null;
+
+  @ManyToOne(() => Customer, { nullable: true, onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'customer_id' })
+  customer!: Customer | null;
+
   @Column({ name: 'customer_name', length: 150 })
   customerName!: string;
 
   @Column({ name: 'customer_email', length: 255 })
   customerEmail!: string;
+
+  @Column({ name: 'recipient_name', type: 'varchar', length: 150, nullable: true })
+  recipientName!: string | null;
 
   @Column({ name: 'delivery_line1', length: 200 })
   deliveryLine1!: string;
@@ -52,6 +71,26 @@ export class Order {
 
   @Column({ name: 'delivery_country', length: 100 })
   deliveryCountry!: string;
+
+  @Column({ name: 'gift_message', type: 'varchar', length: 500, nullable: true })
+  giftMessage!: string | null;
+
+  @Column({
+    name: 'subtotal_amount',
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+  })
+  subtotalAmount!: string;
+
+  @Column({
+    name: 'shipping_amount',
+    type: 'numeric',
+    precision: 10,
+    scale: 2,
+    default: 0,
+  })
+  shippingAmount!: string;
 
   @Column({
     name: 'total_amount',
@@ -76,6 +115,23 @@ export class Order {
     default: 'unpaid',
   })
   paymentStatus!: PaymentStatus;
+
+  @Column({
+    name: 'idempotency_key',
+    type: 'varchar',
+    length: 64,
+    nullable: true,
+    unique: true,
+  })
+  idempotencyKey!: string | null;
+
+  @Column({
+    name: 'confirmation_token_hash',
+    type: 'varchar',
+    length: 64,
+    nullable: true,
+  })
+  confirmationTokenHash!: string | null;
 
   @OneToMany(() => OrderItem, (item) => item.order)
   items!: OrderItem[];

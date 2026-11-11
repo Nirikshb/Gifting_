@@ -3,6 +3,7 @@ import styles from "../account.module.css";
 export const metadata = {
   title: "Wishlist",
   description: "Your Aapulki wishlist.",
+  robots: { index: false, follow: false },
 };
 
 export default function WishlistPage() {

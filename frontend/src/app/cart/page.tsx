@@ -13,6 +13,7 @@ const remainingText = Number.isInteger(remaining)
 export const metadata = {
   title: "Cart",
   description: "Your Aapulki cart.",
+  robots: { index: false, follow: false },
 };
 
 export default function CartPage() {

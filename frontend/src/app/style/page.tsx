@@ -1,5 +1,6 @@
 import { ViewTransition } from "react";
 import Link from "next/link";
+import { publicPageMetadata } from "@/lib/site-url";
 import styles from "./page.module.css";
 
 const leftLinks = ["Typography", "Photo", "Style", "Design"];
@@ -24,9 +25,11 @@ const notes = [
   },
 ];
 
+const description = "Typography, photo, and a quiet design style.";
+
 export const metadata = {
   title: "Style",
-  description: "Typography, photo, and a quiet design style.",
+  ...publicPageMetadata("Style | Aapulki", description, "/style"),
 };
 
 export default function StylePage() {

@@ -3,6 +3,7 @@ import styles from "../account.module.css";
 export const metadata = {
   title: "Change password",
   description: "Password for your Aapulki account.",
+  robots: { index: false, follow: false },
 };
 
 export default function ChangePasswordPage() {

@@ -12,6 +12,7 @@ const services = [
 export const metadata = {
   title: "Kindled · Kindred",
   description: "Designs with soul and brands with story.",
+  robots: { index: false, follow: false },
 };
 
 export default function DetailPage() {

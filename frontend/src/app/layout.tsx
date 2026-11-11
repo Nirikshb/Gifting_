@@ -3,6 +3,7 @@ import { Figtree, Nunito, Prata } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import { SiteHeader } from "@/components/SiteHeader";
 import { customFontVariables } from "@/lib/fonts";
+import { getSiteUrl, publicPageMetadata } from "@/lib/site-url";
 import "./globals.css";
 import styles from "./layout.module.css";
 
@@ -24,10 +25,16 @@ const figtree = Figtree({
   variable: "--font-figtree",
 });
 
+const description = "Aapulki. Continue to the shop.";
+const siteUrl = getSiteUrl();
+
 export const metadata = {
-  title: "Aapulki | Gift Hampers Online",
-  description:
-    "Shop thoughtfully curated gift hampers online, personalized gifts, birthday and anniversary gifts, festive gift hampers, and unique gift ideas for every occasion.",
+  ...(siteUrl ? { metadataBase: new URL(siteUrl) } : {}),
+  title: {
+    default: "Aapulki",
+    template: "%s | Aapulki",
+  },
+  ...publicPageMetadata("Aapulki", description, "/"),
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

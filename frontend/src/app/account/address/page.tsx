@@ -3,6 +3,7 @@ import styles from "../account.module.css";
 export const metadata = {
   title: "Saved address",
   description: "Your saved Aapulki address.",
+  robots: { index: false, follow: false },
 };
 
 export default function SavedAddressPage() {

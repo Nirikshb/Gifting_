@@ -1,9 +1,12 @@
 import { ViewTransition } from "react";
+import { publicPageMetadata } from "@/lib/site-url";
 import styles from "./page.module.css";
+
+const description = "Aapulki makes packaging for gifts that are meant to be kept.";
 
 export const metadata = {
   title: "About",
-  description: "About Aapulki.",
+  ...publicPageMetadata("About | Aapulki", description, "/about"),
 };
 
 export default function AboutPage() {

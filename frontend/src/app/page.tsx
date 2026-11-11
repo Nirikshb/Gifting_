@@ -1,6 +1,14 @@
 import { ViewTransition } from "react";
 import Link from "next/link";
+import { publicPageMetadata } from "@/lib/site-url";
 import styles from "./page.module.css";
+
+const description = "Aapulki. Continue to the shop.";
+
+export const metadata = {
+  title: { absolute: "Aapulki" },
+  ...publicPageMetadata("Aapulki", description, "/"),
+};
 
 export default function Home() {
   return (

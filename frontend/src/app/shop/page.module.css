@@ -155,8 +155,10 @@
 }
 
 .add {
+  display: flex;
   flex: 1;
-  border-right: 1px solid #ddd8d0;
+  align-items: center;
+  justify-content: center;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.16em;
@@ -191,9 +193,39 @@
   font-weight: 500;
 }
 
+.pager a {
+  color: inherit;
+}
+
 .pager span[aria-current="page"] {
   color: #1c1c1c;
   font-weight: 700;
+}
+
+.image {
+  max-width: 72%;
+  max-height: 86%;
+  object-fit: contain;
+}
+
+.stock,
+.note {
+  margin: 0;
+  color: #8a877f;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.note {
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
+
+.card h2 a {
+  color: inherit;
 }
 
 @media (max-width: 900px) {

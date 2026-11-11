@@ -22,8 +22,3 @@ export type CartResponse = {
 export type CartCountResponse = {
   count: number;
 };
-
-export type CartCookieAction =
-  | { type: 'none' }
-  | { type: 'set'; token: string }
-  | { type: 'clear' };

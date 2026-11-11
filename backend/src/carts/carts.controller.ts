@@ -16,7 +16,7 @@ import { CsrfGuard } from '../auth/guards/csrf.guard';
 import { GUEST_CART_COOKIE_NAME } from './cart.constants';
 import { CartsService } from './carts.service';
 import { AddCartItemDto } from './dto/add-cart-item.dto';
-import { CartCookieAction } from './dto/cart-response';
+import type { CartCookieAction } from './types/cart-cookie-action';
 import { UpdateCartItemDto } from './dto/update-cart-item.dto';
 
 @Controller('cart')

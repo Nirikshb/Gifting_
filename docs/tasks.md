@@ -32,7 +32,7 @@
 | **Thank-you** page → `GET /orders/:orderReference` | Not started |
 
 ### Frontend polish
-- No Tailwind (only CSS modules + global `font-*` classes)
+- UI uses CSS modules + global `font-*` classes; Tailwind v4 is installed and wired in `globals.css` / `tailwind.config.js` but is not used for layout
 - No checkout/order API helpers in `api.ts` (`createOrder`, `fetchOrder`)
 - Add to cart does not persist anything
 - Full visual redesign of catalogue/landing (intentionally deferred)
@@ -94,3 +94,25 @@
 ---
 
 **Short version:** Backend guest order **create + lookup** is in place. Frontend stops at **browse + product page**. **Cart → checkout → confirmation** and **payments/email/hardening** are still ahead.
+
+---
+
+## openCodeGo Deepseek v4.1 flash changes
+
+Structure pass only — no new features.
+
+### Backend
+- Moved `auth/request-with-customer.ts` → `auth/types/request-with-customer.ts`
+- Renamed `carts/dto/cart-response.ts` → `carts/dto/cart-response.dto.ts`
+- Extracted `CartCookieAction` → `carts/types/cart-cookie-action.ts`
+- Added `products/dto/list-products-query.dto.ts`; `GET /products` now validates `page` / `limit` through the DTO instead of inline pipes
+- Deleted unused `newsletter/dto/update-newsletter.dto.ts`
+
+### Frontend
+- `app/` is now routes-only: moved `AccountFrame`, `ProfilePanel`, `OrdersView`, `ProcessStage` into `src/components/`
+- Moved their styles too: `components/account.module.css`, `components/OrdersView.module.css`, `components/ProcessStage.module.css`
+- Added `app/error.tsx` (Next.js 16 `retry` prop); restored `app/not-found.tsx` (tracked file was missing on disk)
+- Added shared `components/StatusScreen.tsx` for the error layout
+
+### Docs
+- Corrected the stale "No Tailwind" note (Tailwind v4 is installed and configured)

@@ -1,4 +1,4 @@
-import { ProfilePanel } from "./ProfilePanel";
+import { ProfilePanel } from "@/components/ProfilePanel";
 
 export const metadata = {
   title: "Profile",

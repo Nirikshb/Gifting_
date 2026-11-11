@@ -20,11 +20,11 @@ import {
   UNAVAILABLE_PRODUCT_MESSAGE,
 } from './cart.constants';
 import {
-  CartCookieAction,
   CartCountResponse,
   CartItemResponse,
   CartResponse,
-} from './dto/cart-response';
+} from './dto/cart-response.dto';
+import type { CartCookieAction } from './types/cart-cookie-action';
 import { CartItem } from './entities/cart-item.entity';
 import { Cart } from './entities/cart.entity';
 

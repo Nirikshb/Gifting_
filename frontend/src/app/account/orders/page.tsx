@@ -1,4 +1,4 @@
-import { OrdersView } from "./OrdersView";
+import { OrdersView } from "@/components/OrdersView";
 
 export const metadata = {
   title: "My orders",

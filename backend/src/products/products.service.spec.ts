@@ -8,7 +8,7 @@ import { ProductsService } from './products.service';
 describe('ProductsService', () => {
   let productsService: ProductsService;
   const productsRepository = {
-    find: vi.fn(),
+    findAndCount: vi.fn(),
     findOne: vi.fn(),
   };
 
@@ -27,7 +27,7 @@ describe('ProductsService', () => {
   };
 
   beforeEach(async () => {
-    productsRepository.find.mockReset();
+    productsRepository.findAndCount.mockReset();
     productsRepository.findOne.mockReset();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -44,15 +44,23 @@ describe('ProductsService', () => {
   });
 
   describe('findAll', () => {
-    it('returns active products', async () => {
-      productsRepository.find.mockResolvedValue([kraftGiftBox]);
+    it('returns a paginated page of active products', async () => {
+      productsRepository.findAndCount.mockResolvedValue([[kraftGiftBox], 1]);
 
-      const products = await productsService.findAll();
+      const result = await productsService.findAll(1, 10);
 
-      expect(productsRepository.find).toHaveBeenCalledWith({
+      expect(productsRepository.findAndCount).toHaveBeenCalledWith({
         where: { isActive: true },
+        skip: 0,
+        take: 10,
+        order: { id: 'ASC' },
       });
-      expect(products).toEqual([kraftGiftBox]);
+      expect(result).toEqual({
+        items: [kraftGiftBox],
+        total: 1,
+        page: 1,
+        limit: 10,
+      });
     });
   });
 

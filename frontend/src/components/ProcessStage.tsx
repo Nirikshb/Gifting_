@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import styles from "./page.module.css";
+import styles from "./ProcessStage.module.css";
 
 const steps = [
   {

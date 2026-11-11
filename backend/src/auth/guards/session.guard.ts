@@ -5,7 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import type { RequestWithCustomer } from '../request-with-customer';
+import type { RequestWithCustomer } from '../types/request-with-customer';
 import { SESSION_UNAUTHORIZED_MESSAGE } from '../session.constants';
 import { SessionService } from '../session.service';
 

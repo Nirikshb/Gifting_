@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
-import { AccountFrame } from "./AccountFrame";
-import styles from "./account.module.css";
+import { AccountFrame } from "@/components/AccountFrame";
+import styles from "@/components/account.module.css";
 
 export default function AccountLayout({ children }: { children: ReactNode }) {
   return (

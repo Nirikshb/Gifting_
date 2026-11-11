@@ -10,7 +10,7 @@ import type { Request } from 'express';
 import { OAuth2Client } from 'google-auth-library';
 import { QueryFailedError, Repository } from 'typeorm';
 import { CartsService } from '../carts/carts.service';
-import { CartCookieAction } from '../carts/dto/cart-response';
+import type { CartCookieAction } from '../carts/types/cart-cookie-action';
 import {
   getGoogleClientId,
   GOOGLE_SIGN_IN_NOT_CONFIGURED_MESSAGE,

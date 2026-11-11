@@ -1,12 +1,5 @@
-import {
-  BadRequestException,
-  Controller,
-  DefaultValuePipe,
-  Get,
-  Param,
-  ParseIntPipe,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { ListProductsQueryDto } from './dto/list-products-query.dto';
 import { ProductsService } from './products.service';
 
 @Controller('products')
@@ -14,19 +7,8 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  findAll(
-    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-  ) {
-    if (page < 1) {
-      throw new BadRequestException('page must not be less than 1');
-    }
-
-    if (limit < 1 || limit > 100) {
-      throw new BadRequestException('limit must be between 1 and 100');
-    }
-
-    return this.productsService.findAll(page, limit);
+  findAll(@Query() query: ListProductsQueryDto) {
+    return this.productsService.findAll(query.page, query.limit);
   }
 
   @Get(':slug')

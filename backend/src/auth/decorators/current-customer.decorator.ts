@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import type { Request } from 'express';
 import { Customer } from '../../customers/entities/customer.entity';
-import type { RequestWithCustomer } from '../request-with-customer';
+import type { RequestWithCustomer } from '../types/request-with-customer';
 
 export const CurrentCustomer = createParamDecorator(
   (_data: unknown, context: ExecutionContext): Customer => {

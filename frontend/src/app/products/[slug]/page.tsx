@@ -1,5 +1,6 @@
 import { ViewTransition } from "react";
 import { notFound } from "next/navigation";
+import { AddToCartButton } from "@/components/AddToCartButton";
 import {
   formatInr,
   getActiveProduct,
@@ -94,6 +95,7 @@ export default async function ProductPage({ params }: ProductParams) {
           {price ? <p className={styles.price}>{price}</p> : null}
           <p className={styles.stock}>{product.stockQuantity > 0 ? "In stock" : "Out of stock"}</p>
           {description ? <p className={styles.description}>{description}</p> : null}
+          <AddToCartButton productId={product.id} stockQuantity={product.stockQuantity} />
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: jsonLdScript(structuredData) }}

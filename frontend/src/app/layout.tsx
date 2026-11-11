@@ -3,6 +3,7 @@ import { Figtree, Nunito, Prata } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import { SiteHeader } from "@/components/SiteHeader";
 import { customFontVariables } from "@/lib/fonts";
+import { CartProvider } from "@/lib/cart/CartProvider";
 import { getSiteUrl, publicPageMetadata } from "@/lib/site-url";
 import "./globals.css";
 import styles from "./layout.module.css";
@@ -44,11 +45,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       className={`${prata.variable} ${nunito.variable} ${figtree.variable} ${customFontVariables}`}
     >
       <body>
-        <div className={styles.shell}>
-          <SiteHeader />
-          <main className={styles.main}>{children}</main>
-        </div>
-        <Analytics />
+        <CartProvider>
+          <div className={styles.shell}>
+            <SiteHeader />
+            <main className={styles.main}>{children}</main>
+          </div>
+          <Analytics />
+        </CartProvider>
       </body>
     </html>
   );

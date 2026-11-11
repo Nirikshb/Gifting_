@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ViewTransition } from "react";
 import { api } from "@/lib/api";
+import { useCart } from "@/lib/cart/CartProvider";
 import styles from "./account.module.css";
 
 const tabs = [
@@ -19,6 +20,7 @@ const tabs = [
 export function AccountFrame({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { refresh } = useCart();
   const [name, setName] = useState("");
   const [leaving, setLeaving] = useState(false);
 
@@ -44,6 +46,7 @@ export function AccountFrame({ children }: { children: ReactNode }) {
 
     try {
       await api.post("/auth/logout", undefined);
+      await refresh();
       router.push("/");
     } catch {
       setLeaving(false);

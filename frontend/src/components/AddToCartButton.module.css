@@ -1,0 +1,84 @@
+.wrap {
+  margin-top: 18px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #dcd6ca;
+  background: #fbf8f3;
+}
+
+.stepperButton {
+  width: 34px;
+  height: 40px;
+  border: 0;
+  background: none;
+  color: #1a1a1a;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.stepperButton:hover:not(:disabled) {
+  background: #f1ede4;
+}
+
+.stepperButton:disabled {
+  color: #c0bab0;
+  cursor: default;
+}
+
+.stepperValue {
+  min-width: 34px;
+  color: #1a1a1a;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.add {
+  padding: 12px 22px;
+  border: 0;
+  background: #1c1c1c;
+  color: #f7f4ee;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.add:hover:not(:disabled) {
+  background: #3f4034;
+}
+
+.add:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.added {
+  margin-top: 8px;
+  color: #2e7d5b;
+  font-size: 13px;
+}
+
+.error {
+  margin-top: 8px;
+  color: #a05a2c;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.outOfStock {
+  color: #8d8d8d;
+  font-size: 14px;
+}

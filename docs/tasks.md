@@ -116,3 +116,28 @@ Structure pass only — no new features.
 
 ### Docs
 - Corrected the stale "No Tailwind" note (Tailwind v4 is installed and configured)
+
+---
+
+## openCodeGo Deepseek v4.1 flash changes — Phase 1, Task 1: real shopping cart
+
+Connected the customer-facing cart to the existing backend cart APIs. No backend changes.
+
+### Frontend (new)
+- `src/lib/api/cart.ts`: typed cart API helpers (`getCart`, `getCartCount`, `initializeCart`, `addCartItem`, `updateCartItem`, `removeCartItem`, `clearCart`) over the existing `lib/api/client.ts` `request()`
+- `src/lib/cart/CartProvider.tsx`: React Context provider (no new state library — none existed) mounted in `app/layout.tsx`; holds the cart as single source of truth, derives the header count from it, guards against duplicate submissions (`pendingAction`), validates quantities client-side, exposes `refresh()`
+- `src/components/CartView.tsx` + `CartView.module.css`: cart page UI — image, name, unit price with strikethrough on `priceChanged`, qty stepper (bounded by backend `stockQuantity`), line total, Remove, Clear bag, subtotal/total from backend only, empty/loading/error (+ Try again)/notice states, backend `attentionMessage` warnings
+- `src/components/AddToCartButton.tsx` + `.module.css`: add-to-cart with quantity stepper and out-of-stock handling on the product page
+
+### Frontend (modified)
+- `src/components/SiteHeader.tsx`: hardcoded `Cart (₹0)` replaced with the live count from context
+- `src/app/layout.tsx`: wraps the app in `CartProvider`
+- `src/app/cart/page.tsx`: thin server wrapper rendering `<CartView />` (styles moved to `components/CartView.module.css`)
+- `src/app/products/[slug]/page.tsx`: renders `<AddToCartButton productId={...} stockQuantity={...} />`
+- `src/lib/api/product-format.ts` (new, client-safe) + `src/lib/api/catalogue.ts`: extracted pure format helpers (`formatInr`, `inrAmount`, `productImageUrl`, `productPath`) out of the server-only catalogue module (it imports `next/cache`); `CatalogueProduct` now includes `id` (needed by cart APIs)
+- `src/components/AccountFrame.tsx`: cart `refresh()` after logout so the header count follows the owner change
+
+### Notes
+- All cart totals/warnings come from the backend (`unitPrice`, `seenUnitPrice`, `priceChanged`, `lineTotal`, `subtotal`, `requiresAttention`, `attentionMessage`); no client-side price math
+- CSRF via the existing same-origin `/api` proxy + `lib/api/client.ts` double-submit handling, unchanged
+- Guest cart persists through the existing httpOnly `gp_guest_cart` cookie (verified across full page reloads)

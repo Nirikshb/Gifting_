@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCart } from "@/lib/cart/CartProvider";
 import styles from "./SiteHeader.module.css";
 
 const links = [
@@ -16,6 +17,7 @@ const links = [
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { count } = useCart();
 
   if (pathname === "/detail") return null;
 
@@ -46,7 +48,7 @@ export function SiteHeader() {
           </Link>
           <Link href="/cart" transitionTypes={["curtain"]}>
             <CartIcon />
-            <span>Cart (₹0)</span>
+            <span>{count === null ? "Cart" : `Cart (${count})`}</span>
           </Link>
         </div>
       </div>

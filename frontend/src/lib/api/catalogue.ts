@@ -1,10 +1,18 @@
 import { cacheLife } from "next/cache";
+import {
+  formatInr,
+  inrAmount,
+  productImageUrl,
+  productPath,
+} from "./product-format";
+
+export { formatInr, inrAmount, productImageUrl, productPath } from "./product-format";
 
 const SHOP_LIMIT = 10;
 const SITEMAP_LIMIT = 100;
-const MONEY = /^(\d+)(?:\.(\d{1,2}))?$/;
 
 export type CatalogueProduct = {
+  id: number;
   name: string;
   slug: string;
   description: string;
@@ -45,6 +53,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 function readProduct(value: unknown): CatalogueProduct | null {
   if (!isRecord(value)) return null;
   if (value.isActive === false) return null;
+  if (typeof value.id !== "number" || !Number.isInteger(value.id) || value.id <= 0) return null;
   if (typeof value.name !== "string" || value.name.trim() === "") return null;
   if (typeof value.slug !== "string" || !productPath(value.slug)) return null;
   if (typeof value.description !== "string") return null;
@@ -57,6 +66,7 @@ function readProduct(value: unknown): CatalogueProduct | null {
   }
 
   return {
+    id: value.id,
     name: value.name,
     slug: value.slug,
     description: value.description,
@@ -65,36 +75,6 @@ function readProduct(value: unknown): CatalogueProduct | null {
     imageUrl: value.imageUrl,
     updatedAt: typeof value.updatedAt === "string" ? value.updatedAt : null,
   };
-}
-
-export function productPath(slug: string) {
-  if (!slug || /[/?#\\]/.test(slug) || slug === "." || slug === "..") return null;
-  return `/products/${encodeURIComponent(slug)}`;
-}
-
-export function inrAmount(price: string) {
-  const match = price.trim().match(MONEY);
-  if (!match) return null;
-
-  const fraction = (match[2] ?? "").padEnd(2, "0");
-  return `${match[1]}.${fraction}`;
-}
-
-export function formatInr(price: string) {
-  const amount = inrAmount(price);
-  return amount ? `₹${amount}` : null;
-}
-
-export function productImageUrl(imageUrl: string | null) {
-  if (!imageUrl) return null;
-
-  try {
-    const url = new URL(imageUrl);
-    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
-    return url.href;
-  } catch {
-    return null;
-  }
 }
 
 async function readJson(path: string): Promise<CatalogueResult<unknown>> {

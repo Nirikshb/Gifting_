@@ -4,6 +4,7 @@ import { Cart } from './carts/entities/cart.entity';
 import { CustomerSession } from './customers/entities/customer-session.entity';
 import { Customer } from './customers/entities/customer.entity';
 import { OrderItem } from './orders/entities/order-item.entity';
+import { OrderStatusHistory } from './orders/entities/order-status-history.entity';
 import { Order } from './orders/entities/order.entity';
 import { Newsletter } from './newsletter/entities/newsletter.entity';
 import { Product } from './products/entities/product.entity';
@@ -19,6 +20,7 @@ export default new DataSource({
     Product,
     Order,
     OrderItem,
+    OrderStatusHistory,
     Customer,
     CustomerSession,
     Cart,

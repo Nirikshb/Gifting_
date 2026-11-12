@@ -39,6 +39,28 @@ export function getFrontendOrigin(
   return value ? value : null;
 }
 
+/**
+ * Comma-separated list of emails that should be promoted to admin when they
+ * sign in. This only ever promotes; removing an email does not demote an
+ * existing admin (use SQL for that, see docs/tasks.md).
+ */
+export function isConfiguredAdminEmail(
+  configService: ConfigService,
+  email: string,
+): boolean {
+  const configured = configService.get<string>('ADMIN_EMAILS')?.trim();
+  if (!configured) {
+    return false;
+  }
+
+  const normalized = email.trim().toLowerCase();
+  return configured
+    .split(',')
+    .map((entry) => entry.trim().toLowerCase())
+    .filter(Boolean)
+    .includes(normalized);
+}
+
 export function getSessionCookieSameSite(
   configService: ConfigService,
 ): 'lax' | 'strict' | 'none' {

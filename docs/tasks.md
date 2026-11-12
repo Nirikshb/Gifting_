@@ -271,3 +271,79 @@ No new tables. Recipient, address, gift message and amounts are one-per-order sn
 - No order history for guests or customers on the account pages yet.
 - Responsive rules exist for ≤980px and ≤640px, but browser verification was done at desktop width only (the browser tool has no viewport override).
 - `docs/tasks.md` still contains pre-existing mojibake from an earlier session; left untouched to avoid unrelated churn.
+
+---
+
+## openCodeGo Deepseek v4.1 flash changes — Phase 1, Task 3: order lifecycle, history and admin management
+
+Fulfilment and payment lifecycles, safe cancellation with one-time stock restoration, customer order history and a studio admin area. No payment provider is connected and no path marks an order paid from browser input.
+
+### Backend (new)
+- `src/migrations/1793000000000-OrderLifecycle.ts` — `customers.role` (`customer`/`admin`, default `customer`); `orders.paid_at`, `cancelled_at`, `stock_restored_at`, `payment_reference`; expanded order/payment status checks; `order_status_history` table (category `fulfilment`/`payment`, from/to status, note, actor type/id, timestamps, FK cascade, `(order_id, created_at, id)` index); backfills a system history row for every existing order.
+- `src/orders/entities/order-status-history.entity.ts` — audit rows used by the customer and admin timelines.
+- `src/orders/utils/order-lifecycle.ts` (+ spec) — single transition table and cancellation policy (`customerCanCancelOrder`, `adminCanCancelOrder`, `allowedTransitionsFor`), plus transition validation that rejects unknown, identical and backward moves.
+- `src/orders/order-management.service.ts` (+ spec) — customer list/detail/cancel, admin list/stats/detail/status/cancel, transaction + `pessimistic_write` order lock, one-time restock via `stock_restored_at`, history recording, and `applyVerifiedPaymentEvent`.
+- `src/orders/admin-orders.controller.ts` — `/admin/orders` list, `stats`, detail, `PATCH :ref/status`, `POST :ref/cancel`; `AdminGuard` at controller level, `CsrfGuard` on writes.
+- `src/auth/guards/admin.guard.ts` (+ spec) — layers on `SessionGuard`; 401 unauthenticated, 403 non-admin.
+- `src/orders/dto/cancel-order.dto.ts`, `list-orders-query.dto.ts` (customer + admin variants), `update-order-status.dto.ts`, `order-management-response.dto.ts`.
+- `src/orders/payments/payment-gateway.ts` (+ barrel) — `PaymentGateway` interface, `PAYMENT_GATEWAY` token, `UnconfiguredPaymentGateway` that throws 503.
+
+### Backend (modified)
+- `src/auth/auth.module.ts`, `auth.service.ts`, `config/auth-configuration.ts` — `role` in `/auth/me`; optional `ADMIN_EMAILS` promotion at Google sign-in; no second auth system.
+- `src/customers/entities/customer.entity.ts` — `role` column, documented as an extension of session identity.
+- `src/orders/entities/order.entity.ts` — lifecycle columns, history relation, expanded status checks.
+- `src/orders/orders.controller.ts` — customer routes `GET /orders/mine`, `GET /orders/mine/:ref`, `POST /orders/mine/:ref/cancel`, declared before the parameterised public routes; checkout and confirmation behaviour unchanged.
+- `src/orders/orders.module.ts`, `src/data-source.ts` — new entity/service/controller registration.
+- `src/orders/orders.service.ts` + spec — checkout untouched; spec extended to cover the new entity shape.
+
+### Frontend (new)
+- `src/app/admin/layout.tsx`, `src/app/admin/page.tsx`, `src/app/admin/orders/page.tsx`, `src/app/admin/orders/[reference]/page.tsx`.
+- `src/app/account/orders/[reference]/page.tsx` (`instant = false`).
+- `src/components/AdminFrame.tsx` + `admin.module.css` — studio shell: cream sidebar, access gate (sign in / studio only / error), role-aware profile block; storefront `SiteHeader` hidden under `/admin`.
+- `src/components/AdminOverview.tsx` — real stat cards (total, pending, in fulfilment, delivered, paid revenue, unpaid) with progress bars and five recent orders. No fabricated sparklines.
+- `src/components/AdminOrdersView.tsx` — tracker table with status chips, payment filter, debounced search (reference/customer/email/recipient), pagination, empty/error states.
+- `src/components/AdminOrderDetail.tsx` — items, totals, customer/recipient/gift, history timeline, payment and stock-restoration metadata, forward-only status form, cancellation with optional reason and refund-due warning.
+- `src/components/CustomerOrderDetail.tsx` + `.module.css` — customer detail, badges, delivery, totals, timeline, cancel panel with reason and duplicate-safe error handling.
+- `src/components/orders/OrderBadges.tsx`, `OrderTimeline.tsx` + CSS modules — shared status pills and history rendering.
+- `src/lib/orders/format.ts` — money/date/shipping labels, status tones, initials, notes, type guards.
+- `src/components/OrdersView.tsx` rewritten (real API, filter chips, pagination, skeletons, empty/error states); `.module.css` rewritten.
+- `src/components/OrderConfirmation.tsx` + CSS rewritten as a ticket-style receipt (rounded card, dashed perforations, notches, metadata, drawn barcode); handles cancelled orders and keeps working without a session.
+
+### Frontend (modified)
+- `src/lib/api/orders.ts` — full customer/admin types and calls (`listMyOrders`, `getMyOrder`, `cancelMyOrder`, `listAdminOrders`, `getAdminOrderStats`, `getAdminOrder`, `updateAdminOrderStatus`, `cancelAdminOrder`), shared order/payment status constants.
+- `src/components/SiteHeader.tsx` — no storefront header on `/admin` or `/admin/*`.
+
+### Lifecycle rules
+- Fulfilment is forward-only: `pending → confirmed → processing → shipped → delivered`; `pending`/`confirmed`/`processing → cancelled`; `delivered` and `cancelled` are terminal. Same-status and backward moves are `400`.
+- Payment status is separate: `unpaid`, `pending`, `paid`, `failed`, `refunded`. No route accepts payment status from the client.
+- Customer cancellation allowed only when payment is `unpaid` and status is `pending` or `confirmed`.
+- Admin cancellation allowed for `pending`/`confirmed`/`processing` regardless of payment. A paid order stays `paid`; the response and UI surface `refundDue: true` instead of fabricating a refund.
+
+### Inventory behaviour
+- Cancellation runs in a transaction that locks the order row (`pessimistic_write`), so concurrent cancels serialize.
+- Stock is restored once, guarded by `orders.stock_restored_at`; a duplicate cancellation returns `400` without touching inventory or history.
+- Restock uses quantity increments on each snapshot line; deleted products (`product_id` null) are skipped.
+- No reservation-expiry mechanism was invented; stock stays reserved until cancellation.
+
+### Security
+- Admin access reuses the existing session (`customers.role` + `AdminGuard`); no second login. Promotion: `ADMIN_EMAILS` at Google sign-in, or manual SQL.
+- All writes require CSRF double-submit plus the configured `Origin`; customer reads and writes are scoped by `customer_id` (foreign references return `404`).
+- Guest confirmation links continue to use the reference + token hash and are unaffected by sign-in or cancellation.
+
+### Payment abstraction
+- `PaymentGateway` + `PAYMENT_GATEWAY` is the future Razorpay boundary. `UnconfiguredPaymentGateway` fails closed with `503`.
+- The only internal marker is `applyVerifiedPaymentEvent`, which requires `verified: true`, `INR`, a matching amount and a provider reference. No HTTP route marks an order paid.
+
+### Verification
+- Backend `npx tsc --noEmit -p tsconfig.json` clean; `npx vitest run` → **10 files / 52 tests passed** (transition table, cancellation policy, admin guard, order management).
+- Frontend `npx tsc --noEmit` clean; `npm run build` → **24 routes**, new admin/account routes compiled. Targeted ESLint on all new/touched files is clean; repo-wide lint still reports only pre-existing issues (`SiteHeader` placeholder social anchors, `CartProvider` set-state-in-effect).
+- Migration applied to `gifting_dev`; real API verification (80/80 checks on temporary fixture data) covered auth/roles, admin gating, ownership 404s, pagination/filters/search, guest confirmation regression, transition validation, CSRF/origin rejection, customer/admin cancellation, refundDue, duplicate cancellation, concurrent cancellation (one success, one `400`), stock restored exactly once and no duplicate history.
+- Browser verification (in-app browser, dev DB; screenshots unavailable because the desktop window is not visible — checks done via snapshots/evaluate): unauthenticated `/admin` → "Sign in required"; customer role → "Studio access only"; admin → overview with correct counts/revenue/recent rows; `/admin/orders` 12 of 14 with page 2, status chip, search (`guest` → 1) and payment filter (`paid` → 3); admin detail showed correct customer/recipient/items/totals/history and allowed transition; UI status update `1002 confirmed → processing` with note; admin cancellations of `1010`/`1011` succeeded with stock-restored notice and recorded reason; customer `/account/orders` showed 8 cards / 12 total / pagination and correct badges; customer detail `/account/orders/AAP-T3-1001` cancelled with reason → notice, cancelled badge, timeline entry and cancel section removal; guest ticket `/orders/AAP-T3-1001?token=…` still rendered (cancelled heading, reference, barcode).
+- Temporary verification fixtures, scripts and the cookie route were removed; dev DB cleaned (14 fixture orders, 3 customers, 3 products) and both dev servers stopped.
+
+### Remaining limitations
+- No real payment provider, refunds, emails or notifications; `refunded` exists in the schema but nothing sets it.
+- No admin UI for payment status changes or customer management; role promotion is env/SQL only.
+- Stock restoration does not create a ledger row beyond `stock_restored_at` and the history entry.
+- Dashboard figures are live counts, not time-series analytics.
+- Responsive rules exist, but browser verification was desktop-width only.

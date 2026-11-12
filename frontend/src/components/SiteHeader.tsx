@@ -21,6 +21,10 @@ export function SiteHeader() {
 
   if (pathname === "/detail") return null;
 
+  // Studio pages provide their own chrome; the storefront header would
+  // duplicate navigation and break the admin layout.
+  if (pathname === "/admin" || pathname.startsWith("/admin/")) return null;
+
   return (
     <header
       className={open ? `${styles.header} ${styles.headerOpen}` : styles.header}

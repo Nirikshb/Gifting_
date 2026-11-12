@@ -7,6 +7,7 @@ import { CartsService } from '../carts/carts.service';
 import { Product } from '../products/entities/product.entity';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
 import { OrderItem } from './entities/order-item.entity';
+import { OrderStatusHistory } from './entities/order-status-history.entity';
 import { Order } from './entities/order.entity';
 import { OrdersService } from './orders.service';
 
@@ -127,12 +128,17 @@ function makeManager(options: {
       })),
     ),
   };
+  const historyRepository = {
+    create: vi.fn((value: Partial<OrderStatusHistory>) => value),
+    save: vi.fn(async (entries: Partial<OrderStatusHistory>[]) => entries),
+  };
 
   const manager = {
     getRepository: vi.fn((entity: unknown) => {
       if (entity === Product) return productRepository;
       if (entity === Order) return orderRepository;
       if (entity === OrderItem) return orderItemRepository;
+      if (entity === OrderStatusHistory) return historyRepository;
       throw new Error('Unexpected repository request');
     }),
   };
@@ -142,6 +148,7 @@ function makeManager(options: {
     productRepository,
     orderRepository,
     orderItemRepository,
+    historyRepository,
   };
 }
 

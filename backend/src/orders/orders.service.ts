@@ -25,6 +25,7 @@ import {
   OrderDetailsResponse,
 } from './dto/create-order-response.dto';
 import { OrderItem } from './entities/order-item.entity';
+import { OrderStatusHistory } from './entities/order-status-history.entity';
 import { Order } from './entities/order.entity';
 import { addMoney, multiplyMoney } from './utils/money';
 import {
@@ -209,6 +210,7 @@ export class OrdersService {
           }),
         );
         savedOrder.items = await orderItemRepository.save(orderItems);
+        await this.recordInitialHistory(manager, savedOrder);
 
         await this.cartsService.clearCheckoutCart(manager, cart.id);
 
@@ -383,6 +385,7 @@ export class OrdersService {
       });
 
       await orderItemRepository.save(orderItems);
+      await this.recordInitialHistory(manager, savedOrder);
 
       return {
         orderReference: savedOrder.orderReference,
@@ -487,6 +490,39 @@ export class OrdersService {
       items,
       confirmationToken,
     };
+  }
+
+  /**
+   * Gives every new order a starting point in the admin timeline. The
+   * fulfilment and payment tracks are recorded separately.
+   */
+  private async recordInitialHistory(
+    manager: EntityManager,
+    order: Order,
+  ): Promise<void> {
+    const repository = manager.getRepository(OrderStatusHistory);
+    const actorType = order.customerId === null ? 'system' : 'customer';
+
+    await repository.save([
+      repository.create({
+        orderId: order.id,
+        category: 'fulfilment',
+        fromStatus: null,
+        toStatus: order.orderStatus,
+        note: 'Order created',
+        actorType,
+        actorId: order.customerId,
+      }),
+      repository.create({
+        orderId: order.id,
+        category: 'payment',
+        fromStatus: null,
+        toStatus: order.paymentStatus,
+        note: 'No payment collected',
+        actorType: 'system',
+        actorId: null,
+      }),
+    ]);
   }
 
   private normalizeOptional(value: string | undefined): string | null {

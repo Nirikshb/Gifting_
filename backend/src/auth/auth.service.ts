@@ -14,14 +14,19 @@ import type { CartCookieAction } from '../carts/types/cart-cookie-action';
 import {
   getGoogleClientId,
   GOOGLE_SIGN_IN_NOT_CONFIGURED_MESSAGE,
+  isConfiguredAdminEmail,
   isGoogleSignInConfigured,
 } from '../config/auth-configuration';
-import { Customer } from '../customers/entities/customer.entity';
+import {
+  Customer,
+  type CustomerRole,
+} from '../customers/entities/customer.entity';
 
 export type CustomerProfile = {
   id: number;
   email: string;
   displayName: string;
+  role: CustomerRole;
 };
 
 export type GoogleSignInResult = {
@@ -81,6 +86,7 @@ export class AuthService {
       id: customer.id,
       email: customer.email,
       displayName: customer.displayName,
+      role: customer.role,
     };
   }
 
@@ -136,6 +142,12 @@ export class AuthService {
     if (existing) {
       existing.email = input.email;
       existing.displayName = input.displayName;
+      if (
+        existing.role !== 'admin' &&
+        isConfiguredAdminEmail(this.configService, input.email)
+      ) {
+        existing.role = 'admin';
+      }
       return this.customerRepository.save(existing);
     }
 
@@ -144,6 +156,9 @@ export class AuthService {
         googleSub: input.googleSub,
         email: input.email,
         displayName: input.displayName,
+        role: isConfiguredAdminEmail(this.configService, input.email)
+          ? 'admin'
+          : 'customer',
       });
       return await this.customerRepository.save(created);
     } catch (error) {
@@ -161,6 +176,12 @@ export class AuthService {
 
       raced.email = input.email;
       raced.displayName = input.displayName;
+      if (
+        raced.role !== 'admin' &&
+        isConfiguredAdminEmail(this.configService, input.email)
+      ) {
+        raced.role = 'admin';
+      }
       return this.customerRepository.save(raced);
     }
   }

@@ -11,11 +11,25 @@ import {
 } from 'typeorm';
 import { Customer } from '../../customers/entities/customer.entity';
 import { OrderItem } from './order-item.entity';
+import { OrderStatusHistory } from './order-status-history.entity';
 
-export const ORDER_STATUSES = ['pending', 'confirmed', 'cancelled'] as const;
+export const ORDER_STATUSES = [
+  'pending',
+  'confirmed',
+  'processing',
+  'shipped',
+  'delivered',
+  'cancelled',
+] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
-export const PAYMENT_STATUSES = ['unpaid', 'paid', 'failed'] as const;
+export const PAYMENT_STATUSES = [
+  'unpaid',
+  'pending',
+  'paid',
+  'failed',
+  'refunded',
+] as const;
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 
 @Entity('orders')
@@ -28,11 +42,11 @@ export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 )
 @Check(
   'orders_order_status_valid',
-  "order_status IN ('pending', 'confirmed', 'cancelled')",
+  "order_status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled')",
 )
 @Check(
   'orders_payment_status_valid',
-  "payment_status IN ('unpaid', 'paid', 'failed')",
+  "payment_status IN ('unpaid', 'pending', 'paid', 'failed', 'refunded')",
 )
 export class Order {
   @PrimaryGeneratedColumn()
@@ -133,8 +147,35 @@ export class Order {
   })
   confirmationTokenHash!: string | null;
 
+  /**
+   * Set only by a verified payment event. Never written from request input.
+   */
+  @Column({ name: 'paid_at', type: 'timestamp', nullable: true })
+  paidAt!: Date | null;
+
+  @Column({ name: 'cancelled_at', type: 'timestamp', nullable: true })
+  cancelledAt!: Date | null;
+
+  /**
+   * Guards stock restoration so a cancelled order restores inventory exactly
+   * once, even if cancellation is retried.
+   */
+  @Column({ name: 'stock_restored_at', type: 'timestamp', nullable: true })
+  stockRestoredAt!: Date | null;
+
+  @Column({
+    name: 'payment_reference',
+    type: 'varchar',
+    length: 255,
+    nullable: true,
+  })
+  paymentReference!: string | null;
+
   @OneToMany(() => OrderItem, (item) => item.order)
   items!: OrderItem[];
+
+  @OneToMany(() => OrderStatusHistory, (history) => history.order)
+  statusHistory!: OrderStatusHistory[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

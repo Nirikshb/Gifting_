@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Figtree, Nunito, Prata } from "next/font/google";
+import { Figtree, Nunito } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import { SiteHeader } from "@/components/SiteHeader";
 import { customFontVariables } from "@/lib/fonts";
@@ -7,12 +7,6 @@ import { CartProvider } from "@/lib/cart/CartProvider";
 import { getSiteUrl, publicPageMetadata } from "@/lib/site-url";
 import "./globals.css";
 import styles from "./layout.module.css";
-
-const prata = Prata({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-prata",
-});
 
 const nunito = Nunito({
   weight: ["400", "600", "700"],
@@ -42,7 +36,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${prata.variable} ${nunito.variable} ${figtree.variable} ${customFontVariables}`}
+      className={`${nunito.variable} ${figtree.variable} ${customFontVariables}`}
     >
       <body>
         <CartProvider>

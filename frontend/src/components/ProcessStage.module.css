@@ -29,7 +29,7 @@
 
 .logo {
   justify-self: start;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 22px;
   letter-spacing: 0.4px;
   line-height: 1;
@@ -101,7 +101,7 @@
 }
 
 .intro p {
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: clamp(26px, 3vw, 40px);
   line-height: 1.25;
 }

@@ -27,7 +27,7 @@
 .intro h1 {
   margin-top: 8px;
   color: #1c1c1c;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 34px;
   font-weight: 400;
   line-height: 1.2;
@@ -66,7 +66,7 @@
 
 .brandName {
   color: #1c1c1c;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 26px;
   line-height: 1;
 }
@@ -159,7 +159,7 @@
 
 .section h2 {
   color: #1a1a1a;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 18px;
   font-weight: 400;
   line-height: 1.2;
@@ -407,7 +407,7 @@
 
 .errorTitle {
   color: #1c1c1c;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 30px;
   font-weight: 400;
 }

@@ -32,7 +32,7 @@
 
 .logo {
   color: #1c1c1c;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 26px;
   line-height: 1;
 }
@@ -179,7 +179,7 @@
 .gateTitle {
   margin-top: 10px;
   color: #1c1c1c;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 28px;
   font-weight: 400;
   line-height: 1.2;
@@ -257,7 +257,7 @@
 .pageTitle {
   margin-top: 6px;
   color: #1c1c1c;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 32px;
   font-weight: 400;
   line-height: 1.15;
@@ -305,7 +305,7 @@
 
 .panelTitle {
   color: #1c1c1c;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 20px;
   font-weight: 400;
   line-height: 1.2;
@@ -359,7 +359,7 @@
 .statValue {
   margin-top: 8px;
   color: #1c1c1c;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 30px;
   font-weight: 400;
   line-height: 1.1;
@@ -689,7 +689,7 @@
 
 .emptyTitle {
   color: #1c1c1c;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 21px;
   font-weight: 400;
 }
@@ -795,7 +795,7 @@
 
 .cardTitle {
   color: #1c1c1c;
-  font-family: var(--font-prata), Georgia, serif;
+  font-family: var(--font-fraunces), Georgia, serif;
   font-size: 19px;
   font-weight: 400;
   line-height: 1.2;

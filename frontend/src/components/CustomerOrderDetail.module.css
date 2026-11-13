@@ -128,7 +128,7 @@
   justify-content: space-between;
   gap: 18px;
   padding: 12px 0;
-  border-bottom: 1px dashed #e5e0d6;
+  border-bottom: 1px dashed var(--rule);
 }
 
 .itemName {
@@ -172,13 +172,13 @@
 
 .totals dd {
   margin: 0;
-  color: #4a4a4a;
+  color: var(--muted-strong);
 }
 
 .grandTotal {
   margin-top: 8px;
   padding-top: 12px !important;
-  border-top: 1px dashed #e5e0d6;
+  border-top: 1px dashed var(--rule);
   color: var(--foreground) !important;
   font-size: 16px !important;
   font-weight: 700;
@@ -221,7 +221,7 @@
 
 .giftText {
   margin-top: 6px;
-  color: #4a4a4a;
+  color: var(--muted-strong);
   font-size: 14px;
   line-height: 1.6;
   white-space: pre-wrap;
@@ -239,7 +239,7 @@
 
 .statusBlock + .statusBlock {
   padding-top: 14px;
-  border-top: 1px dashed #e5e0d6;
+  border-top: 1px dashed var(--rule);
 }
 
 .statusNote {
@@ -252,7 +252,7 @@
 .metaList {
   margin: 18px 0 0;
   padding-top: 6px;
-  border-top: 1px dashed #e5e0d6;
+  border-top: 1px dashed var(--rule);
 }
 
 .metaList div {
@@ -282,7 +282,7 @@
   border: 1px solid #e3c9c1;
   border-radius: 999px;
   background: transparent;
-  color: #a34434;
+  color: var(--danger-text);
   font: inherit;
   font-size: 13px;
   font-weight: 700;
@@ -325,13 +325,13 @@
 }
 
 .field textarea:focus {
-  border-color: #8e9270;
+  border-color: var(--accent);
   outline: none;
 }
 
 .error {
   margin-top: 10px;
-  color: #a34434;
+  color: var(--danger-text);
   font-size: 13px;
   line-height: 1.5;
 }
@@ -348,7 +348,7 @@
   padding: 11px 14px;
   border: 0;
   border-radius: 999px;
-  background: #a34434;
+  background: var(--danger-text);
   color: var(--card);
   font: inherit;
   font-size: 12.5px;
@@ -357,7 +357,7 @@
 }
 
 .danger:hover:not(:disabled) {
-  background: #8d382b;
+  background: var(--danger);
 }
 
 .ghost {
@@ -426,7 +426,7 @@
 
 .retry {
   padding: 11px 20px;
-  border: 1px solid #3f4034;
+  border: 1px solid var(--accent);
   border-radius: 999px;
   background: transparent;
   color: var(--foreground);
@@ -466,4 +466,5 @@
     font-size: 20px;
   }
 }
+
 

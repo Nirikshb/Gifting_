@@ -80,7 +80,7 @@ $repl = @(
   @{ p = '(?<![0-9a-fA-F])#5f5f5f(?![0-9a-fA-F])'; r = 'var(--muted)' },
   @{ p = '(?<![0-9a-fA-F])#5c5c5c(?![0-9a-fA-F])'; r = 'var(--muted-strong)' },
   @{ p = '(?<![0-9a-fA-F])#565656(?![0-9a-fA-F])'; r = 'var(--muted-strong)' },
-  @{ p = '(?<[0-9a-fA-F])#4a4a4a(?![0-9a-fA-F])'; r = 'var(--muted-strong)' },
+  @{ p = '(?<![0-9a-fA-F])#4a4a4a(?![0-9a-fA-F])'; r = 'var(--muted-strong)' },
   @{ p = '(?<![0-9a-fA-F])#6f6f6f(?![0-9a-fA-F])'; r = 'var(--muted-strong)' },
   @{ p = '(?<![0-9a-fA-F])#7a776f(?![0-9a-fA-F])'; r = 'var(--muted-strong)' },
   @{ p = '(?<![0-9a-fA-F])#1c1c1c(?![0-9a-fA-F])'; r = 'var(--foreground)' },

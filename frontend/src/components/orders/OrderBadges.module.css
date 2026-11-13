@@ -52,7 +52,7 @@
 .red {
   background: #f9ece9;
   border-color: #efd7d1;
-  color: #a34434;
+  color: var(--danger-text);
 }
 
 .grey {
@@ -60,4 +60,5 @@
   border-color: #e2ded5;
   color: var(--muted);
 }
+
 

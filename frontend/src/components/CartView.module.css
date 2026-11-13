@@ -36,7 +36,7 @@
 }
 
 .shipping strong {
-  color: #4a4a4a;
+  color: var(--muted-strong);
   font-weight: 700;
 }
 
@@ -431,4 +431,5 @@
     font-size: 20px;
   }
 }
+
 

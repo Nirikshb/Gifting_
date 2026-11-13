@@ -15,34 +15,36 @@ const images = [
 ];
 
 export function GiftCarousel() {
-  const radius = 320;
   const count = images.length;
   const angleStep = 360 / count;
+  const panelWidth = 220;
+  const radius = Math.round(panelWidth / 2 / Math.tan(Math.PI / count)) + 32;
 
   return (
     <div className={styles.carousel} aria-label="Rotating gallery of Aapulki gift hampers">
-      <div className={styles.scene}>
-        <div className={styles.rotor}>
-          {images.map((img, i) => {
-            const angle = i * angleStep;
-            return (
-              <div
-                key={img.src}
-                className={styles.panel}
-                style={{
-                  transform: `rotateY(${angle}deg) translateZ(${radius}px)`,
-                }}
-              >
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  width={220}
-                  height={280}
-                  className={styles.panelImg}
-                />
-              </div>
-            );
-          })}
+      <div className={styles.stage}>
+        <div className={styles.scene} style={{ ["--radius" as string]: `${radius}px` }}>
+          <div className={styles.rotor}>
+            {images.map((img, i) => {
+              const angle = i * angleStep;
+              return (
+                <figure
+                  key={img.src}
+                  className={styles.panel}
+                  style={{ transform: `rotateY(${angle}deg) translateZ(var(--radius))` }}
+                >
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    width={440}
+                    height={560}
+                    sizes="(max-width: 900px) 180px, 220px"
+                    className={styles.panelImg}
+                  />
+                </figure>
+              );
+            })}
+          </div>
         </div>
       </div>
       <p className={styles.hint}>Auto-rotating · hover to pause</p>

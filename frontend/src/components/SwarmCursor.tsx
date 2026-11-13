@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 "use client";
 
 import { useEffect, useRef } from 'react';
@@ -181,7 +181,7 @@ export const SwarmCursor = ({
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const wakeRef = useRef(null);
-  const ink = lightMode ? '#18181b' : '#ffffff';
+  const ink = lightMode ? 'var(--foreground)' : '#ffffff';
   const settings = {
     count: Math.round(clamp(count, 1, MAX_PARTICLES)),
     size: clamp(size, 0.5, 16),
@@ -990,4 +990,5 @@ export const SwarmCursor = ({
     </div>
   );
 };
+
 

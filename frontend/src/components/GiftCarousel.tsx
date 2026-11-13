@@ -8,6 +8,10 @@ const images = [
   { src: "/gifting/29873585.jpg", alt: "Elegant gift boxes wrapped in luxurious paper" },
   { src: "/gifting/9185565.jpg", alt: "Gift box with brown ribbon on white textile" },
   { src: "/gifting/39042286.jpg", alt: "Festive gift baskets wrapped with green and gold ribbons" },
+  { src: "/gifting/14365405.jpg", alt: "Close-up of a wicker basket filled with wrapped gifts" },
+  { src: "/gifting/5804022.jpg", alt: "Packed candies and treats in a wicker basket" },
+  { src: "/gifting/32498681.jpg", alt: "Gift basket with assorted products" },
+  { src: "/gifting/6045704.jpg", alt: "Pink gift box elegantly wrapped with red ribbon" },
 ];
 
 export function GiftCarousel() {

@@ -1,10 +1,10 @@
-.page {
+﻿.page {
   display: flex;
   flex: 1 0 auto;
   flex-direction: column;
   width: 100%;
-  background: #e6e1d8;
-  color: #1c1c1c;
+  background: var(--rule);
+  color: var(--foreground);
   font-family: var(--font-figtree), "Figtree", sans-serif;
 }
 
@@ -15,8 +15,8 @@
   min-height: 640px;
   padding: 72px 24px 0;
   overflow: hidden;
-  background: #1a1a1a;
-  color: #f7f4ee;
+  background: var(--foreground);
+  color: var(--background);
 }
 
 .hero img,
@@ -79,8 +79,8 @@
   display: inline-block;
   margin-top: 22px;
   padding: 11px 16px;
-  background: #f3f0ea;
-  color: #1c1c1c;
+  background: var(--surface);
+  color: var(--foreground);
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -148,7 +148,7 @@
 .block p,
 .designer p {
   margin-top: 16px;
-  color: #5f5b55;
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -156,7 +156,7 @@
 .services ul {
   margin-top: 16px;
   padding-left: 16px;
-  color: #5f5b55;
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.8;
 }
@@ -166,7 +166,7 @@
   z-index: 1;
   top: 48%;
   left: 50%;
-  color: #f7f4ee;
+  color: var(--background);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.22em;
@@ -177,7 +177,7 @@
 }
 
 .lowerRight {
-  background: #e6e1d8;
+  background: var(--rule);
 }
 
 .lowerRight blockquote {
@@ -228,7 +228,7 @@
 .download span {
   display: block;
   margin-top: 8px;
-  color: #6d6963;
+  color: var(--muted);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -287,3 +287,4 @@
     text-align: left;
   }
 }
+

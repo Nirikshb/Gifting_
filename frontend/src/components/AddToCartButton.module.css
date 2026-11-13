@@ -1,4 +1,4 @@
-.wrap {
+﻿.wrap {
   margin-top: 18px;
 }
 
@@ -11,8 +11,8 @@
 .stepper {
   display: inline-flex;
   align-items: center;
-  border: 1px solid #dcd6ca;
-  background: #fbf8f3;
+  border: 1px solid var(--rule);
+  background: var(--card);
 }
 
 .stepperButton {
@@ -20,14 +20,14 @@
   height: 40px;
   border: 0;
   background: none;
-  color: #1a1a1a;
+  color: var(--foreground);
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
 }
 
 .stepperButton:hover:not(:disabled) {
-  background: #f1ede4;
+  background: var(--surface);
 }
 
 .stepperButton:disabled {
@@ -37,7 +37,7 @@
 
 .stepperValue {
   min-width: 34px;
-  color: #1a1a1a;
+  color: var(--foreground);
   font-size: 14px;
   font-weight: 700;
   text-align: center;
@@ -46,8 +46,8 @@
 .add {
   padding: 12px 22px;
   border: 0;
-  background: #1c1c1c;
-  color: #f7f4ee;
+  background: var(--foreground);
+  color: var(--background);
   font-family: inherit;
   font-size: 12px;
   font-weight: 700;
@@ -73,12 +73,13 @@
 
 .error {
   margin-top: 8px;
-  color: #a05a2c;
+  color: var(--terracotta);
   font-size: 13px;
   line-height: 1.5;
 }
 
 .outOfStock {
-  color: #8d8d8d;
+  color: var(--muted);
   font-size: 14px;
 }
+

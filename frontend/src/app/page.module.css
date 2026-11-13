@@ -1,9 +1,9 @@
-.pageFill {
+﻿.pageFill {
   display: flex;
   flex: 1 0 auto;
   flex-direction: column;
   width: 100%;
-  background: #f7f4ee;
+  background: var(--background);
 }
 
 .page {
@@ -15,11 +15,12 @@
 }
 
 .link {
-  color: #1a1a1a;
+  color: var(--foreground);
   font-family: var(--font-fraunces), Georgia, serif;
   font-size: 22px;
 }
 
 .link:hover {
-  color: #5c5c5c;
+  color: var(--muted-strong);
 }
+

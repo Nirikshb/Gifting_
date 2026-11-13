@@ -1,11 +1,11 @@
-.page {
+﻿.page {
   display: flex;
   flex: 1 0 auto;
   flex-direction: column;
   width: 100%;
   padding: 28px 0 96px;
   background: #f3efe6;
-  color: #1c1c1c;
+  color: var(--foreground);
 }
 
 :global(body) > :global(div) > :global(header) {
@@ -32,12 +32,12 @@
 }
 
 .links a {
-  color: #2a2a2a;
+  color: var(--foreground);
   font-size: 14px;
 }
 
 .links a:hover {
-  color: #6d6a62;
+  color: var(--muted);
 }
 
 .logo {
@@ -58,8 +58,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #1a1a1a;
-  color: #f7f4ee;
+  background: var(--foreground);
+  color: var(--background);
 }
 
 .pill {
@@ -70,7 +70,7 @@
 
 .pill:hover,
 .cta:hover {
-  background: #333;
+  background: var(--foreground);
 }
 
 .hero {
@@ -95,7 +95,7 @@
 .hero p,
 .process > p,
 .notes p {
-  color: #8d8d8d;
+  color: var(--muted);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -168,12 +168,12 @@
 
 .paper {
   grid-column: 1 / 3;
-  background: #fff;
+  background: var(--card);
 }
 
 .sand,
 .tile {
-  background: #cbb896;
+  background: var(--gold);
 }
 
 .tile {
@@ -191,7 +191,7 @@
 }
 
 .archive p {
-  color: #f6f3ec;
+  color: var(--surface);
   font-family: var(--font-fraunces), Georgia, serif;
   font-size: clamp(26px, 3vw, 34px);
   font-style: italic;
@@ -210,8 +210,8 @@
   height: 64px;
   border: 0;
   border-radius: 50%;
-  background: #e8e3da;
-  color: #2a2a2a;
+  background: var(--rule);
+  color: var(--foreground);
   cursor: pointer;
   box-shadow: 0 10px 24px rgba(50, 40, 24, 0.12);
 }
@@ -227,7 +227,7 @@
 }
 
 .expand:hover {
-  background: #f4f0e8;
+  background: var(--surface);
 }
 
 @media (max-width: 980px) {
@@ -298,3 +298,4 @@
     bottom: 12px;
   }
 }
+

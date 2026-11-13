@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { GiftCarousel } from "@/components/GiftCarousel";
@@ -26,23 +26,23 @@ const stats = [
 ];
 
 const values = [
-  { title: "Hand-tied ribbon & wax seal", body: "Every hamper is finished by hand — no machine-sealed boxes, ever." },
+  { title: "Hand-tied ribbon & wax seal", body: "Every hamper is finished by hand â€” no machine-sealed boxes, ever." },
   { title: "Keepsake packaging", body: "Boxes designed to be reused, not discarded. FSC-mix materials throughout." },
   { title: "Personal note cards", body: "A handwritten message in every hamper, at no extra cost." },
   { title: "Bulk & corporate gifting", body: "From 5 to 5,000 hampers, with one dedicated gifting partner." },
 ];
 
 const features = [
-  { n: "01", title: "Curated with intent", body: "We select makers and products the way you would — for taste, story and craft, not margin." },
-  { n: "02", title: "Wrapped to be remembered", body: "Ribbon, wax seal, tissue and a note — the unboxing is part of the gift." },
+  { n: "01", title: "Curated with intent", body: "We select makers and products the way you would â€” for taste, story and craft, not margin." },
+  { n: "02", title: "Wrapped to be remembered", body: "Ribbon, wax seal, tissue and a note â€” the unboxing is part of the gift." },
   { n: "03", title: "Delivered with care", body: "Packed to survive the journey, tracked end to end, on time or we make it right." },
-  { n: "04", title: "Made for every occasion", body: "Festive, corporate, wedding, new-born and just-because — one thoughtful range." },
+  { n: "04", title: "Made for every occasion", body: "Festive, corporate, wedding, new-born and just-because â€” one thoughtful range." },
 ];
 
 const testimonials = [
   { quote: "The hampers arrived looking like a magazine spread. Our clients still talk about them.", name: "Ananya R.", role: "Founder, Studio Loom" },
   { quote: "Handwritten notes in every box. That single detail made our Diwali gifting unforgettable.", name: "Vikram S.", role: "People Ops, Northwind" },
-  { quote: "Reliable, beautiful and on time — even at 500 units. Aapulki is our default gifting partner now.", name: "Meera K.", role: "Events Lead, Casa Verde" },
+  { quote: "Reliable, beautiful and on time â€” even at 500 units. Aapulki is our default gifting partner now.", name: "Meera K.", role: "Events Lead, Casa Verde" },
 ];
 
 const posts = [
@@ -57,16 +57,16 @@ export default function GiftingPage() {
       {/* Hero */}
       <section className={styles.hero} aria-labelledby="hero-title">
         <div className={styles.heroText}>
-          <p className={styles.eyebrow}>Aapulki · Hand-wrapped gifting</p>
+          <p className={styles.eyebrow}>Aapulki Â· Hand-wrapped gifting</p>
           <h1 id="hero-title" className={styles.heroTitle}>
             We wrap what moves you forward.
           </h1>
           <p className={styles.heroSub}>
-            Curated gift hampers, keepsake packaging and thoughtful corporate gifting — hand-finished,
+            Curated gift hampers, keepsake packaging and thoughtful corporate gifting â€” hand-finished,
             personal, and delivered across India. 20% off your first order.
           </p>
           <div className={styles.heroCtas}>
-            <Link href="/shop" className={styles.ctaPrimary}>Shop hampers from ₹1,199</Link>
+            <Link href="/shop" className={styles.ctaPrimary}>Shop hampers from â‚¹1,199</Link>
             <Link href="/process" className={styles.ctaGhost}>How we gift</Link>
           </div>
         </div>
@@ -114,10 +114,10 @@ export default function GiftingPage() {
           <p className={styles.eyebrow}>Curated around your story</p>
           <h2 id="split-title" className={styles.sectionTitle}>A hamper that feels like you sent it yourself.</h2>
           <p className={styles.body}>
-            We listen first — occasion, recipient, budget, the small details that matter — then build a hamper
+            We listen first â€” occasion, recipient, budget, the small details that matter â€” then build a hamper
             that reads as personal, not purchased. Every element earns its place.
           </p>
-          <Link href="/shop" className={styles.linkArrow}>Explore the collection →</Link>
+          <Link href="/shop" className={styles.linkArrow}>Explore the collection â†’</Link>
         </div>
         <div className={styles.splitMedia}>
           <Image
@@ -231,12 +231,13 @@ export default function GiftingPage() {
       {/* CTA */}
       <section className={styles.cta} aria-labelledby="cta-title">
         <h2 id="cta-title" className={styles.ctaTitle}>Ready to gift something exceptional?</h2>
-        <p className={styles.ctaSub}>From one hamper to five thousand — we handle it with the same care.</p>
+        <p className={styles.ctaSub}>From one hamper to five thousand â€” we handle it with the same care.</p>
         <div className={styles.ctaRow}>
-          <Link href="/shop" className={styles.ctaPrimary}>Shop hampers from ₹1,199</Link>
+          <Link href="/shop" className={styles.ctaPrimary}>Shop hampers from â‚¹1,199</Link>
           <Link href="/process" className={styles.ctaGhost}>Talk to our gifting team</Link>
         </div>
       </section>
     </main>
   );
 }
+

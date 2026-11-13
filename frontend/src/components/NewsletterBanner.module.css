@@ -1,4 +1,4 @@
-.dialog,
+﻿.dialog,
 .dialogClosing {
   position: fixed;
   inset: 0;
@@ -55,7 +55,7 @@
   margin: 0;
   overflow: hidden;
   border-radius: 12px;
-  background: #fdfcf9;
+  background: var(--card);
   font-family: var(--font-nunito), "Nunito", sans-serif;
 }
 
@@ -81,7 +81,7 @@
   border: 0;
   border-radius: 50%;
   background: rgba(242, 239, 231, 0.9);
-  color: #1c1c1c;
+  color: var(--foreground);
   cursor: pointer;
 }
 
@@ -202,14 +202,14 @@
   }
 }
 
-/* Illustration side — one inline SVG, no image requests. */
+/* Illustration side â€” one inline SVG, no image requests. */
 .visual {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   width: 343px;
-  background: linear-gradient(to right, #fdfcf9 0%, #f2efe7 34%);
+  background: linear-gradient(to right, var(--card) 0%, var(--surface) 34%);
   pointer-events: none;
 }
 
@@ -237,7 +237,7 @@
 }
 
 .text h2 {
-  color: #1c1c1c;
+  color: var(--foreground);
   font-size: 24px;
   font-weight: 700;
   line-height: 32px;
@@ -265,10 +265,10 @@
   width: 100%;
   height: 48px;
   padding: 16px;
-  border: 1px solid #e5e1d6;
+  border: 1px solid var(--rule);
   border-radius: 8px;
-  background: #fff;
-  color: #1c1c1c;
+  background: var(--card);
+  color: var(--foreground);
   font: 400 16px/16px var(--font-nunito), "Nunito", sans-serif;
 }
 
@@ -314,7 +314,7 @@
   border: 0;
   border-radius: 8px;
   background: #3f4034;
-  color: #fdfcf9;
+  color: var(--card);
   font: 600 16px/16px var(--font-nunito), "Nunito", sans-serif;
   cursor: pointer;
 }
@@ -378,7 +378,7 @@
     left: 0;
     width: auto;
     height: 282px;
-    background: #f2efe7;
+    background: var(--surface);
   }
 
   .content {
@@ -417,3 +417,4 @@
     transform: translateY(max(0px, calc(100dvh - 100% - 48px)));
   }
 }
+

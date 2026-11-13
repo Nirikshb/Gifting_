@@ -1,4 +1,4 @@
-.page {
+﻿.page {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -546,3 +546,4 @@
     font-size: 36px;
   }
 }
+

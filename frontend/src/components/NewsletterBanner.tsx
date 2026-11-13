@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   useEffect,
@@ -171,7 +171,7 @@ export function NewsletterBanner() {
             </h2>
             <p>
               {signedUp
-                ? "Thank you — a welcome note is on its way to your inbox."
+                ? "Thank you â€” a welcome note is on its way to your inbox."
                 : "Be first to see new hampers, wrap, and seasonal offers. One thoughtful email a month, nothing more."}
             </p>
           </div>
@@ -184,7 +184,7 @@ export function NewsletterBanner() {
                 name="email"
                 autoComplete="email"
                 data-clarity-mask="true"
-                placeholder="Your email address…"
+                placeholder="Your email addressâ€¦"
                 value={email}
                 disabled={signedUp || submitting}
                 aria-invalid={problem === "invalid" || undefined}
@@ -222,7 +222,7 @@ export function NewsletterBanner() {
 }
 
 /**
- * Original Aapulki illustration (drawn for this project — no borrowed assets,
+ * Original Aapulki illustration (drawn for this project â€” no borrowed assets,
  * zero network requests): a letter slipping out of an envelope beside a small
  * ribboned gift, in the site's cream / olive palette.
  */
@@ -235,14 +235,14 @@ function EnvelopeArt() {
       aria-hidden="true"
     >
       {/* soft backdrop shapes */}
-      <circle cx="242" cy="86" r="104" fill="#eeeee2" />
-      <circle cx="76" cy="228" r="46" fill="#f2efe7" />
+      <circle cx="242" cy="86" r="104" fill="var(--tint)" />
+      <circle cx="76" cy="228" r="46" fill="var(--surface)" />
 
       {/* letter peeking out of the envelope */}
       <g transform="rotate(-8 170 96)">
-        <rect x="128" y="34" width="92" height="108" rx="6" fill="#fdfcf9" stroke="#e5e1d6" strokeWidth="2" />
-        <line x1="142" y1="58" x2="206" y2="54" stroke="#e5e1d6" strokeWidth="3" strokeLinecap="round" />
-        <line x1="142" y1="74" x2="206" y2="70" stroke="#e5e1d6" strokeWidth="3" strokeLinecap="round" />
+        <rect x="128" y="34" width="92" height="108" rx="6" fill="var(--card)" stroke="var(--rule)" strokeWidth="2" />
+        <line x1="142" y1="58" x2="206" y2="54" stroke="var(--rule)" strokeWidth="3" strokeLinecap="round" />
+        <line x1="142" y1="74" x2="206" y2="70" stroke="var(--rule)" strokeWidth="3" strokeLinecap="round" />
         {/* wax-seal heart on the letter */}
         <path
           d="M174 96c-7-6-14-11-14-18 0-5 4-8 8-8 3 0 5 1 6 4 1-3 3-4 6-4 4 0 8 3 8 8 0 7-7 12-14 18z"
@@ -251,23 +251,23 @@ function EnvelopeArt() {
       </g>
 
       {/* envelope body */}
-      <rect x="84" y="118" width="180" height="116" rx="10" fill="#f2efe7" stroke="#e5e1d6" strokeWidth="2" />
+      <rect x="84" y="118" width="180" height="116" rx="10" fill="var(--surface)" stroke="var(--rule)" strokeWidth="2" />
       {/* open flap folded back */}
       <path
         d="M84 128c0-6 5-10 10-10h160c5 0 10 4 10 10l-84 56c-4 3-8 3-12 0z"
-        fill="#eeeee2"
-        stroke="#e5e1d6"
+        fill="var(--tint)"
+        stroke="var(--rule)"
         strokeWidth="2"
       />
       {/* front folds */}
-      <path d="M84 128l84 56 84-56" stroke="#e5e1d6" strokeWidth="2" strokeLinejoin="round" />
-      <path d="M84 234l62-50M264 234l-62-50" stroke="#e5e1d6" strokeWidth="2" strokeLinecap="round" />
+      <path d="M84 128l84 56 84-56" stroke="var(--rule)" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M84 234l62-50M264 234l-62-50" stroke="var(--rule)" strokeWidth="2" strokeLinecap="round" />
 
       {/* wax seal on the flap tip */}
       <circle cx="168" cy="180" r="13" fill="#3f4034" />
       <path
         d="M168 174l1.8 3.7 4 .6-2.9 2.8.7 4-3.6-1.9-3.6 1.9.7-4-2.9-2.8 4-.6z"
-        fill="#fdfcf9"
+        fill="var(--card)"
       />
 
       {/* small ribboned gift box */}
@@ -278,7 +278,7 @@ function EnvelopeArt() {
         {/* bow */}
         <path
           d="M260 176c-10-2-16-8-14-14 2-5 9-5 12 0 2 3 2 8 2 14zm0 0c10-2 16-8 14-14-2-5-9-5-12 0-2 3-2 8-2 14z"
-          stroke="#fdfcf9"
+          stroke="var(--card)"
           strokeWidth="3"
           strokeLinejoin="round"
         />
@@ -291,3 +291,4 @@ function EnvelopeArt() {
     </svg>
   );
 }
+

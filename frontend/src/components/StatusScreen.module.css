@@ -1,4 +1,4 @@
-.wrap {
+﻿.wrap {
   display: flex;
   flex: 1 0 auto;
   flex-direction: column;
@@ -12,7 +12,7 @@
 }
 
 .code {
-  color: #8d8d8d;
+  color: var(--muted);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.28em;
@@ -29,7 +29,7 @@
 
 .message {
   max-width: 42ch;
-  color: #5c5c5c;
+  color: var(--muted-strong);
   font-size: 15px;
   line-height: 1.6;
 }
@@ -63,3 +63,4 @@
   background: var(--foreground);
   color: var(--background);
 }
+

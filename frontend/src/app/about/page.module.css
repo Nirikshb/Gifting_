@@ -1,9 +1,9 @@
-.pageFill {
+﻿.pageFill {
   display: flex;
   flex: 1 0 auto;
   flex-direction: column;
   width: 100%;
-  background: #f7f4ee;
+  background: var(--background);
 }
 
 .page {
@@ -16,7 +16,7 @@
 }
 
 .page h1 {
-  color: #1a1a1a;
+  color: var(--foreground);
   font-family: var(--font-fraunces), Georgia, serif;
   font-size: 64px;
   font-weight: 400;
@@ -26,7 +26,7 @@
 .page p {
   max-width: 420px;
   margin-top: 20px;
-  color: #8d8d8d;
+  color: var(--muted);
   font-size: 16px;
   line-height: 1.7;
 }
@@ -41,3 +41,4 @@
     font-size: 40px;
   }
 }
+

@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -29,14 +29,14 @@ export function CartView() {
   const remaining = Math.max(0, FREE_SHIPPING_GOAL - subtotalValue);
   const progress = Math.min(100, (subtotalValue / FREE_SHIPPING_GOAL) * 100);
   const remainingText = Number.isInteger(remaining)
-    ? `₹${remaining}`
-    : `₹${remaining.toFixed(2)}`;
-  const subtotalText = formatInr(subtotal) ?? `₹${subtotal}`;
+    ? `â‚¹${remaining}`
+    : `â‚¹${remaining.toFixed(2)}`;
+  const subtotalText = formatInr(subtotal) ?? `â‚¹${subtotal}`;
   const shippingText =
     Number.parseFloat(shipping) === 0
       ? "Free"
-      : (formatInr(shipping) ?? `₹${shipping}`);
-  const totalText = formatInr(total) ?? `₹${total}`;
+      : (formatInr(shipping) ?? `â‚¹${shipping}`);
+  const totalText = formatInr(total) ?? `â‚¹${total}`;
   const busy = pendingAction !== null;
   const loading = status === "loading" && cart === null;
   const failed = status === "error" && cart === null;
@@ -130,7 +130,7 @@ export function CartView() {
               </p>
             ) : null}
 
-            {loading ? <p className={styles.loading}>Loading your bag…</p> : null}
+            {loading ? <p className={styles.loading}>Loading your bagâ€¦</p> : null}
 
             {failed ? (
               <div className={styles.errorState}>
@@ -159,9 +159,9 @@ export function CartView() {
                 {items.map((item) => {
                   const href = productPath(item.slug);
                   const image = productImageUrl(item.imageUrl);
-                  const unitPrice = formatInr(item.unitPrice) ?? `₹${item.unitPrice}`;
-                  const seenPrice = formatInr(item.seenUnitPrice) ?? `₹${item.seenUnitPrice}`;
-                  const lineTotal = formatInr(item.lineTotal) ?? `₹${item.lineTotal}`;
+                  const unitPrice = formatInr(item.unitPrice) ?? `â‚¹${item.unitPrice}`;
+                  const seenPrice = formatInr(item.seenUnitPrice) ?? `â‚¹${item.seenUnitPrice}`;
+                  const lineTotal = formatInr(item.lineTotal) ?? `â‚¹${item.lineTotal}`;
                   const increaseDisabled = busy || item.quantity >= item.stockQuantity;
 
                   return (
@@ -206,7 +206,7 @@ export function CartView() {
                               disabled={busy || item.quantity <= 1}
                               onClick={() => void handleUpdate(item.productId, item.quantity - 1)}
                             >
-                              −
+                              âˆ’
                             </button>
                             <span className={styles.qtyValue} aria-live="polite">
                               {item.quantity}
@@ -291,23 +291,24 @@ function TruckIcon() {
   return (
     <svg viewBox="0 0 72 40">
       <path
-        fill="#f7f4ee"
-        stroke="#8a8a8a"
+        fill="var(--background)"
+        stroke="var(--muted)"
         strokeWidth="1.8"
         strokeLinejoin="round"
         d="M3 11h36v16H3z"
       />
       <path
-        fill="#f7f4ee"
-        stroke="#8a8a8a"
+        fill="var(--background)"
+        stroke="var(--muted)"
         strokeWidth="1.8"
         strokeLinejoin="round"
         d="M39 16h13l12 9v2H39z"
       />
-      <circle cx="18" cy="30" r="4.2" fill="#f7f4ee" stroke="#8a8a8a" strokeWidth="1.8" />
-      <circle cx="54" cy="30" r="4.2" fill="#f7f4ee" stroke="#8a8a8a" strokeWidth="1.8" />
-      <circle cx="18" cy="30" r="1.4" fill="#8a8a8a" />
-      <circle cx="54" cy="30" r="1.4" fill="#8a8a8a" />
+      <circle cx="18" cy="30" r="4.2" fill="var(--background)" stroke="var(--muted)" strokeWidth="1.8" />
+      <circle cx="54" cy="30" r="4.2" fill="var(--background)" stroke="var(--muted)" strokeWidth="1.8" />
+      <circle cx="18" cy="30" r="1.4" fill="var(--muted)" />
+      <circle cx="54" cy="30" r="1.4" fill="var(--muted)" />
     </svg>
   );
 }
+

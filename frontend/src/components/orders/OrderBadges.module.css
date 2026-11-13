@@ -1,4 +1,4 @@
-.badge {
+﻿.badge {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -21,8 +21,8 @@
 
 .neutral {
   background: #f1efea;
-  border-color: #e4e0d7;
-  color: #5c5c5c;
+  border-color: var(--rule);
+  color: var(--muted-strong);
 }
 
 .amber {
@@ -58,5 +58,6 @@
 .grey {
   background: #f1efea;
   border-color: #e2ded5;
-  color: #6d6a62;
+  color: var(--muted);
 }
+

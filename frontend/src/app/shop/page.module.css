@@ -1,9 +1,9 @@
-.pageFill {
+﻿.pageFill {
   display: flex;
   flex: 1 0 auto;
   flex-direction: column;
   width: 100%;
-  background: #f7f4ee;
+  background: var(--background);
 }
 
 .page {
@@ -35,10 +35,10 @@
   width: 100%;
   margin: 0 0 18px;
   border: 1px solid #ddd8d0;
-  background: #f7f4ee;
+  background: var(--background);
   break-inside: avoid;
   overflow: hidden;
-  color: #1c1c1c;
+  color: var(--foreground);
 }
 
 .photo,
@@ -76,7 +76,7 @@
 }
 
 .mark {
-  fill: #8d8376;
+  fill: var(--muted);
 }
 
 .markLight {
@@ -86,7 +86,7 @@
 .card h2 {
   margin: 0;
   padding: 8px 18px 0;
-  color: #8a877f;
+  color: var(--muted);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.08em;
@@ -105,7 +105,7 @@
 }
 
 .price {
-  color: #1c1c1c;
+  color: var(--foreground);
   font-size: 18px;
   font-weight: 600;
   line-height: 1;
@@ -116,7 +116,7 @@
 .more {
   border: 0;
   background: transparent;
-  color: #7a776f;
+  color: var(--muted-strong);
   font-family: inherit;
   cursor: pointer;
 }
@@ -173,13 +173,13 @@
 .wish:hover,
 .add:hover,
 .more:hover {
-  color: #1c1c1c;
+  color: var(--foreground);
 }
 
 .wish:focus-visible,
 .add:focus-visible,
 .more:focus-visible {
-  outline: 1px solid #1c1c1c;
+  outline: 1px solid var(--foreground);
   outline-offset: -2px;
 }
 
@@ -198,7 +198,7 @@
 }
 
 .pager span[aria-current="page"] {
-  color: #1c1c1c;
+  color: var(--foreground);
   font-weight: 700;
 }
 
@@ -211,7 +211,7 @@
 .stock,
 .note {
   margin: 0;
-  color: #8a877f;
+  color: var(--muted);
   font-size: 11px;
   letter-spacing: 0.08em;
   text-align: center;
@@ -248,3 +248,4 @@
     height: 220px;
   }
 }
+

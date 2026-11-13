@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Bottom-edge dock in the Aapulki brand: cream surfaces, ink text, deep-olive
  * accent, De Valencia wordmark, Fraunces display, Nunito UI text.
  *
@@ -16,12 +16,12 @@
   --ease: cubic-bezier(0.32, 0.72, 0, 1);
   --accent: #3f4034;
   --accent-deep: #2b2c23;
-  --tint: #eeeee2;
-  --surface: #f2efe7;
-  --rule: #e5e1d6;
-  --foot: #f7f4ee;
-  --ink: #1c1c1c;
-  --muted: #62625b; /* 5.99:1 on card, ~5.4:1 on surface — passes WCAG AA */
+  --tint: var(--tint);
+  --surface: var(--surface);
+  --rule: var(--rule);
+  --foot: var(--background);
+  --ink: var(--foreground);
+  --muted: #62625b; /* 5.99:1 on card, ~5.4:1 on surface â€” passes WCAG AA */
 
   position: fixed;
   left: 0;
@@ -76,7 +76,7 @@
   border: none;
   border-radius: 16px 16px 0 0;
   background: var(--accent);
-  color: #fdfcf9;
+  color: var(--card);
   font: inherit;
   cursor: pointer;
   text-align: left;
@@ -139,7 +139,7 @@
   flex-shrink: 0;
   place-items: center;
   border-radius: 8px;
-  background: #fdfcf9;
+  background: var(--card);
   color: var(--accent);
   box-shadow: 0 1px 2px rgba(28, 28, 28, 0.15);
 }
@@ -170,7 +170,7 @@
   flex-shrink: 0;
   padding: 1px 8px;
   border-radius: 999px;
-  background: #fdfcf9;
+  background: var(--card);
   color: var(--accent);
   font-size: 12px;
   line-height: 18px;
@@ -213,7 +213,7 @@
   gap: 4px;
   padding: 10px 14px;
   border-radius: 10px;
-  background: #fdfcf9;
+  background: var(--card);
   color: var(--ink);
   font-size: 14px;
   line-height: 20px;
@@ -326,17 +326,17 @@
 
 /*
  * The sheet and the content share one background, so the content's delayed
- * fade-in happens on an identical surface — no tone shift, no flash.
+ * fade-in happens on an identical surface â€” no tone shift, no flash.
  *
  * Closed state owns the CLOSING transition: a long gentle S-curve plus a
- * late dissolve. Open state grows the sheet at full opacity — it reads as
+ * late dissolve. Open state grows the sheet at full opacity â€” it reads as
  * the tab unfolding upward, not a separate card fading in.
  */
 .sheet {
   width: var(--panel-w);
   height: 0;
   overflow: hidden;
-  background: #fdfcf9;
+  background: var(--card);
   border-radius: 16px 16px 0 0;
   opacity: 0;
   visibility: hidden;
@@ -355,7 +355,7 @@
     visibility 0s;
 }
 
-/* Open: the tab folds away underneath the growing sheet, not display:none —
+/* Open: the tab folds away underneath the growing sheet, not display:none â€”
    one continuous surface from pill to panel. */
 .dockOpen .tab {
   pointer-events: none;
@@ -372,9 +372,9 @@
   display: flex;
   flex-direction: column;
   height: var(--panel-h, auto);
-  background: #fdfcf9;
+  background: var(--card);
   opacity: 0;
-  /* Closing: fade out in step with the settling sheet — no downward dip. */
+  /* Closing: fade out in step with the settling sheet â€” no downward dip. */
   transition:
     opacity 280ms ease 120ms;
 }
@@ -422,7 +422,7 @@
   place-items: center;
   border-radius: 10px;
   background: var(--accent);
-  color: #fdfcf9;
+  color: var(--card);
 }
 
 .wordmark {
@@ -579,7 +579,7 @@
   padding: 1px 7px;
   border-radius: 6px;
   background: var(--surface);
-  color: #5f5f5f;
+  color: var(--muted);
   font-size: 12px;
   line-height: 18px;
   letter-spacing: 0.01em;
@@ -595,7 +595,7 @@
 }
 
 .incTagLink:hover {
-  background: #e2e1d2;
+  background: var(--rule);
 }
 
 /* --------------------------------- offer ----------------------------------- */
@@ -644,7 +644,7 @@
   height: 46px;
   border-radius: 999px;
   background: var(--accent);
-  color: #fdfcf9;
+  color: var(--card);
   font-size: 14px;
   font-weight: 700;
   line-height: 20px;
@@ -691,7 +691,7 @@
   background: var(--tint);
   color: var(--accent);
   box-shadow:
-    0 0 0 1.5px #fdfcf9,
+    0 0 0 1.5px var(--card),
     0 2px 6px rgba(40, 30, 20, 0.12);
 }
 
@@ -758,3 +758,4 @@
     transform: none;
   }
 }
+

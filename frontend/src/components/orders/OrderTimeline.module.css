@@ -1,4 +1,4 @@
-.timeline {
+﻿.timeline {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -22,7 +22,7 @@
   bottom: 0;
   left: 7px;
   width: 1px;
-  background: #e3ded3;
+  background: var(--rule);
 }
 
 .entry:last-child {
@@ -39,11 +39,11 @@
   margin-top: 3px;
   border: 2px solid #8e9270;
   border-radius: 50%;
-  background: #f7f4ee;
+  background: var(--background);
 }
 
 .markerPayment {
-  border-color: #b9855c;
+  border-color: var(--gold);
 }
 
 .content {
@@ -59,33 +59,34 @@
 }
 
 .title {
-  color: #1c1c1c;
+  color: var(--foreground);
   font-size: 14px;
   font-weight: 700;
 }
 
 .date {
-  color: #9a968c;
+  color: var(--muted);
   font-size: 12px;
 }
 
 .meta {
   margin-top: 2px;
-  color: #8d8d8d;
+  color: var(--muted);
   font-size: 12px;
 }
 
 .note {
   margin-top: 6px;
   padding: 8px 10px;
-  border-left: 2px solid #ddd7c9;
-  background: #f9f6ef;
-  color: #565656;
+  border-left: 2px solid var(--rule);
+  background: var(--card);
+  color: var(--muted-strong);
   font-size: 13px;
   line-height: 1.55;
 }
 
 .empty {
-  color: #8d8d8d;
+  color: var(--muted);
   font-size: 14px;
 }
+

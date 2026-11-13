@@ -3,9 +3,29 @@
 @config "../../tailwind.config.js";
 
 :root {
-  --background: #f7f4ee;
-  --foreground: #1c1c1c;
+  --background: #f7f2e9;
+  --foreground: #211a14;
   color-scheme: light;
+
+  /* Heirloom gifting palette — warm paper, deep burgundy anchor, craft gold. */
+  --card: #fdfbf6;
+  --surface: #f1ece1;
+  --tint: #eae3d3;
+  --rule: #ded6c4;
+  --rule-strong: #cfc7b4;
+  --muted: #6b655c;
+  --muted-strong: #54504a;
+  --accent: #3f4034;
+  --accent-deep: #2b2c23;
+  --anchor: #6d1f24;
+  --anchor-deep: #5a181c;
+  --anchor-tint: #f6ecea;
+  --terracotta: #a4471f;
+  --gold: #c9a55c;
+  --gold-deep: #8a6d2f;
+  --danger: #8d382b;
+  --danger-text: #a34434;
+  --disabled: #a59d8e;
 }
 
 html {

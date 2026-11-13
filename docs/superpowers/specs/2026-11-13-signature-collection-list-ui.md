@@ -1,12 +1,14 @@
 # Signature collection list page — UI spec
 
 **Date:** 2026-11-13  
-**Status:** UI notes from live reference. Not implemented.  
+**Status:** Page overview from live reference. Not implemented.  
 **Reference:** [Eazy Gyft Signature collection](https://eazygyft.com/collections/signature)  
 **Aapulki name:** Signature / Pre-curated hampers  
 **Related:** [Create Your Own wizard](./2026-11-13-create-your-own-gift-box-design.md) (different path: shopper does not pick fill items)
 
-This file is **one detailed section**: the **list page UI** only (not PDP, not checkout).
+**Listing / product-grid UI:** do not use this file as the last word on cards, density, or what is visible under the photo. Use **[2026-11-13-signature-listing-grid-ui.md](./2026-11-13-signature-listing-grid-ui.md)** for that section.
+
+This file is the **list page** at page level (what the collection is, hero, toolbar, filters, mapping). It is not the detailed product-section spec.
 
 ---
 
@@ -26,8 +28,8 @@ Route to use later: `/signature` or a filtered `/shop` collection. Do not reuse 
 
 1. Site header (logo, account, search, cart).
 2. **Collection hero** (no photo banner on this page — text only).
-3. **Toolbar** (density + sort + filter), full bleed, sticky feel under the header.
-4. **Product grid**.
+3. **Toolbar** (density + sort + filter), full bleed, sticky under the header.
+4. **Product grid** — see the listing-grid extension for columns, captions, sold out, clicks.
 5. Site footer.
 
 There is no left sidebar of filters on desktop. Filters open as a **right drawer**.
@@ -54,7 +56,7 @@ One horizontal bar, 1px borders, four zones:
 
 | Zone | Control | Behaviour |
 |------|---------|-----------|
-| Left | Three density icons | Large grid (few columns, big images), default grid, compact/list-like (more columns / tighter). `aria-label`: Switch to larger / smaller / compact product images. |
+| Left | Three density icons | Changes how the **product grid** looks. Exact columns and whether name/price show: **listing-grid UI extension**. |
 | Middle | Empty flex spacer | Keeps sort/filter on the right |
 | Right | **Sort by** ▾ | Opens a dropdown (not a full page). Options below. |
 | Far right | **Filter** | Opens a right-hand drawer over a dimmed grid |
@@ -73,7 +75,7 @@ One horizontal bar, 1px borders, four zones:
 
 Aapulki phase 1: Featured (manual order), Price low–high, Price high–low, Name A–Z. Skip “Most relevant” unless you have search ranking.
 
-Count: **43 products** exists in the DOM (Shopify collection count). It is not a loud heading on the toolbar in the default Impact theme layout. Optional for Aapulki: show `23 hampers` near the toolbar.
+Count: **43 products** exists in the DOM (Shopify collection count). Optional for Aapulki: show `23 hampers` near the toolbar.
 
 ---
 
@@ -92,98 +94,36 @@ Accordion groups:
 
 Footer of drawer: full-width **View results**.
 
-Some PDPs have colour options **Snow** / **Blush** (box colour). Those are product variants, not collection-level filters on the default facet list we opened. If Aapulki boxes come in kraft/ivory, add a **Box colour** facet later.
+Snow / Blush as box colour: see the listing-grid extension (variant on some cards, not a collection filter).
 
 ---
 
-### Grid layout
+### Product grid
 
-- **Desktop:** 4 columns, even gutters, light grey card ground (`#f5f5f5` range). No card border. Image is the card.
-- **Portrait photos** (`aspect-portrait`). Contents are shot as a **flat lay of the sourced products**, not only a closed box. That is how the shopper sees “what is inside” without opening the PDP.
-- **Mobile:** 2 columns (theme `sizes` imply `/ 2` below 699px).
-- Cards **reveal on scroll** (fade/slide in). Optional; do not block rendering on it.
-
-Clicking the image goes to the product URL (`/products/midnight-rose`). The whole media is the hit target. There is **no Add to cart on the list card**.
+**Refer to [signature listing grid UI](./2026-11-13-signature-listing-grid-ui.md).** That file is the accurate description of default compact (image-only), medium/large (captions on), sold out, hover image, swatches, and click targets.
 
 ---
 
-### One card — anatomy
-
-From top to bottom of `product-card`:
-
-1. **Figure**
-   - **Sold out badge** — top-left, small caps, light pill (`SOLD OUT`). Present only when stock is 0. In-stock cards have no badge.
-   - **Primary image** — flat lay.
-   - **Secondary image** — many cards have a hover swap (`product-card__image--secondary`), often a lifestyle or video poster. In-stock and sold-out both may have this.
-2. **Info** (centered stack, below the image — easy to miss if you only look at the photo)
-   - **Vendor** — small caps link `Eazy Gyft` (the hamper brand).
-   - **Title** — hamper name, e.g. `Midnight Rose`, `The Blush Ritual`, `Crystal Rye Ritual`.
-   - **Price** — e.g. `$475.00`. Theme marks it `Sale price` in a11y text even when it is the only price. Aapulki: show `₹` with existing `formatInr`. Show a compare-at price only if you truly discount.
-
-No rating. No “quick add”. No contents bullet list on the card. The photo does that job.
-
-**Sold out vs in stock (same grid):**
-
-| | Sold out | In stock |
-|---|----------|----------|
-| Badge | Yes | No |
-| Still listed | Yes — they do not hide sold-out by default | Yes |
-| Clickable | Yes — PDP still opens | Yes |
-| Price | Still shown | Shown |
-
-Aapulki: keep sold-out visible unless “In stock only” is on. Grey the image slightly if you want; the reference does **not** grey the photo, only the badge.
-
----
-
-### What the photos teach (important for India)
-
-The list is selling **Eazy Gyft boxes**, but every thumbnail is a pile of **other brands** (Diptyque, Jo Malone, Lunya, Harrods tins, Alo, etc.). That matches the sourcing model: they did not manufacture the candle. They packed known products into a named ritual.
-
-For Aapulki Signature:
-
-- Shoot a flat lay of the **real units you will pack**.
-- Do not use a closed box as the only list image if the value is the contents.
-- Do not fake brands you cannot fulfil.
-- The **product title** is your hamper name (`Diwali Ivory`, `New baby kraft`), not `Jo Malone set`.
-- The **vendor line** is Aapulki.
-
----
-
-### Interaction summary
-
-| Shopper action | Result |
-|----------------|--------|
-| Scan hero | Understands these are ready-made boxes with a note |
-| Change density | Bigger or smaller photos; same products |
-| Sort | Reorders the 43 (or N) hampers |
-| Filter → View results | Subset of the grid; drawer closes |
-| Click card | PDP for that hamper (out of scope for this section) |
-| Click sold-out card | Still PDP; purchase disabled there |
-
----
-
-### Aapulki mapping (list only)
+### Aapulki mapping (list page)
 
 | Reference | Aapulki |
 |-----------|---------|
 | `/collections/signature` | `/signature` (preferred) or `/shop?collection=signature` |
-| 4-column portrait grid | Match; `/shop` today is a generic catalogue — this collection should feel more editorial |
+| Product grid | Follow the listing-grid UI extension |
 | Vendor Eazy Gyft | Aapulki |
 | Product type Gyft Box | Hamper / Signature box |
 | USD | INR |
 | Filter drawer | Same pattern; do not add a permanent left rail |
 | No ATC on card | Same — cart happens on PDP / existing cart |
-| 43 mixed in-stock and sold-out | Show both; stock from `stock_quantity` |
 
-Existing `/shop` can stay as “all products”. Signature is a **subset**: products that are complete hampers (`builderRole` null or a new `productKind: 'signature_hamper'`), not fill SKUs from Create Your Own.
-
-Do not put Create Your Own fill items on this grid. Those SKUs belong in the builder. This grid is only named, pre-packed boxes.
+Existing `/shop` can stay as “all products”. Signature is a **subset**: complete hampers, not Create Your Own fill SKUs.
 
 ---
 
-### Out of scope for this section
+### Out of scope for this file
 
-- Product detail page (contents list, add to cart, box colour Snow/Blush).
+- Product-grid pixel behaviour (use the listing-grid extension).
+- Product detail page (contents list, add to cart).
 - Checkout.
 - Admin for creating a signature hamper.
 - Copying their photography, names, or prices.

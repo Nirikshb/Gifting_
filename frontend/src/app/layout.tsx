@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Figtree, Nunito } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import { SiteHeader } from "@/components/SiteHeader";
+import { TemplateDockMount } from "@/components/TemplateDockMount";
 import { customFontVariables } from "@/lib/fonts";
 import { CartProvider } from "@/lib/cart/CartProvider";
 import { getSiteUrl, publicPageMetadata } from "@/lib/site-url";
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <main className={styles.main}>{children}</main>
           </div>
           <Analytics />
+          <TemplateDockMount />
         </CartProvider>
       </body>
     </html>

@@ -10,7 +10,7 @@ import {
   type FormEvent,
   type MouseEvent,
 } from "react";
-import Image from "next/image";
+import { X } from "lucide-react";
 import { api } from "@/lib/api";
 import styles from "./NewsletterBanner.module.css";
 
@@ -152,234 +152,142 @@ export function NewsletterBanner() {
         close();
       }}
     >
-    <section
-      className={poof ? `${styles.banner} ${styles.poof}` : styles.banner}
-      aria-label="Newsletter"
-      onAnimationEnd={onPoofEnd}
-    >
-      <button className={styles.close} type="button" aria-label="Close" onClick={close}>
-        <CloseIcon />
-      </button>
-      <div className={styles.visual} aria-hidden="true">
-        <div className={styles.wash}>
-          <img
-            className={styles.photo}
-            src="/newsletter/7c86d.png"
-            alt=""
-          />
-          <div className={styles.grain} />
-          <div className={styles.fade} />
-        </div>
-        <Envelopes />
-      </div>
-
-      <div className={styles.content}>
-        <div className={styles.text}>
-          <h2 id="newsletter-title">
-            {signedUp ? "You're signed up." : "Join my newsletter"}
-          </h2>
-          <p>
-            {signedUp
-              ? "Thank you."
-              : "Receive fresh articles straight in your inbox, every Friday morning. I also share interesting finds from the internet!"}
-          </p>
+      <section
+        className={poof ? `${styles.banner} ${styles.poof}` : styles.banner}
+        aria-label="Newsletter"
+        onAnimationEnd={onPoofEnd}
+      >
+        <button className={styles.close} type="button" aria-label="Close" onClick={close}>
+          <X size={14} strokeWidth={1.8} aria-hidden="true" />
+        </button>
+        <div className={styles.visual} aria-hidden="true">
+          <EnvelopeArt />
         </div>
 
-        <form className={styles.form} onSubmit={submit} noValidate>
-          <div className={styles.field}>
-            <input
-              className={problem ? styles.inputInvalid : styles.input}
-              type="email"
-              name="email"
-              autoComplete="email"
-              data-clarity-mask="true"
-              placeholder="Your email address…"
-              value={email}
-              disabled={signedUp || submitting}
-              aria-invalid={problem === "invalid" || undefined}
-              aria-describedby="newsletter-note"
-              onChange={change}
-            />
-            <p
-              id="newsletter-note"
-              className={problem ? styles.error : styles.note}
-            >
-              {problem === "invalid"
-                ? invalidEmailMessage
-                : problem === "failed"
-                  ? failedMessage
-                  : "Weekly newsletter only. No spam, unsubscribe at any time."}
+        <div className={styles.content}>
+          <div className={styles.text}>
+            <h2 id="newsletter-title">
+              {signedUp ? "You're on the list." : "Gifting, wrapped up neatly."}
+            </h2>
+            <p>
+              {signedUp
+                ? "Thank you — a welcome note is on its way to your inbox."
+                : "Be first to see new hampers, wrap, and seasonal offers. One thoughtful email a month, nothing more."}
             </p>
           </div>
-          <button
-            className={styles.button}
-            type="submit"
-            disabled={signedUp || submitting}
-          >
-            Subscribe
-          </button>
-          <p className={styles.mobileNote}>
-            Weekly newsletter only. No spam,
-            <br />
-            unsubscribe at any time.
-          </p>
-        </form>
-      </div>
-    </section>
+
+          <form className={styles.form} onSubmit={submit} noValidate>
+            <div className={styles.field}>
+              <input
+                className={problem ? styles.inputInvalid : styles.input}
+                type="email"
+                name="email"
+                autoComplete="email"
+                data-clarity-mask="true"
+                placeholder="Your email address…"
+                value={email}
+                disabled={signedUp || submitting}
+                aria-invalid={problem === "invalid" || undefined}
+                aria-describedby="newsletter-note"
+                onChange={change}
+              />
+              <p
+                id="newsletter-note"
+                className={problem ? styles.error : styles.note}
+              >
+                {problem === "invalid"
+                  ? invalidEmailMessage
+                  : problem === "failed"
+                    ? failedMessage
+                    : "One email a month. No spam, unsubscribe at any time."}
+              </p>
+            </div>
+            <button
+              className={styles.button}
+              type="submit"
+              disabled={signedUp || submitting}
+            >
+              {signedUp ? "Signed up" : "Sign me up"}
+            </button>
+            <p className={styles.mobileNote}>
+              One email a month. No spam,
+              <br />
+              unsubscribe at any time.
+            </p>
+          </form>
+        </div>
+      </section>
     </dialog>
   );
 }
 
-function CloseIcon() {
+/**
+ * Original Aapulki illustration (drawn for this project — no borrowed assets,
+ * zero network requests): a letter slipping out of an envelope beside a small
+ * ribboned gift, in the site's cream / olive palette.
+ */
+function EnvelopeArt() {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M7 7l10 10M17 7L7 17" />
-    </svg>
-  );
-}
+    <svg
+      className={styles.art}
+      viewBox="0 0 340 260"
+      fill="none"
+      aria-hidden="true"
+    >
+      {/* soft backdrop shapes */}
+      <circle cx="242" cy="86" r="104" fill="#eeeee2" />
+      <circle cx="76" cy="228" r="46" fill="#f2efe7" />
 
-function Envelopes() {
-  return (
-    <div className={styles.envelopes}>
-      <div className={styles.closedWrap}>
-        <div className={styles.closed}>
-          <div className={styles.closedBody} />
-          <div className={styles.closedFolds}>
-            <Image
-              className={styles.closedShadow}
-              src="/newsletter/0d66b.svg"
-              alt=""
-              width={155}
-              height={98.5577}
-            />
-            <Image
-              className={styles.closedBottom}
-              src="/newsletter/8899c.svg"
-              alt=""
-              width={155}
-              height={98.5577}
-            />
-            <Image
-              className={styles.closedTop}
-              src="/newsletter/0c772.svg"
-              alt=""
-              width={120}
-              height={49.5356}
-            />
-            <Image
-              className={styles.closedEdge}
-              src="/newsletter/774b2.svg"
-              alt=""
-              width={118.876}
-              height={49.86}
-            />
-          </div>
-        </div>
-      </div>
-      <div className={styles.openWrap}>
-        <div className={styles.open}>
-          <Image
-            className={styles.base}
-            src="/newsletter/8a113.svg"
-            alt=""
-            width={168}
-            height={164}
-          />
-          <Image
-            className={styles.paperShadow}
-            src="/newsletter/42cbf.svg"
-            alt=""
-            width={144.28}
-            height={85.538}
-          />
-          <Image
-            className={styles.paper}
-            src="/newsletter/7ab61.svg"
-            alt=""
-            width={105.5}
-            height={108.5}
-          />
-          <Image
-            className={styles.letter}
-            src="/newsletter/1a4e8.svg"
-            alt=""
-            width={86.9238}
-            height={77.7129}
-          />
-          <Image
-            className={styles.paperEdge}
-            src="/newsletter/cf5f8.svg"
-            alt=""
-            width={103.75}
-            height={60.875}
-          />
-          <div className={styles.front}>
-            <Image
-              className={styles.leftFold}
-              src="/newsletter/8a53a.svg"
-              alt=""
-              width={116}
-              height={76.9318}
-            />
-            <Image
-              className={styles.leftStroke}
-              src="/newsletter/8f6ce.svg"
-              alt=""
-              width={100.078}
-              height={58.9318}
-            />
-            <Image
-              className={styles.rightFold}
-              src="/newsletter/935fa.svg"
-              alt=""
-              width={116}
-              height={76.9318}
-            />
-            <Image
-              className={styles.rightStroke}
-              src="/newsletter/7c8ea.svg"
-              alt=""
-              width={100.078}
-              height={58.9318}
-            />
-            <Image
-              className={styles.bottomShadow}
-              src="/newsletter/0e388.svg"
-              alt=""
-              width={186}
-              height={118.269}
-            />
-            <Image
-              className={styles.bottomFold}
-              src="/newsletter/daab7.svg"
-              alt=""
-              width={144}
-              height={59.4429}
-            />
-            <Image
-              className={styles.bottomEdge}
-              src="/newsletter/0f3fe.svg"
-              alt=""
-              width={142.652}
-              height={59.7922}
-            />
-            <Image
-              className={styles.openFade}
-              src="/newsletter/b3d36.svg"
-              alt=""
-              width={176}
-              height={101.5}
-            />
-            <Image
-              className={styles.openBorder}
-              src="/newsletter/8efeb.svg"
-              alt=""
-              width={146}
-              height={94}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+      {/* letter peeking out of the envelope */}
+      <g transform="rotate(-8 170 96)">
+        <rect x="128" y="34" width="92" height="108" rx="6" fill="#fdfcf9" stroke="#e5e1d6" strokeWidth="2" />
+        <line x1="142" y1="58" x2="206" y2="54" stroke="#e5e1d6" strokeWidth="3" strokeLinecap="round" />
+        <line x1="142" y1="74" x2="206" y2="70" stroke="#e5e1d6" strokeWidth="3" strokeLinecap="round" />
+        {/* wax-seal heart on the letter */}
+        <path
+          d="M174 96c-7-6-14-11-14-18 0-5 4-8 8-8 3 0 5 1 6 4 1-3 3-4 6-4 4 0 8 3 8 8 0 7-7 12-14 18z"
+          fill="#3f4034"
+        />
+      </g>
+
+      {/* envelope body */}
+      <rect x="84" y="118" width="180" height="116" rx="10" fill="#f2efe7" stroke="#e5e1d6" strokeWidth="2" />
+      {/* open flap folded back */}
+      <path
+        d="M84 128c0-6 5-10 10-10h160c5 0 10 4 10 10l-84 56c-4 3-8 3-12 0z"
+        fill="#eeeee2"
+        stroke="#e5e1d6"
+        strokeWidth="2"
+      />
+      {/* front folds */}
+      <path d="M84 128l84 56 84-56" stroke="#e5e1d6" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M84 234l62-50M264 234l-62-50" stroke="#e5e1d6" strokeWidth="2" strokeLinecap="round" />
+
+      {/* wax seal on the flap tip */}
+      <circle cx="168" cy="180" r="13" fill="#3f4034" />
+      <path
+        d="M168 174l1.8 3.7 4 .6-2.9 2.8.7 4-3.6-1.9-3.6 1.9.7-4-2.9-2.8 4-.6z"
+        fill="#fdfcf9"
+      />
+
+      {/* small ribboned gift box */}
+      <g>
+        <rect x="228" y="176" width="64" height="58" rx="7" fill="#3f4034" />
+        <rect x="228" y="196" width="64" height="12" fill="#9b9c86" />
+        <rect x="254" y="176" width="12" height="58" fill="#9b9c86" />
+        {/* bow */}
+        <path
+          d="M260 176c-10-2-16-8-14-14 2-5 9-5 12 0 2 3 2 8 2 14zm0 0c10-2 16-8 14-14-2-5-9-5-12 0-2 3-2 8-2 14z"
+          stroke="#fdfcf9"
+          strokeWidth="3"
+          strokeLinejoin="round"
+        />
+      </g>
+
+      {/* hand-tied sprig accents */}
+      <path d="M296 128c10-8 22-10 30-6" stroke="#9b9c86" strokeWidth="3" strokeLinecap="round" />
+      <path d="M306 116c6-2 12-1 16 2" stroke="#9b9c86" strokeWidth="3" strokeLinecap="round" />
+      <path d="M52 66c-8-8-10-18-7-26" stroke="#9b9c86" strokeWidth="3" strokeLinecap="round" />
+    </svg>
   );
 }

@@ -12,30 +12,25 @@ import {
 } from "react";
 import { X } from "lucide-react";
 import { api } from "@/lib/api";
+import Image from "next/image";
+import { subscribeToNewsletter } from "@/lib/api/newsletter";
 import styles from "./NewsletterBanner.module.css";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const invalidEmailMessage = "Your email address appears to be invalid.";
 const failedMessage = "Something went wrong. Please try again.";
-
-async function subscribeToNewsletter(
-  email: string,
-): Promise<"ok" | "invalid" | "failed"> {
-  try {
-    await api.post("/newsletter", { email });
-    return "ok";
-  } catch (error: any) {
-    if (error.statusCode === 400) return "invalid";
-    return "failed";
-  }
-}
+const consentRequiredMessage =
+  "Please accept the newsletter terms before subscribing.";
 
 export function NewsletterBanner() {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [email, setEmail] = useState("");
   const [problem, setProblem] = useState<"invalid" | "failed" | null>(null);
+  const [consentError, setConsentError] = useState(false);
+  const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [signedUp, setSignedUp] = useState(false);
+  const [pendingConfirmation, setPendingConfirmation] = useState(false);
   const [poof, setPoof] = useState(false);
   const [phase, setPhase] = useState<"hidden" | "open" | "closing">("hidden");
 
@@ -80,10 +75,10 @@ export function NewsletterBanner() {
   }, [phase]);
 
   useEffect(() => {
-    if (!signedUp) return;
+    if (!signedUp || pendingConfirmation) return;
     const id = window.setTimeout(() => setPoof(true), 700);
     return () => window.clearTimeout(id);
-  }, [signedUp]);
+  }, [signedUp, pendingConfirmation]);
 
   function close() {
     setPhase((current) => (current === "open" ? "closing" : current));
@@ -98,17 +93,26 @@ export function NewsletterBanner() {
       setProblem("invalid");
       return;
     }
+    if (!consent) {
+      setConsentError(true);
+      return;
+    }
+    setConsentError(false);
 
     setSubmitting(true);
     try {
       const result = await subscribeToNewsletter(value);
-      if (result === "ok") {
+      if (result.status === "pending_confirmation") {
+        // Double opt-in: the address is queued and a confirmation email is on
+        // its way. Nothing is sent to this address until it is confirmed.
         setProblem(null);
+        setPendingConfirmation(true);
         setSignedUp(true);
         return;
       }
 
-      setProblem(result);
+      setProblem(null);
+      setSignedUp(true);
     } finally {
       setSubmitting(false);
     }
@@ -131,6 +135,18 @@ export function NewsletterBanner() {
   function onDialogClick(event: MouseEvent<HTMLDialogElement>) {
     if (event.target === event.currentTarget) close();
   }
+
+  const heading = signedUp
+    ? pendingConfirmation
+      ? "Check your inbox to confirm."
+      : "You're signed up."
+    : "Join my newsletter";
+
+  const copy = signedUp
+    ? pendingConfirmation
+      ? "We've sent you a confirmation link. Confirm it to start the newsletter."
+      : "Thank you."
+    : "Receive fresh articles straight in your inbox, every Friday morning. I also share interesting finds from the internet!";
 
   if (phase === "hidden") return null;
 
@@ -157,23 +173,27 @@ export function NewsletterBanner() {
         aria-label="Newsletter"
         onAnimationEnd={onPoofEnd}
       >
-        <button className={styles.close} type="button" aria-label="Close" onClick={close}>
-          <X size={14} strokeWidth={1.8} aria-hidden="true" />
+        <button
+          className={styles.close}
+          type="button"
+          aria-label="Close"
+          onClick={close}
+        >
+          <CloseIcon />
         </button>
         <div className={styles.visual} aria-hidden="true">
-          <EnvelopeArt />
+          <div className={styles.wash}>
+            <img className={styles.photo} src="/newsletter/7c86d.png" alt="" />
+            <div className={styles.grain} />
+            <div className={styles.fade} />
+          </div>
+          <Envelopes />
         </div>
 
         <div className={styles.content}>
           <div className={styles.text}>
-            <h2 id="newsletter-title">
-              {signedUp ? "You're on the list." : "Gifting, wrapped up neatly."}
-            </h2>
-            <p>
-              {signedUp
-                ? "Thank you â€” a welcome note is on its way to your inbox."
-                : "Be first to see new hampers, wrap, and seasonal offers. One thoughtful email a month, nothing more."}
-            </p>
+            <h2 id="newsletter-title">{heading}</h2>
+            <p>{copy}</p>
           </div>
 
           <form className={styles.form} onSubmit={submit} noValidate>
@@ -184,10 +204,12 @@ export function NewsletterBanner() {
                 name="email"
                 autoComplete="email"
                 data-clarity-mask="true"
-                placeholder="Your email addressâ€¦"
+                placeholder="Your email address…"
                 value={email}
                 disabled={signedUp || submitting}
-                aria-invalid={problem === "invalid" || undefined}
+                aria-invalid={
+                  problem === "invalid" || consentError ? true : undefined
+                }
                 aria-describedby="newsletter-note"
                 onChange={change}
               />
@@ -199,18 +221,52 @@ export function NewsletterBanner() {
                   ? invalidEmailMessage
                   : problem === "failed"
                     ? failedMessage
-                    : "One email a month. No spam, unsubscribe at any time."}
+                    : consentError
+                      ? consentRequiredMessage
+                      : "Weekly newsletter only. No spam, unsubscribe at any time."}
               </p>
             </div>
+
+            {!signedUp && (
+              <div className={styles.consent}>
+                <input
+                  id="newsletter-consent"
+                  className={styles.consentInput}
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(event) => {
+                    setConsent(event.target.checked);
+                    if (event.target.checked) {
+                      setConsentError(false);
+                    }
+                  }}
+                />
+                <label
+                  className={styles.consentLabel}
+                  htmlFor="newsletter-consent"
+                >
+                  I want the Aapulki newsletter — fresh articles every Friday
+                  morning and interesting finds from the internet. No spam, and
+                  you can unsubscribe at any time.
+                </label>
+              </div>
+            )}
+
             <button
               className={styles.button}
               type="submit"
               disabled={signedUp || submitting}
             >
-              {signedUp ? "Signed up" : "Sign me up"}
+              {submitting
+                ? "Joining…"
+                : signedUp
+                  ? pendingConfirmation
+                    ? "Pending confirmation"
+                    : "Subscribed"
+                  : "Subscribe"}
             </button>
             <p className={styles.mobileNote}>
-              One email a month. No spam,
+              Weekly newsletter only. No spam,
               <br />
               unsubscribe at any time.
             </p>

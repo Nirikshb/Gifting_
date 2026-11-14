@@ -328,9 +328,204 @@
   outline-offset: 2px;
 }
 
-.button:disabled {
-  cursor: default;
-  opacity: 0.7;
+.consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.consentInput {
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  flex: none;
+  accent-color: #8b5cf6;
+}
+
+.consentLabel {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  color: #475569;
+}
+
+.envelopes {
+  position: absolute;
+  inset: 0;
+}
+
+.closedWrap {
+  position: absolute;
+  top: 73px;
+  right: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 137px;
+  height: 108px;
+}
+
+.closed {
+  position: relative;
+  width: 120px;
+  height: 80px;
+  transform: rotate(-15deg);
+  opacity: 0.92;
+  filter: blur(1px);
+}
+
+.closedBody {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(71, 85, 105, 0.06);
+  border-radius: 7px;
+  background: linear-gradient(#eef0f1 13%, #f9fafa 85%);
+  box-shadow:
+    0 2px 3px rgba(30, 41, 59, 0.04),
+    0 7px 7px rgba(30, 41, 59, 0.03),
+    0 14px 8px rgba(30, 41, 59, 0.04);
+}
+
+.closedFolds {
+  position: absolute;
+  inset: 0;
+  mask-image: url("/newsletter/22d72.svg");
+  mask-repeat: no-repeat;
+  mask-size: 120px 80px;
+}
+
+.closedFolds img {
+  position: absolute;
+  max-width: none;
+}
+
+.closedShadow,
+.closedBottom {
+  left: -18px;
+  top: 2px;
+}
+
+.closedTop,
+.closedEdge {
+  left: 0;
+  top: -1px;
+}
+
+.openWrap {
+  position: absolute;
+  top: 90px;
+  right: -21px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 155px;
+  height: 114px;
+}
+
+.open {
+  position: relative;
+  width: 144px;
+  height: 96px;
+  transform: rotate(7.5deg);
+}
+
+.open img {
+  position: absolute;
+  max-width: none;
+}
+
+.base {
+  left: -12px;
+  top: -26px;
+  transform: rotate(180deg) scaleX(-1);
+}
+
+.paperShadow {
+  left: 0;
+  top: -30px;
+}
+
+.paper {
+  left: 20px;
+  top: -40px;
+}
+
+.letter {
+  left: 28px;
+  top: -30px;
+}
+
+.paperEdge {
+  left: 20px;
+  top: -40px;
+}
+
+.front {
+  position: absolute;
+  left: -5px;
+  top: -4px;
+  width: 154px;
+  height: 142px;
+  mask-image: url("/newsletter/37dd7.svg");
+  mask-repeat: no-repeat;
+  mask-position: center bottom;
+  mask-size: 144px 142px;
+}
+
+.front img {
+  position: absolute;
+  max-width: none;
+}
+
+.leftFold {
+  left: -28px;
+  top: 36px;
+  transform: rotate(-90deg) scaleX(-1);
+}
+
+.leftStroke {
+  left: -18px;
+  top: 44px;
+  transform: rotate(-90deg) scaleX(-1);
+}
+
+.rightFold {
+  right: -28px;
+  top: 36px;
+  transform: rotate(90deg);
+}
+
+.rightStroke {
+  right: -18px;
+  top: 44px;
+  transform: rotate(90deg);
+}
+
+.bottomShadow {
+  left: -16px;
+  top: 28px;
+  mix-blend-mode: multiply;
+}
+
+.bottomFold {
+  left: 5px;
+  top: 48px;
+  transform: rotate(180deg) scaleX(-1);
+}
+
+.bottomEdge {
+  left: 6px;
+  top: 46px;
+}
+
+.openFade {
+  left: -11px;
+  top: 22px;
+}
+
+.openBorder {
+  left: 4px;
+  top: 14px;
 }
 
 @media (prefers-reduced-motion: reduce) {

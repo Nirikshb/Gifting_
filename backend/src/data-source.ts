@@ -6,8 +6,12 @@ import { Customer } from './customers/entities/customer.entity';
 import { OrderItem } from './orders/entities/order-item.entity';
 import { OrderStatusHistory } from './orders/entities/order-status-history.entity';
 import { Order } from './orders/entities/order.entity';
+import { EmailOutbox } from './notifications/entities/email-outbox.entity';
 import { Newsletter } from './newsletter/entities/newsletter.entity';
+import { ProductImage } from './products/entities/product-image.entity';
 import { Product } from './products/entities/product.entity';
+import { StockAdjustment } from './products/entities/stock-adjustment.entity';
+import { Campaign } from './campaign/entities/campaign.entity';
 
 export default new DataSource({
   type: 'postgres',
@@ -18,14 +22,18 @@ export default new DataSource({
   database: process.env.DB_DATABASE,
   entities: [
     Product,
+    ProductImage,
+    StockAdjustment,
     Order,
     OrderItem,
     OrderStatusHistory,
+    EmailOutbox,
     Customer,
     CustomerSession,
     Cart,
     CartItem,
     Newsletter,
+    Campaign,
   ],
   migrations: ['src/migrations/*.ts'],
   synchronize: false,

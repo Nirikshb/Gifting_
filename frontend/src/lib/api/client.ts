@@ -61,7 +61,7 @@ export async function request(
   });
 }
 
-async function loadCsrfToken() {
+export async function loadCsrfToken() {
   if (csrfToken) return csrfToken;
 
   const data = await request("GET", "/auth/csrf");

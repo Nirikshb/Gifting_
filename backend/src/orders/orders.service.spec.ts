@@ -9,6 +9,7 @@ import { CreateCheckoutDto } from './dto/create-checkout.dto';
 import { OrderItem } from './entities/order-item.entity';
 import { OrderStatusHistory } from './entities/order-status-history.entity';
 import { Order } from './entities/order.entity';
+import { NotificationsService } from '../notifications/notifications.service';
 import { OrdersService } from './orders.service';
 
 const baseOrderFields = {
@@ -152,7 +153,10 @@ function makeManager(options: {
   };
 }
 
-function makeCartsService(cart: Partial<Cart> | null, customerId: number | null = null) {
+function makeCartsService(
+  cart: Partial<Cart> | null,
+  customerId: number | null = null,
+) {
   const loadCheckoutCart = vi.fn().mockResolvedValue({
     cart: cart as Cart | null,
     customerId,
@@ -161,13 +165,48 @@ function makeCartsService(cart: Partial<Cart> | null, customerId: number | null 
   const clearCheckoutCart = vi.fn().mockResolvedValue(undefined);
 
   return {
-    cartsService: { loadCheckoutCart, clearCheckoutCart } as unknown as CartsService,
+    cartsService: {
+      loadCheckoutCart,
+      clearCheckoutCart,
+    } as unknown as CartsService,
     loadCheckoutCart,
     clearCheckoutCart,
   };
 }
 
-function makeDataSource(manager: EntityManager, existingOrder: Order | null = null) {
+/**
+ * Stands in for the notification outbox so the order specs can assert what is
+ * queued without touching delivery.
+ */
+function makeNotifications() {
+  return {
+    enqueueOrderPlaced: vi.fn().mockResolvedValue(undefined),
+    enqueueAdminNewOrder: vi.fn().mockResolvedValue(undefined),
+    enqueueOrderStatusChanged: vi.fn().mockResolvedValue(undefined),
+    scheduleDispatch: vi.fn(),
+    dispatchPending: vi.fn().mockResolvedValue(undefined),
+  };
+}
+
+function makeService(
+  dataSource: DataSource,
+  cartsService: CartsService,
+  notifications = makeNotifications(),
+) {
+  return {
+    service: new OrdersService(
+      dataSource,
+      cartsService,
+      notifications as unknown as NotificationsService,
+    ),
+    notifications,
+  };
+}
+
+function makeDataSource(
+  manager: EntityManager,
+  existingOrder: Order | null = null,
+) {
   const orderRepository = {
     findOne: vi.fn().mockResolvedValue(existingOrder),
     update: vi.fn(async () => ({ affected: 1 })),
@@ -189,7 +228,9 @@ function makeDataSource(manager: EntityManager, existingOrder: Order | null = nu
 
 const guestRequest = { cookies: {} } as unknown as Request;
 
-function makeDto(overrides: Partial<CreateCheckoutDto> = {}): CreateCheckoutDto {
+function makeDto(
+  overrides: Partial<CreateCheckoutDto> = {},
+): CreateCheckoutDto {
   return {
     customerName: 'Jane Doe',
     customerEmail: 'jane@example.com',
@@ -224,7 +265,7 @@ describe('OrdersService.createCheckoutOrder', () => {
     });
     const carts = makeCartsService(makeCart());
     const { dataSource } = makeDataSource(manager);
-    const service = new OrdersService(dataSource, carts.cartsService);
+    const { service } = makeService(dataSource, carts.cartsService);
 
     const result = await service.createCheckoutOrder(
       guestRequest,
@@ -269,7 +310,7 @@ describe('OrdersService.createCheckoutOrder', () => {
     });
     const carts = makeCartsService(makeCart(), 42);
     const { dataSource } = makeDataSource(manager);
-    const service = new OrdersService(dataSource, carts.cartsService);
+    const { service } = makeService(dataSource, carts.cartsService);
 
     const result = await service.createCheckoutOrder(guestRequest, makeDto());
 
@@ -282,7 +323,7 @@ describe('OrdersService.createCheckoutOrder', () => {
     const { manager, orderRepository } = makeManager({ products: [] });
     const carts = makeCartsService(null);
     const { dataSource } = makeDataSource(manager);
-    const service = new OrdersService(dataSource, carts.cartsService);
+    const { service } = makeService(dataSource, carts.cartsService);
 
     await expect(
       service.createCheckoutOrder(guestRequest, makeDto()),
@@ -298,7 +339,7 @@ describe('OrdersService.createCheckoutOrder', () => {
     });
     const carts = makeCartsService(makeCart());
     const { dataSource } = makeDataSource(manager);
-    const service = new OrdersService(dataSource, carts.cartsService);
+    const { service } = makeService(dataSource, carts.cartsService);
 
     await expect(
       service.createCheckoutOrder(guestRequest, makeDto()),
@@ -312,7 +353,7 @@ describe('OrdersService.createCheckoutOrder', () => {
     const { manager, orderRepository } = makeManager({ products: [product] });
     const carts = makeCartsService(makeCart());
     const { dataSource } = makeDataSource(manager);
-    const service = new OrdersService(dataSource, carts.cartsService);
+    const { service } = makeService(dataSource, carts.cartsService);
 
     await expect(
       service.createCheckoutOrder(guestRequest, makeDto()),
@@ -327,7 +368,7 @@ describe('OrdersService.createCheckoutOrder', () => {
     });
     const carts = makeCartsService(makeCart());
     const { dataSource } = makeDataSource(manager);
-    const service = new OrdersService(dataSource, carts.cartsService);
+    const { service } = makeService(dataSource, carts.cartsService);
 
     await expect(
       service.createCheckoutOrder(guestRequest, makeDto()),
@@ -340,7 +381,7 @@ describe('OrdersService.createCheckoutOrder', () => {
     const carts = makeCartsService(makeCart());
     const { manager } = makeManager({ products: [] });
     const { dataSource, orderRepository } = makeDataSource(manager, existing);
-    const service = new OrdersService(dataSource, carts.cartsService);
+    const { service } = makeService(dataSource, carts.cartsService);
 
     const result = await service.createCheckoutOrder(
       guestRequest,
@@ -365,7 +406,7 @@ describe('OrdersService.findOrderConfirmation', () => {
     const { manager } = makeManager({ products: [] });
     const { dataSource, orderRepository } = makeDataSource(manager, existing);
     const carts = makeCartsService(null);
-    const service = new OrdersService(dataSource, carts.cartsService);
+    const { service } = makeService(dataSource, carts.cartsService);
 
     const confirmation = await service.findOrderConfirmation(
       existing.orderReference,
@@ -388,7 +429,7 @@ describe('OrdersService.findOrderConfirmation', () => {
     const { manager } = makeManager({ products: [] });
     const { dataSource } = makeDataSource(manager);
     const carts = makeCartsService(null);
-    const service = new OrdersService(dataSource, carts.cartsService);
+    const { service } = makeService(dataSource, carts.cartsService);
 
     await expect(
       service.findOrderConfirmation('some-reference', undefined),
@@ -399,10 +440,117 @@ describe('OrdersService.findOrderConfirmation', () => {
     const { manager } = makeManager({ products: [] });
     const { dataSource } = makeDataSource(manager, null);
     const carts = makeCartsService(null);
-    const service = new OrdersService(dataSource, carts.cartsService);
+    const { service } = makeService(dataSource, carts.cartsService);
 
     await expect(
       service.findOrderConfirmation('some-reference', 'wrong-token'),
     ).rejects.toBeInstanceOf(NotFoundException);
+  });
+});
+
+describe('OrdersService order notifications', () => {
+  it('queues both order emails inside the checkout transaction and sweeps only after it commits', async () => {
+    const { manager } = makeManager({
+      products: [makeProduct()],
+    });
+    const carts = makeCartsService(makeCart());
+    const { dataSource } = makeDataSource(manager);
+
+    let committed = false;
+    const tracked = dataSource as unknown as {
+      transaction: (callback: (manager: EntityManager) => unknown) => unknown;
+    };
+    const runTransaction = tracked.transaction;
+    tracked.transaction = async (callback) => {
+      const result = await runTransaction(callback);
+      committed = true;
+      return result;
+    };
+
+    const notifications = makeNotifications();
+    notifications.scheduleDispatch = vi.fn(() => {
+      // Delivery must never start while the order transaction is open.
+      expect(committed).toBe(true);
+    });
+
+    const { service } = makeService(
+      dataSource,
+      carts.cartsService,
+      notifications,
+    );
+
+    await service.createCheckoutOrder(
+      guestRequest,
+      makeDto({ idempotencyKey: 'notify-key' }),
+    );
+
+    // The fake save assigns id 1; the call argument is the pre-save draft.
+    expect(notifications.enqueueOrderPlaced).toHaveBeenCalledWith(manager, 1);
+    expect(notifications.enqueueAdminNewOrder).toHaveBeenCalledWith(manager, 1);
+    expect(notifications.scheduleDispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('queues both emails for a signed-in customer too', async () => {
+    const { manager } = makeManager({ products: [makeProduct()] });
+    const carts = makeCartsService(makeCart(), 42);
+    const { dataSource } = makeDataSource(manager);
+    const notifications = makeNotifications();
+    const { service } = makeService(
+      dataSource,
+      carts.cartsService,
+      notifications,
+    );
+
+    await service.createCheckoutOrder(guestRequest, makeDto());
+
+    expect(notifications.enqueueOrderPlaced).toHaveBeenCalledTimes(1);
+    expect(notifications.enqueueAdminNewOrder).toHaveBeenCalledTimes(1);
+    expect(notifications.scheduleDispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not re-queue anything for a replayed idempotency key', async () => {
+    const existing = makeOrder({ idempotencyKey: 'replayed-key' });
+    const carts = makeCartsService(makeCart());
+    const { manager } = makeManager({ products: [] });
+    const { dataSource } = makeDataSource(manager, existing);
+    const notifications = makeNotifications();
+    const { service } = makeService(
+      dataSource,
+      carts.cartsService,
+      notifications,
+    );
+
+    await service.createCheckoutOrder(
+      guestRequest,
+      makeDto({ idempotencyKey: 'replayed-key' }),
+    );
+
+    expect(notifications.enqueueOrderPlaced).not.toHaveBeenCalled();
+    expect(notifications.enqueueAdminNewOrder).not.toHaveBeenCalled();
+  });
+
+  it('queues both emails from the guest order endpoint', async () => {
+    const { manager } = makeManager({ products: [makeProduct()] });
+    const { dataSource } = makeDataSource(manager);
+    const notifications = makeNotifications();
+    const { service } = makeService(
+      dataSource,
+      makeCartsService(null).cartsService,
+      notifications,
+    );
+
+    await service.createGuestOrder({
+      customerName: 'Guest Buyer',
+      customerEmail: 'guest@example.com',
+      deliveryLine1: '3 Ring Road',
+      deliveryCity: 'Pune',
+      deliveryPostcode: '411001',
+      deliveryCountry: 'India',
+      items: [{ productId: 1, quantity: 1 }],
+    });
+
+    expect(notifications.enqueueOrderPlaced).toHaveBeenCalledWith(manager, 1);
+    expect(notifications.enqueueAdminNewOrder).toHaveBeenCalledWith(manager, 1);
+    expect(notifications.scheduleDispatch).toHaveBeenCalledTimes(1);
   });
 });

@@ -10,6 +10,8 @@ import { CustomersModule } from './customers/customers.module';
 import { OrdersModule } from './orders/orders.module';
 import { ProductsModule } from './products/products.module';
 import { NewsletterModule } from './newsletter/newsletter.module';
+import { EmailSettingsModule } from './email-settings/email-settings.module';
+import { CampaignModule } from './campaign/campaign.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { NewsletterModule } from './newsletter/newsletter.module';
     AuthModule,
     CartsModule,
     NewsletterModule,
+    EmailSettingsModule,
+    CampaignModule,
   ],
   controllers: [AppController],
   providers: [AppService],

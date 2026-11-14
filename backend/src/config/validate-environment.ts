@@ -1,3 +1,5 @@
+import { SUPPORTED_EMAIL_PROVIDERS } from './email-configuration';
+
 function readNonEmptyString(
   config: Record<string, unknown>,
   key: string,
@@ -39,6 +41,52 @@ export function validateEnvironment(
   if (googleClientId) {
     requireNonEmptyString(config, 'SESSION_SECRET');
     requireNonEmptyString(config, 'FRONTEND_ORIGIN');
+  }
+
+  // An unknown provider must stop the app at boot: starting "successfully"
+  // and never sending anything would look like silent data loss.
+  const emailProvider = readNonEmptyString(config, 'EMAIL_PROVIDER');
+  if (emailProvider) {
+    const providerName = emailProvider.toLowerCase();
+    if (
+      !(SUPPORTED_EMAIL_PROVIDERS as readonly string[]).includes(providerName)
+    ) {
+      throw new Error(
+        `Environment variable EMAIL_PROVIDER has unsupported value "${emailProvider}". ` +
+          `Supported values: ${SUPPORTED_EMAIL_PROVIDERS.join(', ')}.`,
+      );
+    }
+
+    // Selecting a real provider without its credential must stop the app at
+    // boot rather than queue forever. `none` needs nothing and keeps running.
+    if (providerName === 'sender') {
+      requireNonEmptyString(config, 'SENDER_API_TOKEN');
+    }
+  }
+
+  const emailMaxAttempts = readNonEmptyString(config, 'EMAIL_MAX_ATTEMPTS');
+  if (
+    emailMaxAttempts &&
+    (!Number.isInteger(Number(emailMaxAttempts)) ||
+      Number(emailMaxAttempts) < 1)
+  ) {
+    throw new Error(
+      'Environment variable EMAIL_MAX_ATTEMPTS must be a positive integer.',
+    );
+  }
+
+  const dispatchInterval = readNonEmptyString(
+    config,
+    'EMAIL_DISPATCH_INTERVAL_MS',
+  );
+  if (
+    dispatchInterval &&
+    (!Number.isInteger(Number(dispatchInterval)) ||
+      Number(dispatchInterval) < 0)
+  ) {
+    throw new Error(
+      'Environment variable EMAIL_DISPATCH_INTERVAL_MS must be a non-negative integer.',
+    );
   }
 
   return config;

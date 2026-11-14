@@ -10,6 +10,7 @@ import {
   shippingLabel,
 } from "@/lib/orders/format";
 import { OrderStatusBadge, PaymentStatusBadge } from "./orders/OrderBadges";
+import { OrderQrCode } from "./OrderQrCode";
 import styles from "./OrderConfirmation.module.css";
 
 type Status = "loading" | "ready" | "error";
@@ -22,6 +23,7 @@ type OrderConfirmationProps = {
 export function OrderConfirmation({ reference, token }: OrderConfirmationProps) {
   const [order, setOrder] = useState<CheckoutOrder | null>(null);
   const [status, setStatus] = useState<Status>("loading");
+  const [orderUrl, setOrderUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token) return;
@@ -41,6 +43,12 @@ export function OrderConfirmation({ reference, token }: OrderConfirmationProps) 
     return () => {
       cancelled = true;
     };
+  }, [reference, token]);
+
+  useEffect(() => {
+    if (!token) return;
+    const url = `${window.location.origin}/orders/${encodeURIComponent(reference)}?token=${encodeURIComponent(token)}`;
+    queueMicrotask(() => setOrderUrl(url));
   }, [reference, token]);
 
   if (token && status === "loading") {
@@ -227,7 +235,16 @@ export function OrderConfirmation({ reference, token }: OrderConfirmationProps) 
               </Link>
             </div>
             <div className={styles.stub}>
-              <Barcode value={order.orderReference} />
+              {orderUrl ? (
+                <OrderQrCode
+                  value={orderUrl}
+                  label={`QR code for order ${order.orderReference}`}
+                  downloadName={`aapulki-order-${order.orderReference}`}
+                  caption="Scan to open this exact order. Download and keep it with your receipt."
+                />
+              ) : (
+                <Barcode value={order.orderReference} />
+              )}
               <p className={styles.barcodeLabel}>{order.orderReference}</p>
               <p className={styles.stubNote}>
                 Created with your account? Sign in to follow its progress and

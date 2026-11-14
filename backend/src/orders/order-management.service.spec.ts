@@ -1,6 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { DataSource, EntityManager } from 'typeorm';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { NotificationsService } from '../notifications/notifications.service';
 import { Product } from '../products/entities/product.entity';
 import { OrderItem } from './entities/order-item.entity';
 import { OrderStatusHistory } from './entities/order-status-history.entity';
@@ -255,10 +256,12 @@ class FakeStore {
 
   private orderItemRepository() {
     return {
-      find: async (options: {
-        where?: unknown;
-        order?: { id?: 'ASC' | 'DESC' };
-      } = {}) => {
+      find: async (
+        options: {
+          where?: unknown;
+          order?: { id?: 'ASC' | 'DESC' };
+        } = {},
+      ) => {
         const filtered = this.items.filter((item) =>
           matchesWhere(
             item as unknown as Record<string, unknown>,
@@ -266,7 +269,9 @@ class FakeStore {
           ),
         );
         return [...filtered].sort((left, right) =>
-          options.order?.id === 'DESC' ? right.id - left.id : left.id - right.id,
+          options.order?.id === 'DESC'
+            ? right.id - left.id
+            : left.id - right.id,
         );
       },
     };
@@ -352,8 +357,29 @@ class FakeStore {
   }
 }
 
+function makeNotifications() {
+  return {
+    enqueueOrderPlaced: vi.fn().mockResolvedValue(undefined),
+    enqueueAdminNewOrder: vi.fn().mockResolvedValue(undefined),
+    enqueueOrderStatusChanged: vi.fn().mockResolvedValue(undefined),
+    scheduleDispatch: vi.fn(),
+    dispatchPending: vi.fn().mockResolvedValue(undefined),
+  };
+}
+
+function makeServiceWithNotifications(store: FakeStore) {
+  const notifications = makeNotifications();
+  return {
+    service: new OrderManagementService(
+      store.dataSource,
+      notifications as unknown as NotificationsService,
+    ),
+    notifications,
+  };
+}
+
 function makeService(store: FakeStore): OrderManagementService {
-  return new OrderManagementService(store.dataSource);
+  return makeServiceWithNotifications(store).service;
 }
 
 describe('OrderManagementService customer history', () => {
@@ -412,7 +438,10 @@ describe('OrderManagementService customer history', () => {
 
   it('returns a customer order with its timeline', async () => {
     const order = makeOrder();
-    const store = new FakeStore({ orders: [order], items: [makeItem(order.id)] });
+    const store = new FakeStore({
+      orders: [order],
+      items: [makeItem(order.id)],
+    });
 
     const service = makeService(store);
     store.history.push({
@@ -458,11 +487,9 @@ describe('OrderManagementService customer cancellation', () => {
     });
     const service = makeService(store);
 
-    const result = await service.cancelCustomerOrder(
-      42,
-      order.orderReference,
-      { reason: 'Changed my mind' },
-    );
+    const result = await service.cancelCustomerOrder(42, order.orderReference, {
+      reason: 'Changed my mind',
+    });
 
     expect(result.orderStatus).toBe('cancelled');
     expect(result.stockRestored).toBe(true);
@@ -778,10 +805,146 @@ describe('OrderManagementService payment events', () => {
     };
 
     await service.applyVerifiedPaymentEvent(event);
-    await service.applyVerifiedPaymentEvent({ ...event, eventId: 'evt_1_retry' });
+    await service.applyVerifiedPaymentEvent({
+      ...event,
+      eventId: 'evt_1_retry',
+    });
 
     expect(
       store.history.filter((entry) => entry.category === 'payment'),
     ).toHaveLength(1);
+  });
+});
+
+describe('OrderManagementService order notifications', () => {
+  function trackCommit(store: FakeStore): { isCommitted: () => boolean } {
+    const dataSource = store.dataSource as unknown as {
+      transaction: <T>(
+        callback: (manager: EntityManager) => Promise<T>,
+      ) => Promise<T>;
+    };
+    const runTransaction = dataSource.transaction;
+    let committed = false;
+    dataSource.transaction = async (callback) => {
+      const result = await runTransaction(callback);
+      committed = true;
+      return result;
+    };
+    return { isCommitted: () => committed };
+  }
+
+  it('queues the customer status email inside the transaction and sweeps after commit', async () => {
+    const order = makeOrder({ id: 1, orderStatus: 'pending' });
+    const store = new FakeStore({ orders: [order] });
+    const { isCommitted } = trackCommit(store);
+    const { service, notifications } = makeServiceWithNotifications(store);
+    notifications.scheduleDispatch = vi.fn(() => {
+      expect(isCommitted()).toBe(true);
+    });
+
+    await service.updateAdminOrderStatus(7, order.orderReference, {
+      status: 'confirmed',
+      note: 'Payment arranged',
+    });
+
+    expect(notifications.enqueueOrderStatusChanged).toHaveBeenCalledWith(
+      expect.anything(),
+      order.id,
+      'confirmed',
+    );
+    expect(notifications.scheduleDispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('queues nothing for a repeated status request', async () => {
+    const order = makeOrder({ id: 1, orderStatus: 'pending' });
+    const store = new FakeStore({ orders: [order] });
+    const { service, notifications } = makeServiceWithNotifications(store);
+
+    await service.updateAdminOrderStatus(7, order.orderReference, {
+      status: 'confirmed',
+    });
+    await expect(
+      service.updateAdminOrderStatus(7, order.orderReference, {
+        status: 'confirmed',
+      }),
+    ).rejects.toThrow(/already marked/i);
+
+    expect(notifications.enqueueOrderStatusChanged).toHaveBeenCalledTimes(1);
+    expect(notifications.scheduleDispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('queues the cancellation email with the recorded reason', async () => {
+    const order = makeOrder({ id: 1, orderStatus: 'processing' });
+    const store = new FakeStore({
+      orders: [order],
+      items: [makeItem(order.id)],
+      products: [makeProduct(3)],
+    });
+    const { service, notifications } = makeServiceWithNotifications(store);
+
+    await service.cancelAdminOrder(7, order.orderReference, {
+      reason: 'Recipient unavailable',
+    });
+
+    expect(notifications.enqueueOrderStatusChanged).toHaveBeenCalledWith(
+      expect.anything(),
+      order.id,
+      'cancelled',
+      expect.objectContaining({ cancellationReason: 'Recipient unavailable' }),
+    );
+    expect(notifications.scheduleDispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('queues the cancellation email for a customer-initiated cancel too', async () => {
+    const order = makeOrder({ id: 1, orderStatus: 'pending' });
+    const store = new FakeStore({ orders: [order] });
+    const { service, notifications } = makeServiceWithNotifications(store);
+
+    await service.cancelCustomerOrder(42, order.orderReference, {});
+
+    expect(notifications.enqueueOrderStatusChanged).toHaveBeenCalledWith(
+      expect.anything(),
+      order.id,
+      'cancelled',
+      expect.objectContaining({ cancellationReason: null }),
+    );
+    expect(notifications.scheduleDispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it('queues no emails for a verified payment event', async () => {
+    const order = makeOrder({ id: 1 });
+    const store = new FakeStore({ orders: [order] });
+    const { service, notifications } = makeServiceWithNotifications(store);
+
+    await service.applyVerifiedPaymentEvent({
+      verified: true,
+      provider: 'test-provider',
+      eventId: 'evt_1',
+      orderReference: order.orderReference,
+      providerReference: 'pay_123',
+      amount: '58.00',
+      currency: 'INR',
+      paidAt: new Date(),
+    });
+
+    expect(notifications.enqueueOrderPlaced).not.toHaveBeenCalled();
+    expect(notifications.enqueueAdminNewOrder).not.toHaveBeenCalled();
+    expect(notifications.enqueueOrderStatusChanged).not.toHaveBeenCalled();
+    expect(notifications.scheduleDispatch).not.toHaveBeenCalled();
+  });
+
+  it('queues nothing when the transition is rejected', async () => {
+    const order = makeOrder({ id: 1, orderStatus: 'delivered' });
+    const store = new FakeStore({ orders: [order] });
+    const { service, notifications } = makeServiceWithNotifications(store);
+
+    await expect(
+      service.updateAdminOrderStatus(7, order.orderReference, {
+        status: 'confirmed',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(notifications.enqueueOrderStatusChanged).not.toHaveBeenCalled();
+    expect(notifications.scheduleDispatch).not.toHaveBeenCalled();
   });
 });

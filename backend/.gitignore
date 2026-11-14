@@ -5,3 +5,6 @@ dist/
 !.env.example
 coverage/
 *.tsbuildinfo
+
+# Uploaded product images are runtime data, not source.
+uploads/

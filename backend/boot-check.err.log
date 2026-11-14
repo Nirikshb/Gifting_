@@ -1,0 +1,3 @@
+[31m[Nest] 41784  - [39m11/14/2026, 8:56:37 PM [31m  ERROR[39m [38;5;3m[CampaignService] [39m[31mBoot reconciliation of sending campaigns failed: relation "campaigns" does not exist[39m
+[31m[Nest] 41784  - [39m11/14/2026, 8:56:37 PM [31m  ERROR[39m [38;5;3m[CampaignSchedulerService] [39m[31mCampaign reconciliation sweep failed: relation "campaigns" does not exist[39m
+[31m[Nest] 41784  - [39m11/14/2026, 8:56:37 PM [31m  ERROR[39m [38;5;3m[CampaignSchedulerService] [39m[31mScheduled campaign sweep failed: relation "campaigns" does not exist[39m

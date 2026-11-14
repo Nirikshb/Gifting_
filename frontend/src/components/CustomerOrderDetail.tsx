@@ -17,6 +17,7 @@ import {
 } from "@/lib/orders/format";
 import { OrderStatusBadge, PaymentStatusBadge } from "./orders/OrderBadges";
 import { OrderTimeline } from "./orders/OrderTimeline";
+import { OrderQrCode } from "./OrderQrCode";
 import styles from "./CustomerOrderDetail.module.css";
 
 type LoadState = "loading" | "ready" | "error";
@@ -45,6 +46,12 @@ export function CustomerOrderDetail({ reference }: { reference: string }) {
   const [submitting, setSubmitting] = useState(false);
   const [cancelError, setCancelError] = useState("");
   const [notice, setNotice] = useState("");
+  const [orderUrl, setOrderUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const url = `${window.location.origin}/account/orders/${encodeURIComponent(reference)}`;
+    queueMicrotask(() => setOrderUrl(url));
+  }, [reference]);
 
   useEffect(() => {
     let cancelled = false;
@@ -333,6 +340,23 @@ export function CustomerOrderDetail({ reference }: { reference: string }) {
               )}
             </section>
           ) : null}
+
+          <section className={styles.card}>
+            <h3>Order QR</h3>
+            <p className={styles.cardHint}>
+              Scan to open this order in your account, or download the QR to keep
+              with your receipt.
+            </p>
+            {orderUrl ? (
+              <div style={{ marginTop: 14, display: "flex", justifyContent: "center" }}>
+                <OrderQrCode
+                  value={orderUrl}
+                  label={`QR code for order ${order.orderReference}`}
+                  downloadName={`aapulki-order-${order.orderReference}`}
+                />
+              </div>
+            ) : null}
+          </section>
 
           <section className={styles.card}>
             <h3>Need help?</h3>

@@ -347,3 +347,137 @@ Fulfilment and payment lifecycles, safe cancellation with one-time stock restora
 - Stock restoration does not create a ledger row beyond `stock_restored_at` and the history entry.
 - Dashboard figures are live counts, not time-series analytics.
 - Responsive rules exist, but browser verification was desktop-width only.
+
+---
+
+## openCodeGo Deepseek v4.1 flash changes — Phase 2, Task 4: admin product and inventory management
+
+An admin can now add products, edit them, change prices, upload product images, list or hide products and adjust stock. Checkout and cancellation behaviour is unchanged.
+
+### Audit findings (what already existed)
+- `products` table (id, name, slug unique, description, price numeric(10,2), stock_quantity, image_url, category, is_active) with `price >= 0` and `stock_quantity >= 0` checks.
+- Public catalogue only: `GET /products` (active only, paginated) and `GET /products/:slug` — no write routes, no admin product code.
+- No image upload, no upload directory, no product admin UI. `image_url` was a plain URL column.
+- Existing session auth with `customers.role` + `AdminGuard` (Task 3) and the CSRF/Origin guard — reused as is.
+- Checkout reserves stock by decrementing `stock_quantity` inside its transaction; cancellation restores it (Task 3). Both untouched.
+- Frontend had no product admin pages; the storefront rendered `image_url` only when it was an absolute http(s) URL.
+
+### Backend (new)
+- `src/migrations/1793100000000-ProductManagement.ts` — `product_images` (id, original_name, stored_name unique, mime_type, size_bytes, created_by_customer_id, created_at) and `stock_adjustments` (id, product_id, previous_quantity, new_quantity, delta, reason, actor_type, actor_id, created_at) with FKs and checks; indexes on `products(category)`, `products(is_active)` and the adjustment history. The `products` table itself is unchanged.
+- `src/products/entities/product-image.entity.ts`, `src/products/entities/stock-adjustment.entity.ts`.
+- `src/products/admin-products.service.ts` (+ spec) — list/search/filter/paginate, stats, categories, create, update, stock adjustment, adjustment history, image upload.
+- `src/products/admin-products.controller.ts` — `/admin/products` list, `stats`, `categories`, `images` (GET/POST), `/:id`, `/:id/stock-adjustments`, `POST`, `PATCH /:id`, `PATCH /:id/stock`; `AdminGuard` on the controller, `CsrfGuard` on every write.
+- `src/products/product-images.controller.ts` — public `GET /product-images/:fileName` streaming the stored file.
+- `src/products/dto/create-product.dto.ts`, `update-product.dto.ts`, `update-stock.dto.ts`, `list-admin-products-query.dto.ts`, `admin-product-response.dto.ts`.
+- `src/products/utils/product-validation.ts` (+ spec) — slug pattern, price format, stock bounds, shared messages.
+- `src/products/utils/product-image.ts` (+ spec) — file-signature detection, server file names, name sanitising, public URL builder.
+- `src/config/product-configuration.ts` — low-stock threshold, upload directory, maximum image size.
+
+### Backend (modified)
+- `src/products/products.module.ts` — new entities, controllers and services; imports `AuthModule` for `AdminGuard`.
+- `src/data-source.ts` — registers `ProductImage` and `StockAdjustment`.
+- `src/common/interceptors/transform-response.interceptor.ts` — passes `StreamableFile` through so image bytes are streamed instead of JSON-wrapped.
+- `.gitignore` (ignore `uploads/`), `.env.example` (new optional variables).
+
+### Frontend (new)
+- `src/app/admin/products/page.tsx`, `src/app/admin/products/new/page.tsx`, `src/app/admin/products/[id]/edit/page.tsx`.
+- `src/components/AdminProductsView.tsx` — stat cards (products, hidden, out of stock, low stock), search by name/slug, category, availability and stock filters, product table with image, price, category, stock badge and availability pill, pagination, empty and error states.
+- `src/components/AdminProductForm.tsx` — create and edit form (name, slug auto-generated but editable, description, price, category, stock, listed/hidden toggle, image upload with preview and removal) plus the inventory panel: current stock, new quantity, reason, and the adjustment history.
+- `src/lib/api/products.ts` — typed admin product API client including the multipart image upload.
+
+### Frontend (modified)
+- `src/components/AdminFrame.tsx` — "Products" added to the studio navigation.
+- `src/components/admin.module.css` — product table, badges, form, image picker and adjustment history styles.
+- `src/lib/api/client.ts` — `loadCsrfToken` is exported so the multipart upload can reuse it.
+
+### Product image handling
+- The admin uploads a file; the browser sends it as multipart data. The server detects the real type from the file signature (JPEG, PNG, WebP, GIF, AVIF), rejects anything else, enforces a 5 MB limit and writes the file under a server generated UUID name in `backend/uploads/products`.
+- The product never stores a URL supplied by the browser. It stores an `imageId` reference to an upload record, and the server resolves that to its own public URL (`<FRONTEND_ORIGIN>/api/product-images/<uuid>.png`). An unknown image id is rejected.
+- Images are served by the backend and reached through the existing `/api` proxy, so the storefront's absolute-URL image rule keeps working unchanged.
+- Uploads require `FRONTEND_ORIGIN`; without it the upload endpoint fails closed with 503.
+
+### Inventory behaviour
+- Stock is only changed through `PATCH /admin/products/:id/stock`, which requires a reason, runs in a transaction and locks the product row (`pessimistic_write`), so two concurrent updates cannot overwrite each other.
+- Every change writes a `stock_adjustments` row with the previous quantity, the new quantity, the difference, the reason and the admin who made it. Setting the same number again records nothing.
+- Negative quantities are rejected by the DTO, the service and the database check.
+- Creating a product with stock records the opening quantity as an adjustment.
+- Checkout reservation and cancellation restoration are untouched; the ledger records admin adjustments, while order reservations stay on the order.
+
+### Security
+- Every route reuses `SessionGuard` + `AdminGuard`: anonymous → 401, signed-in customer → 403. Writes additionally need the CSRF double-submit token and the configured Origin.
+- Admin-only behaviour is enforced on the server; the frontend gate is only a convenience.
+
+### Verification
+- Backend `npx tsc --noEmit -p tsconfig.json` clean; `npx vitest run` → **14 files / 107 tests passed** (up from 10/52): slug/price/stock validation and DTO rules, image signature detection and file naming, service behaviour (create, duplicate slug, invalid price/stock, edit, availability, stock adjustments, locking, filters, stats, upload) and controller guard metadata.
+- Frontend `npx tsc --noEmit` clean; `npm run build` → **27 routes** (`/admin/products`, `/admin/products/new`, `/admin/products/[id]/edit` compiled). ESLint on the new files reports no errors (only the usual `<img>` warnings the storefront already has); repo-wide lint still fails only on the pre-existing `CartProvider` setState-in-effect error. Backend ESLint is clean for every new file; the remaining backend lint errors are pre-existing files.
+- Real API verification against the dev database (temporary script, deleted afterwards): **72/72 checks** passed — admin/customer/anonymous authorization, create, duplicate slug, invalid price, negative price, negative stock, blank name, unknown field, unknown image id, missing CSRF, foreign Origin, edit, duplicate slug on edit, availability off/on (hidden product leaves the shop and returns), search, category/availability/stock filters, pagination, stats, stock update, unchanged quantity, negative stock, missing reason, history, concurrent stock updates, multipart upload through the storefront proxy, image served back with matching bytes, non-image rejected, path traversal rejected, attach and remove image, checkout reservation (5 → 3), cancellation restoration (3 → 5), seed products untouched.
+- Browser verification (in-app browser on the dev database; no screenshots because the desktop window is not visible — checks done through snapshots and DOM evaluation): unauthenticated `/admin/products` → "Sign in required"; customer → "Studio access only"; admin → stat cards and the product table; search `kraft` → 1 row; low-stock filter → 6 rows; new-product form filled with an uploaded PNG → "Studio Canvas Tote was added to the catalogue", the list then showed the new row with the uploaded image; edit page saved name and price ("was saved"), availability off removed the product from `/shop` and on brought it back with the image; stock panel updated 7 → 12 with the reason and showed "Stock updated from 7 to 12." plus both history entries; stock 0 showed "Out of stock"; empty search showed "No products match these filters" with "Clear filters"; submitting an empty form showed inline field errors; submitting a duplicate slug showed "A product with this slug already exists."; pagination showed 1–12 of 17 and 13–17 of 17; the storefront `/shop` and `/products/studio-canvas-tote` rendered the uploaded image.
+- All verification data was removed afterwards (14 temporary products, 2 customers, 2 test orders, 1 cart, 3 uploads, the temporary scripts and the temporary session route). The database is back to the two seed products, unchanged.
+
+### Remaining limitations
+- Images are stored on the server's local disk; production needs object storage or a shared volume.
+- The stored image URL contains the storefront origin, so moving the site means re-uploading or migrating the `products.image_url` values.
+- Only one image per product — the schema has a single `image_url` column and no gallery table was invented.
+- The adjustment ledger records admin changes only; order reservations and restorations live on the order.
+- Low-stock threshold is a single global number (default 5), not per product.
+- No bulk import/export, no scheduled low-stock alerts, no barcode or SKU field (the schema has none).
+- Browser verification was desktop-width only.
+## openCodeGo Deepseek v4.1 flash changes - Phase 2, Task 5: transactional emails and order notifications
+
+### Audit (before coding)
+- No email or notification code existed anywhere in the backend; the only outbound message is the newsletter signup, which stores rows and never sends. No provider SDK, no templates, no queue.
+- Order events that need notifications: checkout (`POST /orders/checkout` and legacy `POST /orders`), admin fulfilment transitions (`PATCH /admin/orders/:ref/status`), admin cancellation (`POST /admin/orders/:ref/cancel`) and customer self-cancel (`POST /orders/mine/:ref/cancel`).
+- All order writes already run inside `dataSource.transaction(...)`, so an outbox table written on the same manager commits atomically with the order and cannot break checkout if delivery later fails.
+
+### Architecture
+- `src/notifications/` module: `NotificationsService` (enqueue + dispatch), `EmailProvider` interface, `UnconfiguredEmailProvider` (fails clearly), `EmailOutbox` entity, `notification-events.ts` (event keys), `templates/` (reusable branded HTML + plain text).
+- Transactional outbox `email_outbox` (migration `1793200000000-EmailOutbox`): rendered subject/html/text snapshot, unique `event_key`, `status pending -> sending -> sent | failed`, `attempts`, `next_attempt_at`, `last_error`, `provider_message_id`. Indexes on `(status, next_attempt_at, id)` and `(order_id, id)`.
+- Enqueue happens inside the order/status transaction via the shared `EntityManager` (`orIgnore()` on the unique key), so repeated or concurrent requests cannot create duplicates. Delivery never runs inside that transaction: `scheduleDispatch()` is called only after commit.
+- Dispatch loop: reset stale `sending` rows (10 min), claim due rows atomically (`pending -> sending` with attempt increment), classify (empty recipient -> hold, malformed -> permanent fail before any provider call, provider unconfigured -> hold without consuming an attempt, sender missing -> hold), send, then mark `sent` or schedule retry with backoff (1m, 2m, 4m ... capped 1h, max `EMAIL_MAX_ATTEMPTS`, default 5) or mark permanently `failed`. Interval sweep (default 60s, `EMAIL_DISPATCH_INTERVAL_MS=0` disables) plus a boot sweep to recover rows left by a restart; an in-process guard prevents overlapping sweeps.
+- Provider interface `send(EmailMessage) -> { messageId }`; unknown `EMAIL_PROVIDER` fails at startup; no provider configured means rows stay `pending` with a clear hold reason - never claimed as delivered.
+
+### Events and triggers
+- Order placed -> customer email (`order_placed:<orderId>`), plus one admin email (`admin_new_order:<orderId>`).
+- Fulfilment change confirmed/processing/shipped/delivered/cancelled -> customer email (`order_status:<orderId>:<status>`).
+- Repeating a status is rejected by the lifecycle (HTTP 400) and the unique key would dedupe anyway; verified both ways.
+- No payment-success or refund emails (no payment flow exists); no invented tracking numbers.
+
+### Templates
+- `templates/brand.ts` (Aapulki, ivory `#f7f4ee`, blush `#f0d9d4`, INR, `58.00`-style formatting), `order-summary.ts`, `order-placed.ts`, `admin-new-order.ts`, `order-status.ts`, `payment.ts`. Every email has HTML and plain-text parts, mobile-friendly single column.
+- Content rules verified: real order data only (reference, items, totals, address from the DB snapshot); cancellation reason only in the cancelled email; the word "payment" appears only in the admin email; no `tracking` text anywhere; no token links. Signed-in customers get `/account/orders/<ref>`, guests get no account link, admin gets `/admin/orders/<ref>`; links are omitted entirely when neither `FRONTEND_ORIGIN` nor `SITE_URL` is set.
+
+### Configuration
+- `src/config/email-configuration.ts` (provider selection, sender, admin recipient, dispatch interval, max attempts) and updated `validate-environment.ts`; documented in `backend/.env.example`: `EMAIL_PROVIDER`, `EMAIL_FROM_NAME`, `EMAIL_FROM_ADDRESS`, `EMAIL_HOST/PORT/USER/PASSWORD/SECURE`, `ADMIN_NOTIFICATION_EMAIL`, `EMAIL_DISPATCH_INTERVAL_MS`, `EMAIL_MAX_ATTEMPTS`.
+- Admin recipient = `ADMIN_NOTIFICATION_EMAIL`, falling back to the first entry of `ADMIN_EMAILS`. Credentials are backend-only; no secrets committed (`.env` stays gitignored). Invalid recipient addresses are not validated at startup - they fail at dispatch time with `Invalid recipient address.` instead of blocking boot.
+
+### Reliability (verified)
+- Provider unavailable: rows hold `pending` with `Email provider is not configured.`, retried each sweep without consuming attempts.
+- Invalid recipient: permanent `failed` at 0 attempts, provider never called.
+- Duplicates: unique `event_key` + `orIgnore` (repeated status PATCH -> 400 and no new row; direct duplicate INSERT ignored on the real DB).
+- Retries/backoff, provider errors, concurrent claim, stale-`sending` recovery, restart recovery and missing-config paths are covered by unit tests with a mock provider only.
+- Email creation never breaks checkout or status updates: enqueue failure on a missing order row is logged and skipped; delivery is fully decoupled after commit; an order is never rolled back because of email failure.
+
+### Security / PII
+- No passwords, tokens or full payment details in logs; provider errors are redacted of email addresses; no `?token=` links in any email.
+
+### Tests
+- `npx tsc --noEmit` clean; `npx vitest run` -> **19 files / 213 tests passed** (was 14/107): every event and recipient/template selection, duplicate prevention, outbox persistence inside the transaction, dispatch-after-commit, failed delivery, retry/backoff, missing provider, provider errors, guest and signed-in checkout, admin notification, cancellation with reason, and checkout/order-lifecycle regressions. Mock provider only - no real email is ever sent.
+- ESLint clean on all new/modified Task 5 files (remaining errors are pre-existing in older specs, identical to HEAD).
+
+### Browser verification (dev DB, honest state)
+- Baseline: 2 seed products, 0 orders/carts/customers/outbox.
+- Guest checkout via the UI -> order 64: `order_placed:64` + `admin_new_order:64` queued `pending`, correct subjects and recipients (customer + `studio-admin@example.com`), attempts 0, hold reason `Email provider is not configured.` - **pending, not delivered**.
+- Admin status flow confirmed -> processing -> shipped -> delivered: one row per status (3-6), all `pending`.
+- Duplicate status PATCH (`confirmed` again) -> HTTP 400 `Order is already marked as "confirmed".`, no new row.
+- Second order (signed-in) cancelled from the studio with reason "Recipient moved abroad" -> `order_status:65:cancelled` with the reason in the text body; stock restored and history recorded.
+- Content checks: payment wording only in admin emails; no `tracking` anywhere; guest emails have no `/account/orders/` link, signed-in emails do; no `?token=` anywhere; admin emails have `/admin/orders/` links.
+- Phase B (malformed `ADMIN_NOTIFICATION_EMAIL=not-an-address`, backend restarted): new order 66's admin row -> `failed` with `Invalid recipient address.` at 0 attempts (provider never called) while the customer row stayed `pending`. Config reverted and restarted -> pending rows resumed holding, the malformed row stayed permanently failed.
+- Dedupe on the real DB: duplicate `event_key` INSERT with `ON CONFLICT DO NOTHING` -> `INSERT 0`, still 11 rows / 11 distinct keys.
+- All temp verification data removed: 3 orders, 3 items, 11 status-history rows, 11 outbox rows, 2 carts, 2 customers, 2 sessions; kraft stock restored 3 -> 5 (two order decrements undone), linen unchanged at 3 (its decrement was already restored by cancellation). Temporary controller, temp SQL helper and their wiring deleted; rebuild clean; backend root 200, temp route 404.
+
+### Remaining limitations
+- No email provider is configured in this environment, so **no email was actually delivered** - every row observed was `pending` or `failed`; delivery with a real provider (SMTP etc.) is untested end to end.
+- The provider interface ships only `UnconfiguredEmailProvider`; a concrete SMTP/API provider must be added and `EMAIL_PROVIDER` set for real sending.
+- Outbox rows are kept forever (no retention/purge job); there is no admin UI for the outbox yet.
+- Templates are hardcoded HTML strings in code, not editable by non-developers.
+- Browser verification was desktop-width only; mobile rendering of emails was not visually tested in a mail client (only the HTML/CSS is mobile-friendly by construction).

@@ -12,6 +12,7 @@ import {
   In,
 } from 'typeorm';
 import { PaginatedResult } from '../common/interfaces/paginated-result.interface';
+import { NotificationsService } from '../notifications/notifications.service';
 import { OrderItem } from './entities/order-item.entity';
 import { OrderStatusHistory } from './entities/order-status-history.entity';
 import { Order, type OrderStatus } from './entities/order.entity';
@@ -61,6 +62,7 @@ export class OrderManagementService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async listCustomerOrders(
@@ -113,7 +115,7 @@ export class OrderManagementService {
     orderReference: string,
     dto: CancelOrderDto,
   ): Promise<CancelOrderResponse> {
-    return this.dataSource.transaction(async (manager) => {
+    const result = await this.dataSource.transaction(async (manager) => {
       const order = await this.lockOrder(manager, {
         orderReference,
         customerId,
@@ -140,6 +142,9 @@ export class OrderManagementService {
         id: customerId,
       });
     });
+
+    this.notifications.scheduleDispatch();
+    return result;
   }
 
   async listAdminOrders(
@@ -244,8 +249,7 @@ export class OrderManagementService {
     return {
       totalOrders,
       pendingOrders,
-      activeOrders:
-        confirmedOrders + processingOrders + shippedOrders,
+      activeOrders: confirmedOrders + processingOrders + shippedOrders,
       deliveredOrders,
       cancelledOrders,
       unpaidOrders,
@@ -289,8 +293,17 @@ export class OrderManagementService {
         actor: { type: 'admin', id: adminId },
       });
 
+      // Queued inside the order transaction; delivered after it commits.
+      await this.notifications.enqueueOrderStatusChanged(
+        manager,
+        locked.id,
+        dto.status,
+      );
+
       return locked;
     });
+
+    this.notifications.scheduleDispatch();
 
     return {
       orderReference: order.orderReference,
@@ -305,7 +318,7 @@ export class OrderManagementService {
     orderReference: string,
     dto: CancelOrderDto,
   ): Promise<CancelOrderResponse> {
-    return this.dataSource.transaction(async (manager) => {
+    const result = await this.dataSource.transaction(async (manager) => {
       const order = await this.lockOrder(manager, { orderReference });
 
       if (!order) {
@@ -327,6 +340,9 @@ export class OrderManagementService {
         id: adminId,
       });
     });
+
+    this.notifications.scheduleDispatch();
+    return result;
   }
 
   /**
@@ -481,6 +497,15 @@ export class OrderManagementService {
       actor,
     });
 
+    // The customer is told about the cancellation (with the reason that was
+    // recorded), queued in this same transaction like every other event.
+    await this.notifications.enqueueOrderStatusChanged(
+      manager,
+      order.id,
+      'cancelled',
+      { cancellationReason: note, changedAt: now },
+    );
+
     return {
       orderReference: order.orderReference,
       orderStatus: 'cancelled',
@@ -545,13 +570,8 @@ export class OrderManagementService {
       currency: 'INR',
       createdAt: order.createdAt,
       itemCount: items.reduce((total, item) => total + item.quantity, 0),
-      itemsPreview: items
-        .slice(0, 3)
-        .map((item) => this.toSummaryLine(item)),
-      canCancel: customerCanCancelOrder(
-        order.orderStatus,
-        order.paymentStatus,
-      ),
+      itemsPreview: items.slice(0, 3).map((item) => this.toSummaryLine(item)),
+      canCancel: customerCanCancelOrder(order.orderStatus, order.paymentStatus),
     };
   }
 
@@ -614,10 +634,7 @@ export class OrderManagementService {
       createdAt: order.createdAt,
       paidAt: order.paidAt ?? null,
       cancelledAt: order.cancelledAt ?? null,
-      canCancel: customerCanCancelOrder(
-        order.orderStatus,
-        order.paymentStatus,
-      ),
+      canCancel: customerCanCancelOrder(order.orderStatus, order.paymentStatus),
       items: items.map((item) => ({
         productName: item.productName,
         productSlug: item.productSlug,

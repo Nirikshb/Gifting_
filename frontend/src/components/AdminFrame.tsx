@@ -7,7 +7,8 @@ import { api } from "@/lib/api";
 import { initials } from "@/lib/orders/format";
 import styles from "./admin.module.css";
 
-type Gate = "checking" | "authorized" | "unauthenticated" | "forbidden" | "error";
+type Gate =
+  "checking" | "authorized" | "unauthenticated" | "forbidden" | "error";
 
 type Profile = {
   displayName?: string;
@@ -18,6 +19,8 @@ type Profile = {
 const navigation = [
   { label: "Overview", href: "/admin" },
   { label: "Orders", href: "/admin/orders" },
+  { label: "Products", href: "/admin/products" },
+  { label: "Email", href: "/admin/email" },
 ];
 
 function isCurrent(href: string, pathname: string) {
@@ -29,6 +32,7 @@ export function AdminFrame({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [gate, setGate] = useState<Gate>("checking");
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -54,6 +58,10 @@ export function AdminFrame({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  useEffect(() => {
+    queueMicrotask(() => setMenuOpen(false));
+  }, [pathname]);
+
   if (gate === "checking") {
     return (
       <div className={styles.gate}>
@@ -68,7 +76,9 @@ export function AdminFrame({ children }: { children: ReactNode }) {
         <div className={styles.gateCard}>
           <p className={styles.gateEyebrow}>Aapulki studio</p>
           <h1 className={styles.gateTitle}>
-            {gate === "unauthenticated" ? "Sign in required" : "Studio access only"}
+            {gate === "unauthenticated"
+              ? "Sign in required"
+              : "Studio access only"}
           </h1>
           <p className={styles.gateText}>
             {gate === "unauthenticated"
@@ -78,7 +88,11 @@ export function AdminFrame({ children }: { children: ReactNode }) {
                 : "We could not verify your access right now. Please try again shortly."}
           </p>
           <div className={styles.gateActions}>
-            <Link className={styles.gatePrimary} href="/account" transitionTypes={["account"]}>
+            <Link
+              className={styles.gatePrimary}
+              href="/account"
+              transitionTypes={["account"]}
+            >
               Go to account
             </Link>
             <Link className={styles.gateSecondary} href="/">
@@ -94,42 +108,86 @@ export function AdminFrame({ children }: { children: ReactNode }) {
 
   return (
     <div className={styles.adminShell}>
-      <aside className={styles.sidebar}>
-        <div className={styles.brand}>
-          <Link className={styles.logo} href="/admin">
-            Aapulki
-          </Link>
-          <span className={styles.logoBadge}>Studio</span>
-        </div>
-
-        <nav className={styles.sideNav} aria-label="Studio">
-          {navigation.map((item) => {
-            const current = isCurrent(item.href, pathname);
-
-            return (
-              <Link
-                key={item.href}
-                className={current ? `${styles.sideLink} ${styles.sideLinkCurrent}` : styles.sideLink}
-                href={item.href}
-                aria-current={current ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className={styles.sideFoot}>
-          <span className={styles.avatar} aria-hidden="true">
-            {initials(displayName)}
+      <div className={styles.mobileBar}>
+        <button
+          type="button"
+          className={styles.menuButton}
+          aria-expanded={menuOpen}
+          aria-controls="studio-sidebar"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span className={styles.menuIcon} aria-hidden="true" />
+          <span className={styles.menuLabel}>
+            {menuOpen ? "Close" : "Menu"}
           </span>
-          <div className={styles.sideMeta}>
-            <p className={styles.sideName}>{displayName}</p>
-            <p className={styles.sideRole}>{profile?.email ?? "Administrator"}</p>
+        </button>
+        <Link className={styles.mobileBrand} href="/admin">
+          Aapulki <span className={styles.logoBadge}>Studio</span>
+        </Link>
+      </div>
+
+      {menuOpen ? (
+        <button
+          type="button"
+          className={styles.backdrop}
+          aria-label="Close menu"
+          onClick={() => setMenuOpen(false)}
+        />
+      ) : null}
+
+      <aside
+        id="studio-sidebar"
+        className={
+          menuOpen ? `${styles.sidebar} ${styles.sidebarOpen}` : styles.sidebar
+        }
+      >
+        <div className={styles.sidebarInner}>
+          <div className={styles.brand}>
+            <Link className={styles.logo} href="/admin">
+              Aapulki
+            </Link>
+            <span className={styles.logoBadge}>Studio</span>
           </div>
-          <Link className={styles.sideExit} href="/" transitionTypes={["curtain"]}>
-            Back to shop
-          </Link>
+
+          <nav className={styles.sideNav} aria-label="Studio">
+            {navigation.map((item) => {
+              const current = isCurrent(item.href, pathname);
+
+              return (
+                <Link
+                  key={item.href}
+                  className={
+                    current
+                      ? `${styles.sideLink} ${styles.sideLinkCurrent}`
+                      : styles.sideLink
+                  }
+                  href={item.href}
+                  aria-current={current ? "page" : undefined}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className={styles.sideFoot}>
+            <span className={styles.avatar} aria-hidden="true">
+              {initials(displayName)}
+            </span>
+            <div className={styles.sideMeta}>
+              <p className={styles.sideName}>{displayName}</p>
+              <p className={styles.sideRole}>
+                {profile?.email ?? "Administrator"}
+              </p>
+            </div>
+            <Link
+              className={styles.sideExit}
+              href="/"
+              transitionTypes={["curtain"]}
+            >
+              Back to shop
+            </Link>
+          </div>
         </div>
       </aside>
 

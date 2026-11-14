@@ -9,6 +9,7 @@ import type { Request } from 'express';
 import { DataSource, EntityManager, In, QueryFailedError } from 'typeorm';
 import { CartsService } from '../carts/carts.service';
 import type { CartCookieAction } from '../carts/types/cart-cookie-action';
+import { NotificationsService } from '../notifications/notifications.service';
 import { Product } from '../products/entities/product.entity';
 import {
   CheckoutOrderLineResponse,
@@ -16,10 +17,7 @@ import {
   OrderConfirmationResponse,
 } from './dto/checkout-response.dto';
 import { CreateCheckoutDto } from './dto/create-checkout.dto';
-import {
-  CreateOrderDto,
-  POSTGRES_INTEGER_MAX,
-} from './dto/create-order.dto';
+import { CreateOrderDto, POSTGRES_INTEGER_MAX } from './dto/create-order.dto';
 import {
   CreatedOrderResponse,
   OrderDetailsResponse,
@@ -47,6 +45,7 @@ export class OrdersService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly cartsService: CartsService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   /**
@@ -71,7 +70,7 @@ export class OrdersService {
     }
 
     try {
-      return await this.dataSource.transaction(async (manager) => {
+      const result = await this.dataSource.transaction(async (manager) => {
         const checkout = await this.cartsService.loadCheckoutCart(
           manager,
           request,
@@ -91,12 +90,14 @@ export class OrdersService {
           if (existing) {
             return {
               order: await this.withRotatedConfirmationToken(existing, manager),
-              cookie: { type: 'none' },
+              cookie: { type: 'none' as const },
             };
           }
         }
 
-        const cartItems = [...cart.items].sort((left, right) => left.id - right.id);
+        const cartItems = [...cart.items].sort(
+          (left, right) => left.id - right.id,
+        );
         const productIds = [
           ...new Set(cartItems.map((item) => item.productId)),
         ].sort((left, right) => left - right);
@@ -107,7 +108,9 @@ export class OrdersService {
           order: { id: 'ASC' },
           lock: { mode: 'pessimistic_write' },
         });
-        const productById = new Map(products.map((product) => [product.id, product]));
+        const productById = new Map(
+          products.map((product) => [product.id, product]),
+        );
 
         const lineSnapshots: CheckoutOrderLineResponse[] = [];
         for (const cartItem of cartItems) {
@@ -179,7 +182,8 @@ export class OrdersService {
           customerId: checkout.customerId,
           customerName,
           customerEmail: dto.customerEmail.trim(),
-          recipientName: this.normalizeOptional(dto.recipientName) ?? customerName,
+          recipientName:
+            this.normalizeOptional(dto.recipientName) ?? customerName,
           deliveryLine1: dto.deliveryLine1.trim(),
           deliveryLine2: this.normalizeOptional(dto.deliveryLine2),
           deliveryCity: dto.deliveryCity.trim(),
@@ -214,6 +218,11 @@ export class OrdersService {
 
         await this.cartsService.clearCheckoutCart(manager, cart.id);
 
+        // Queued in the same transaction as the order, so the notification
+        // rows commit or roll back with it. Delivery happens after commit.
+        await this.notifications.enqueueOrderPlaced(manager, savedOrder.id);
+        await this.notifications.enqueueAdminNewOrder(manager, savedOrder.id);
+
         return {
           order: this.toCheckoutResponse(savedOrder, confirmationToken),
           cookie:
@@ -222,6 +231,9 @@ export class OrdersService {
               : { type: 'none' as const },
         };
       });
+
+      this.notifications.scheduleDispatch();
+      return result;
     } catch (error) {
       if (idempotencyKey && this.isIdempotencyUniqueViolation(error)) {
         const existing = await this.findOrderByIdempotencyKey(idempotencyKey);
@@ -277,7 +289,7 @@ export class OrdersService {
     }
     const productIds = mergedItems.map((item) => item.productId);
 
-    return this.dataSource.transaction(async (manager) => {
+    const result = await this.dataSource.transaction(async (manager) => {
       const productRepository = manager.getRepository(Product);
       const orderRepository = manager.getRepository(Order);
       const orderItemRepository = manager.getRepository(OrderItem);
@@ -288,7 +300,9 @@ export class OrdersService {
         lock: { mode: 'pessimistic_write' },
       });
 
-      const productById = new Map(products.map((product) => [product.id, product]));
+      const productById = new Map(
+        products.map((product) => [product.id, product]),
+      );
       const lineSnapshots: CreatedOrderResponse['items'] = [];
 
       for (const line of mergedItems) {
@@ -345,9 +359,7 @@ export class OrdersService {
         }
       }
 
-      const subtotal = addMoney(
-        ...lineSnapshots.map((line) => line.lineTotal),
-      );
+      const subtotal = addMoney(...lineSnapshots.map((line) => line.lineTotal));
       const shipping = calculateShippingAmount(subtotal);
       const totalAmount = addMoney(subtotal, shipping);
 
@@ -387,6 +399,11 @@ export class OrdersService {
       await orderItemRepository.save(orderItems);
       await this.recordInitialHistory(manager, savedOrder);
 
+      // Same transaction as the order: the notification is committed with it,
+      // and is only ever delivered after the commit.
+      await this.notifications.enqueueOrderPlaced(manager, savedOrder.id);
+      await this.notifications.enqueueAdminNewOrder(manager, savedOrder.id);
+
       return {
         orderReference: savedOrder.orderReference,
         orderStatus: savedOrder.orderStatus,
@@ -395,6 +412,9 @@ export class OrdersService {
         items: lineSnapshots,
       };
     });
+
+    this.notifications.scheduleDispatch();
+    return result;
   }
 
   async findByOrderReference(
@@ -444,7 +464,9 @@ export class OrdersService {
     manager?: EntityManager,
   ): Promise<CheckoutOrderResponse> {
     const token = createOrderConfirmationToken();
-    const repository = (manager ?? this.dataSource.manager).getRepository(Order);
+    const repository = (manager ?? this.dataSource.manager).getRepository(
+      Order,
+    );
     await repository.update(
       { id: order.id },
       { confirmationTokenHash: hashOrderConfirmationToken(token) },
@@ -546,9 +568,7 @@ export class OrdersService {
     );
   }
 
-  private mergeLineItems(
-    items: CreateOrderDto['items'],
-  ): MergedLineItem[] {
+  private mergeLineItems(items: CreateOrderDto['items']): MergedLineItem[] {
     const quantitiesByProductId = new Map<number, number>();
 
     for (const item of items) {

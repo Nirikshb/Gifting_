@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { CartsModule } from '../carts/carts.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 import { Product } from '../products/entities/product.entity';
 import { AdminOrdersController } from './admin-orders.controller';
 import { OrderItem } from './entities/order-item.entity';
@@ -17,14 +18,10 @@ import {
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Order,
-      OrderItem,
-      OrderStatusHistory,
-      Product,
-    ]),
+    TypeOrmModule.forFeature([Order, OrderItem, OrderStatusHistory, Product]),
     CartsModule,
     AuthModule,
+    NotificationsModule,
   ],
   controllers: [OrdersController, AdminOrdersController],
   providers: [

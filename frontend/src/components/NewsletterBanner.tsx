@@ -11,8 +11,6 @@ import {
   type MouseEvent,
 } from "react";
 import { X } from "lucide-react";
-import { api } from "@/lib/api";
-import Image from "next/image";
 import { subscribeToNewsletter } from "@/lib/api/newsletter";
 import styles from "./NewsletterBanner.module.css";
 
@@ -179,15 +177,10 @@ export function NewsletterBanner() {
           aria-label="Close"
           onClick={close}
         >
-          <CloseIcon />
+          <X aria-hidden="true" />
         </button>
         <div className={styles.visual} aria-hidden="true">
-          <div className={styles.wash}>
-            <img className={styles.photo} src="/newsletter/7c86d.png" alt="" />
-            <div className={styles.grain} />
-            <div className={styles.fade} />
-          </div>
-          <Envelopes />
+          <EnvelopeArt />
         </div>
 
         <div className={styles.content}>

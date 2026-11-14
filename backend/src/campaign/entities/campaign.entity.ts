@@ -63,7 +63,7 @@ export class Campaign {
   @Column({ name: 'audience_definition', type: 'jsonb', nullable: true })
   audienceDefinition!: Record<string, unknown> | null;
 
-  @Column({ name: 'status', type: 'varchar', length: 16 })
+  @Column({ name: 'status', type: 'varchar', length: 16, default: 'draft' })
   status!: CampaignStatus;
 
   /** When a scheduled campaign is due to be sent (null until scheduled). */

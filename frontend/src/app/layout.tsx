@@ -1,4 +1,5 @@
-import type { Metadata } from "next";`r`nimport type { ReactNode } from "react";
+import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Figtree, Nunito } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import { SiteHeader } from "@/components/SiteHeader";
@@ -24,7 +25,14 @@ const figtree = Figtree({
 const description = "Aapulki. Continue to the shop.";
 const siteUrl = getSiteUrl();
 
-export const metadata: Metadata = {`r`n  icons: {`r`n    icon: [`r`n      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },`r`n      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },`r`n    ],`r`n    shortcut: "/favicon.ico",`r`n  },
+export const metadata: Metadata = {
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    shortcut: "/favicon.ico",
+  },
   ...(siteUrl ? { metadataBase: new URL(siteUrl) } : {}),
   title: {
     default: "Aapulki",

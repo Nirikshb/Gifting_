@@ -3,9 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Campaign } from '../../campaign/entities/campaign.entity';
 
 export const MARKETING_ALLOWANCE_CATEGORIES = [
   'promotional',
@@ -63,6 +66,13 @@ export class MarketingAllowanceLedger {
    */
   @Column({ name: 'campaign_id', type: 'integer', nullable: true })
   campaignId!: number | null;
+
+  @ManyToOne(() => Campaign, { nullable: true })
+  @JoinColumn({
+    name: 'campaign_id',
+    foreignKeyConstraintName: 'marketing_allowance_ledger_campaign_id_fkey',
+  })
+  campaign!: Campaign | null;
 
   /**
    * Reference to the EmailOutbox delivery-attempt record.

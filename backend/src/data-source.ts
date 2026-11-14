@@ -3,6 +3,8 @@ import { CartItem } from './carts/entities/cart-item.entity';
 import { Cart } from './carts/entities/cart.entity';
 import { CustomerSession } from './customers/entities/customer-session.entity';
 import { Customer } from './customers/entities/customer.entity';
+import { EmailSetting } from './email-settings/entities/email-setting.entity';
+import { MarketingAllowanceLedger } from './marketing-allowance/entities/marketing-allowance-ledger.entity';
 import { OrderItem } from './orders/entities/order-item.entity';
 import { OrderStatusHistory } from './orders/entities/order-status-history.entity';
 import { Order } from './orders/entities/order.entity';
@@ -28,6 +30,8 @@ export default new DataSource({
     OrderItem,
     OrderStatusHistory,
     EmailOutbox,
+    EmailSetting,
+    MarketingAllowanceLedger,
     Customer,
     CustomerSession,
     Cart,

@@ -11,6 +11,7 @@ const links = [
   { label: "About", href: "/about" },
   { label: "Process", href: "/process" },
   { label: "Style", href: "/style" },
+  { label: "Signature", href: "/signature" },
   { label: "Shop", href: "/shop" },
 ];
 
@@ -25,81 +26,97 @@ export function SiteHeader() {
   // duplicate navigation and break the admin layout.
   if (pathname === "/admin" || pathname.startsWith("/admin/")) return null;
 
+  const isCurrent = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+
   return (
     <header
       className={open ? `${styles.header} ${styles.headerOpen}` : styles.header}
+      data-aapulki-site-header=""
       style={{ viewTransitionName: "site-header" }}
     >
-      <div className={styles.top}>
-        <div className={styles.social}>
-          <a href="/" aria-label="Facebook">
-            <FacebookIcon />
-          </a>
-          <a href="/" aria-label="Instagram">
-            <InstagramIcon />
-          </a>
-          <a href="/" aria-label="X">
-            <XIcon />
-          </a>
-          <a href="/" aria-label="Pinterest">
-            <PinterestIcon />
-          </a>
-        </div>
-        <div className={styles.tools}>
-          <Link href="/account" transitionTypes={["account"]}>
-            <UserIcon />
-            <span>Account</span>
-          </Link>
-          <Link href="/cart" transitionTypes={["curtain"]}>
-            <CartIcon />
-            <span>{count === null ? "Cart" : `Cart (${count})`}</span>
-          </Link>
-        </div>
-      </div>
       <div className={styles.bar}>
         <Link className={styles.logo} href="/" transitionTypes={["curtain"]}>
           Aapulki
         </Link>
-        <div className={styles.barEnd}>
-          <nav className={open ? styles.navOpen : styles.nav} aria-label="Primary">
-            {links.map((link) => {
-              const current =
-                link.href === "/process"
-                  ? pathname === "/process"
-                  : link.label === "About"
-                    ? pathname === "/about"
-                    : link.label === "Style"
-                      ? pathname === "/style"
-                      : link.label === "Shop"
-                        ? pathname === "/shop"
-                        : link.label === "Home" && pathname === "/";
 
-              return (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  transitionTypes={["curtain"]}
-                  aria-current={current ? "page" : undefined}
-                  onClick={() => setOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </nav>
+        <nav className={styles.nav} aria-label="Primary">
+          {links.map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              transitionTypes={["curtain"]}
+              aria-current={isCurrent(link.href) ? "page" : undefined}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className={styles.tools}>
+          <Link className={styles.tool} href="/account" transitionTypes={["account"]}>
+            <UserIcon />
+            <span>Account</span>
+          </Link>
+          <Link className={styles.tool} href="/cart" transitionTypes={["curtain"]}>
+            <CartIcon />
+            <span>{count === null ? "Cart" : `Cart (${count})`}</span>
+          </Link>
           <button
             className={styles.menu}
             type="button"
             aria-expanded={open}
-            aria-label="Menu"
+            aria-controls="site-menu"
+            aria-label={open ? "Close menu" : "Open menu"}
             onClick={() => setOpen((value) => !value)}
           >
-            <span />
             <span />
             <span />
           </button>
         </div>
       </div>
+
+      {open ? (
+        <div className={styles.drawer} id="site-menu">
+          <nav className={styles.drawerNav} aria-label="Menu">
+            {links.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                transitionTypes={["curtain"]}
+                aria-current={isCurrent(link.href) ? "page" : undefined}
+                onClick={() => setOpen(false)}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <div className={styles.drawerTools}>
+            <Link href="/account" transitionTypes={["account"]} onClick={() => setOpen(false)}>
+              <UserIcon />
+              <span>Account</span>
+            </Link>
+            <Link href="/cart" transitionTypes={["curtain"]} onClick={() => setOpen(false)}>
+              <CartIcon />
+              <span>{count === null ? "Cart" : `Cart (${count})`}</span>
+            </Link>
+          </div>
+          <div className={styles.social}>
+            <a href="/" aria-label="Facebook">
+              <FacebookIcon />
+            </a>
+            <a href="/" aria-label="Instagram">
+              <InstagramIcon />
+            </a>
+            <a href="/" aria-label="X">
+              <XIcon />
+            </a>
+            <a href="/" aria-label="Pinterest">
+              <PinterestIcon />
+            </a>
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 }
@@ -156,4 +173,3 @@ function CartIcon() {
     </svg>
   );
 }
-

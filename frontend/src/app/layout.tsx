@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { Figtree, Nunito } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SmoothScroll } from "@/components/SmoothScroll";
 import { TemplateDockMount } from "@/components/TemplateDockMount";
 import { customFontVariables } from "@/lib/fonts";
 import { CartProvider } from "@/lib/cart/CartProvider";
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     >
       <body>
         <CartProvider>
+          <SmoothScroll />
           <div className={styles.shell}>
             <SiteHeader />
             <main className={styles.main}>{children}</main>

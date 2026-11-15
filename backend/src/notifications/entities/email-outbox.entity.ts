@@ -4,9 +4,12 @@ import {
   CreateDateColumn,
   Entity,
   Index,
+  JoinColumn,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Order } from '../../orders/entities/order.entity';
 
 export const NOTIFICATION_EVENT_TYPES = [
   'order_placed',
@@ -68,6 +71,13 @@ export class EmailOutbox {
 
   @Column({ name: 'order_id', type: 'integer', nullable: true })
   orderId!: number | null;
+
+  @ManyToOne(() => Order, { nullable: true, onDelete: 'CASCADE' })
+  @JoinColumn({
+    name: 'order_id',
+    foreignKeyConstraintName: 'email_outbox_order_fkey',
+  })
+  order!: Order | null;
 
   /**
    * Empty when no recipient is configured yet; dispatch keeps such rows

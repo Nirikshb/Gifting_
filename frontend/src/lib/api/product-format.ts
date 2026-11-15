@@ -21,8 +21,13 @@ export function formatInr(price: string) {
 export function productImageUrl(imageUrl: string | null) {
   if (!imageUrl) return null;
 
+  const trimmed = imageUrl.trim();
+  if (trimmed.startsWith("/")) {
+    return trimmed;
+  }
+
   try {
-    const url = new URL(imageUrl);
+    const url = new URL(trimmed);
     if (url.protocol !== "http:" && url.protocol !== "https:") return null;
     return url.href;
   } catch {

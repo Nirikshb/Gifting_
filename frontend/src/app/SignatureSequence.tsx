@@ -6,20 +6,23 @@ import styles from "./SignatureSequence.module.css";
 
 const sequence = [
   {
-    image: "/gifting/14365405.jpg",
-    alt: "A woven gifting basket filled with small ribbon-tied presents",
+    image: "/gifting/ritual-boxes.jpg",
+    focal: "center 46%",
+    alt: "Red parcels tied with ribbon and stacked beneath a scattering of gold light",
     title: "It starts with a little wonder.",
     text: "The first glimpse: colour, texture, and the promise of something chosen just for them.",
   },
   {
-    image: "/gifting/6102479.jpg",
-    alt: "An overhead arrangement of gifts wrapped in red, blush and gold",
+    image: "/gifting/ritual-velvet.jpg",
+    focal: "center 52%",
+    alt: "Deep red velvet bows gathered around a black bottle and a printed box",
     title: "Then, the thoughtful details.",
     text: "A favourite shade. A familiar ribbon. All the small things that make it feel personal.",
   },
   {
-    image: "/gifting/6102096.jpg",
-    alt: "A single present wrapped in white paper and a vivid red bow",
+    image: "/gifting/ritual-arranging.jpg",
+    focal: "center 56%",
+    alt: "Hands arranging pale bottles and gold ornaments inside a white gift box",
     title: "And finally, all theirs.",
     text: "A keepsake of a moment, ready to make its way into their hands.",
   },
@@ -91,7 +94,13 @@ export default function SignatureSequence() {
               <h3>{step.title}</h3>
               <p>{step.text}</p>
               <figure className={styles.storyPhoto} aria-hidden="true">
-                <Image src={step.image} alt="" fill sizes="(max-width: 809px) 92vw, 40vw" />
+                <Image
+                  src={step.image}
+                  alt=""
+                  fill
+                  sizes="(max-width: 809px) 92vw, 40vw"
+                  style={{ objectPosition: step.focal }}
+                />
               </figure>
             </article>
           ))}
@@ -101,7 +110,13 @@ export default function SignatureSequence() {
           <div className={styles.visualInner} ref={visualRef}>
             {sequence.map((step) => (
               <figure className={styles.frame} key={step.image}>
-                <Image src={step.image} alt={step.alt} fill sizes="(max-width: 809px) 92vw, 46vw" />
+                <Image
+                  src={step.image}
+                  alt={step.alt}
+                  fill
+                  sizes="(max-width: 809px) 92vw, 46vw"
+                  style={{ objectPosition: step.focal }}
+                />
               </figure>
             ))}
             <span className={styles.caption}>A little wonder, wrapped with care</span>

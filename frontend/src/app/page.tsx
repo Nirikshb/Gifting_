@@ -29,28 +29,51 @@ const recipients = [
   {
     title: "A little celebration",
     note: "For the days that deserve a ribbon.",
-    image: "/gifting/6102479.jpg",
-    alt: "A collection of carefully wrapped presents tied with red ribbon",
+    image: "/gifting/celebrate-pedestals.jpg",
+    alt: "Pale cream jars and glittering ornaments arranged on deep red plinths",
+    focal: "center 44%",
   },
   {
     title: "A fresh beginning",
     note: "For new keys, new chapters and new arrivals.",
-    image: "/gifting/6045704.jpg",
-    alt: "A small gift box wrapped with a bright ribbon",
+    image: "/gifting/beginning-bottles.jpg",
+    alt: "Three cream bottles gathered with a wide champagne satin bow",
+    focal: "center 54%",
   },
   {
     title: "Just because",
     note: "For no reason other than them.",
-    image: "/gifting/6102096.jpg",
-    alt: "A hand-wrapped gift resting on soft fabric",
+    image: "/gifting/just-because-unboxing.jpg",
+    alt: "Hands lifting the lid from a striped gift box filled with soft tissue",
+    focal: "center 42%",
   },
 ];
 
 const occasions = [
-  { title: "The big day", label: "Weddings & milestones", image: "/gifting/32498681.jpg" },
-  { title: "New keys", label: "Housewarmings", image: "/gifting/14365405.jpg" },
-  { title: "A little one", label: "New arrivals", image: "/gifting/6045704.jpg" },
-  { title: "No occasion", label: "Just because", image: "/gifting/6102096.jpg" },
+  {
+    title: "The big day",
+    label: "Weddings & milestones",
+    image: "/gifting/occasion-guide.jpg",
+    focal: "86% 50%",
+  },
+  {
+    title: "New keys",
+    label: "Housewarmings",
+    image: "/gifting/occasion-serum.jpg",
+    focal: "88% 56%",
+  },
+  {
+    title: "A little one",
+    label: "New arrivals",
+    image: "/gifting/ritual-boxes.jpg",
+    focal: "center 26%",
+  },
+  {
+    title: "No occasion",
+    label: "Just because",
+    image: "/gifting/ritual-velvet.jpg",
+    focal: "72% 40%",
+  },
 ];
 
 /**
@@ -148,11 +171,12 @@ export default async function HomePage() {
           <div className={styles.heroVisual}>
             <Image
               className={styles.heroImage}
-              src="/gifting/6102479.jpg"
-              alt="An arrangement of gifts wrapped with vivid red ribbons"
+              src="/gifting/hero-red-parcels.jpg"
+              alt="Deep red gift parcels finished with wide champagne satin ribbon"
               fill
               loading="eager"
-              sizes="(max-width: 809px) 94vw, 60vw"
+              sizes="100vw"
+              style={{ objectPosition: "center 100%" }}
             />
           </div>
         </section>
@@ -178,10 +202,11 @@ export default async function HomePage() {
           <div className={styles.editorialCard}>
             <div className={styles.editorialVisual}>
               <Image
-                src="/gifting/9185565.jpg"
-                alt="A handwritten parcel with natural twine and a leafy branch in soft light"
+                src="/gifting/editorial-hands.jpg"
+                alt="Hands settling a black bottle into a blush gift box beside a looping coral ribbon"
                 fill
                 sizes="(max-width: 809px) 100vw, 46vw"
+                style={{ objectPosition: "center 42%" }}
               />
               <span className={styles.imageNote}>A moment before the unwrapping</span>
             </div>
@@ -229,6 +254,7 @@ export default async function HomePage() {
                     alt={recipient.alt}
                     fill
                     sizes="(max-width: 600px) 100vw, (max-width: 1000px) 50vw, 33vw"
+                    style={{ objectPosition: recipient.focal }}
                   />
                   <span className={styles.recipientNumber}>0{index + 1}</span>
                   <span className={styles.recipientArrow} aria-hidden="true">↗</span>
@@ -259,10 +285,11 @@ export default async function HomePage() {
             </div>
             <div className={styles.builderPhoto}>
               <Image
-                src="/gifting/32498681.jpg"
-                alt="A warm-toned hamper held close, filled with small gifts"
+                src="/gifting/signature-hamper.jpg"
+                alt="A gold gift box of miniature bottles tied with a wide satin bow"
                 fill
                 sizes="(max-width: 809px) 100vw, 46vw"
+                style={{ objectPosition: "center 56%" }}
               />
               <span>One for them.<br />A little joy for you, too.</span>
             </div>
@@ -284,7 +311,13 @@ export default async function HomePage() {
                 key={occasion.title}
               >
                 <span className={styles.occasionPhoto}>
-                  <Image src={occasion.image} alt="" fill sizes="88px" />
+                  <Image
+                    src={occasion.image}
+                    alt=""
+                    fill
+                    sizes="88px"
+                    style={{ objectPosition: occasion.focal }}
+                  />
                 </span>
                 <span className={styles.occasionWords}>
                   <strong>{occasion.title}</strong>
@@ -343,10 +376,11 @@ export default async function HomePage() {
             </div>
             <div className={styles.unboxingVisual}>
               <Image
-                src="/gifting/6102096.jpg"
-                alt="A carefully wrapped white gift box with a vivid red ribbon"
+                src="/gifting/unboxing-open-box.jpg"
+                alt="An open gift box lined with gold satin, ribbon spilling across the paper"
                 fill
                 sizes="(max-width: 809px) 100vw, 47vw"
+                style={{ objectPosition: "center 46%" }}
               />
               <span className={styles.unboxingTag}>Made to be kept</span>
             </div>

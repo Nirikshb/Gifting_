@@ -108,7 +108,7 @@
   margin-top: 28px;
   overflow: hidden;
   border-radius: 20px;
-  background: #e7dace;
+  background: #3b0009;
 }
 
 .storyPhoto img {
@@ -128,7 +128,7 @@
   height: 100%;
   overflow: hidden;
   border-radius: 32px;
-  background: #e7dace;
+  background: #3b0009;
 }
 
 .frame {
@@ -155,7 +155,7 @@
 
 .caption {
   position: absolute;
-  z-index: 2;
+  z-index: 4;
   bottom: 18px;
   left: 18px;
   padding: 10px 15px;

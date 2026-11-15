@@ -34,17 +34,12 @@ export default function SignatureSequence() {
     offset: ["start start", "end end"],
   });
 
-  // One calm crossfade per 100vh block. No spring, no scale, no clipping —
-  // the reference only changes opacity while the image column stays pinned.
-  const storyOne = useTransform(scrollYProgress, [0, 0.02, 0.22, 0.34], [1, 1, 1, 0]);
-  const storyTwo = useTransform(scrollYProgress, [0.27, 0.4, 0.6, 0.73], [0, 1, 1, 0]);
-  const storyThree = useTransform(scrollYProgress, [0.66, 0.79, 1, 1], [0, 1, 1, 1]);
-
+  // The copy sits still inside each 100vh block (as in the reference) while
+  // the pinned image column crossfades by opacity alone.
   const imageOne = useTransform(scrollYProgress, [0, 0.25, 0.36], [1, 1, 0]);
   const imageTwo = useTransform(scrollYProgress, [0.3, 0.42, 0.62, 0.73], [0, 1, 1, 0]);
   const imageThree = useTransform(scrollYProgress, [0.67, 0.79, 1, 1], [0, 1, 1, 1]);
 
-  const storyOpacities = [storyOne, storyTwo, storyThree];
   const imageOpacities = [imageOne, imageTwo, imageThree];
 
   return (

@@ -171,12 +171,12 @@ export default async function HomePage() {
           <div className={styles.heroVisual}>
             <Image
               className={styles.heroImage}
-              src="/gifting/hero-red-parcels.jpg"
-              alt="Deep red gift parcels finished with wide champagne satin ribbon"
+              src="/gifting/unboxing-open-box.jpg"
+              alt="An open gold-lined gift box lined with satin, the ribbon trailing across the paper"
               fill
               loading="eager"
               sizes="100vw"
-              style={{ objectPosition: "center 100%" }}
+              style={{ objectPosition: "center 46%" }}
             />
           </div>
         </section>
@@ -285,11 +285,11 @@ export default async function HomePage() {
             </div>
             <div className={styles.builderPhoto}>
               <Image
-                src="/gifting/signature-hamper.jpg"
-                alt="A gold gift box of miniature bottles tied with a wide satin bow"
+                src="/gifting/hero-red-parcels.jpg"
+                alt="Deep red parcels finished with wide champagne satin ribbon"
                 fill
                 sizes="(max-width: 809px) 100vw, 46vw"
-                style={{ objectPosition: "center 56%" }}
+                style={{ objectPosition: "center 40%" }}
               />
               <span>One for them.<br />A little joy for you, too.</span>
             </div>
@@ -376,11 +376,11 @@ export default async function HomePage() {
             </div>
             <div className={styles.unboxingVisual}>
               <Image
-                src="/gifting/unboxing-open-box.jpg"
-                alt="An open gift box lined with gold satin, ribbon spilling across the paper"
+                src="/gifting/signature-hamper.jpg"
+                alt="A gold gift box of miniature bottles tied with a wide satin bow"
                 fill
                 sizes="(max-width: 809px) 100vw, 47vw"
-                style={{ objectPosition: "center 46%" }}
+                style={{ objectPosition: "center 56%" }}
               />
               <span className={styles.unboxingTag}>Made to be kept</span>
             </div>
@@ -388,20 +388,24 @@ export default async function HomePage() {
         </section>
 
         <section className={styles.testimonial} aria-labelledby="testimonial-title">
-          <div className={styles.quoteMark} aria-hidden="true">✳</div>
-          <p className={styles.eyebrow}>The feeling is the whole point</p>
-          <h2 id="testimonial-title">
-            It&apos;s the thought
-            <br />
-            they can <em>feel.</em>
-          </h2>
-          <p className={styles.testimonialNote}>
-            A favourite colour. A ribbon worth saving. The moment it all comes
-            together, before the box is even open.
-          </p>
-          <Link className={styles.textLink} href="/process" transitionTypes={["curtain"]}>
-            See the care behind it <span aria-hidden="true">↗</span>
-          </Link>
+          <div className={styles.testimonialInner}>
+            <div className={styles.quoteMark} aria-hidden="true">“</div>
+            <p className={styles.eyebrow}>The feeling is the whole point</p>
+            <h2 id="testimonial-title">
+              It&apos;s the thought
+              <br />
+              they can <em>feel.</em>
+            </h2>
+            <p className={styles.stars} aria-hidden="true">★★★★★</p>
+            <p className={styles.testimonialNote}>
+              A favourite colour. A ribbon worth saving. The moment it all comes
+              together, before the box is even open.
+            </p>
+            <p className={styles.testimonialTag}>Wrapped by hand · Delivered with care</p>
+            <Link className={styles.textLink} href="/process" transitionTypes={["curtain"]}>
+              See the care behind it <span aria-hidden="true">↗</span>
+            </Link>
+          </div>
         </section>
 
         <footer className={styles.footer}>

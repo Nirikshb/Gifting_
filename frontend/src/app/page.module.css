@@ -70,8 +70,8 @@
   border-radius: 0 0 64px 64px;
   color: #fff8ee;
   background:
-    radial-gradient(ellipse at 50% 108%, rgba(198, 63, 54, 0.38), transparent 56%),
-    linear-gradient(158deg, #870713 0%, #6c0410 55%, #4a0008 100%);
+    radial-gradient(ellipse at 50% 110%, rgba(153, 46, 46, 0.48), transparent 56%),
+    linear-gradient(158deg, #5f0511 0%, #4a020d 55%, #2f0009 100%);
 }
 
 .heroCopy {
@@ -731,13 +731,20 @@
   border-radius: 32px;
   color: #f8f1e7;
   background:
-    radial-gradient(ellipse at 50% 112%, rgba(150, 26, 42, 0.55), transparent 58%),
-    #1f080c;
+    radial-gradient(ellipse at 50% 118%, rgba(176, 83, 68, 0.42), transparent 62%),
+    #19060a;
   text-align: center;
 }
 
+.testimonialInner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .testimonial .eyebrow {
-  color: #d4a58c;
+  color: #d9a58c;
 }
 
 .testimonial .eyebrow::before {
@@ -746,11 +753,37 @@
 }
 
 .quoteMark {
-  height: 42px;
-  color: #bf6650;
+  margin-bottom: 10px;
+  color: #c98968;
   font-family: var(--font-fraunces), Georgia, serif;
-  font-size: 84px;
-  line-height: 1;
+  font-size: clamp(96px, 12vw, 140px);
+  line-height: 0.65;
+}
+
+.stars {
+  display: inline-flex;
+  gap: 10px;
+  margin: 0 0 4px;
+  color: #e0a878;
+  font-size: 17px;
+  letter-spacing: 0.3em;
+}
+
+.testimonialNote {
+  max-width: 520px;
+  margin: 0 auto 24px;
+  color: #d7c2b4;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.testimonialTag {
+  margin: 0 0 22px;
+  color: #a8796a;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
 }
 
 .testimonial h2 {
@@ -763,14 +796,6 @@
 
 .testimonial h2 em {
   color: #e2a58b;
-}
-
-.testimonialNote {
-  max-width: 500px;
-  margin: 0 auto 28px;
-  color: #d7c2b4;
-  font-size: 15px;
-  line-height: 1.65;
 }
 
 .testimonial .textLink {
@@ -1214,6 +1239,24 @@
       animation-timeline: view();
       animation-range: cover 0% cover 100%;
     }
+
+    .testimonialInner {
+      animation: testimonial-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 8% entry 62%;
+    }
+  }
+}
+
+@keyframes testimonial-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 56px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -1297,7 +1340,8 @@
   .editorialVisual img,
   .builderPhoto img,
   .unboxingVisual img,
-  .recipientPhoto img {
+  .recipientPhoto img,
+  .testimonialInner {
     animation: none;
   }
 

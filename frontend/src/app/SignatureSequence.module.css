@@ -8,7 +8,7 @@
 }
 
 .head {
-  max-width: var(--max);
+  max-width: calc(var(--max) + var(--gutter) * 2);
   margin: 0 auto clamp(48px, 6vw, 88px);
   padding-inline: var(--gutter);
 }
@@ -135,6 +135,18 @@
   position: absolute;
   inset: 0;
   margin: 0;
+}
+
+.frame:nth-of-type(1) {
+  opacity: var(--o1, 1);
+}
+
+.frame:nth-of-type(2) {
+  opacity: var(--o2, 0);
+}
+
+.frame:nth-of-type(3) {
+  opacity: var(--o3, 0);
 }
 
 .frame img {

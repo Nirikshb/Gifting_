@@ -1,8 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import styles from "./SignatureSequence.module.css";
 
 const sequence = [
@@ -26,21 +25,52 @@ const sequence = [
   },
 ];
 
+const fade = (progress: number, start: number, end: number) =>
+  Math.min(1, Math.max(0, (progress - start) / (end - start)));
+
 export default function SignatureSequence() {
   const trackRef = useRef<HTMLDivElement>(null);
-  const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: trackRef,
-    offset: ["start start", "end end"],
-  });
+  const visualRef = useRef<HTMLDivElement>(null);
 
-  // The copy sits still inside each 100vh block (as in the reference) while
-  // the pinned image column crossfades by opacity alone.
-  const imageOne = useTransform(scrollYProgress, [0, 0.25, 0.36], [1, 1, 0]);
-  const imageTwo = useTransform(scrollYProgress, [0.3, 0.42, 0.62, 0.73], [0, 1, 1, 0]);
-  const imageThree = useTransform(scrollYProgress, [0.67, 0.79, 1, 1], [0, 1, 1, 1]);
+  useEffect(() => {
+    const track = trackRef.current;
+    const visual = visualRef.current;
+    if (!track || !visual) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-  const imageOpacities = [imageOne, imageTwo, imageThree];
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const rect = track.getBoundingClientRect();
+      const scrollable = rect.height - window.innerHeight;
+      const progress =
+        scrollable > 0 ? Math.min(1, Math.max(0, -rect.top / scrollable)) : 0;
+
+      // One calm crossfade per story. The copy itself stays still.
+      const first = 1 - fade(progress, 0.25, 0.36);
+      const second = fade(progress, 0.3, 0.42) * (1 - fade(progress, 0.62, 0.73));
+      const third = fade(progress, 0.67, 0.79);
+
+      visual.style.setProperty("--o1", first.toFixed(3));
+      visual.style.setProperty("--o2", second.toFixed(3));
+      visual.style.setProperty("--o3", third.toFixed(3));
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, []);
 
   return (
     <section className={styles.section} aria-labelledby="sequence-title">
@@ -68,15 +98,11 @@ export default function SignatureSequence() {
         </div>
 
         <div className={styles.visual} aria-hidden="true">
-          <div className={styles.visualInner}>
-            {sequence.map((step, index) => (
-              <motion.figure
-                className={styles.frame}
-                key={step.image}
-                style={reduceMotion ? undefined : { opacity: imageOpacities[index] }}
-              >
+          <div className={styles.visualInner} ref={visualRef}>
+            {sequence.map((step) => (
+              <figure className={styles.frame} key={step.image}>
                 <Image src={step.image} alt={step.alt} fill sizes="(max-width: 809px) 92vw, 46vw" />
-              </motion.figure>
+              </figure>
             ))}
             <span className={styles.caption}>A little wonder, wrapped with care</span>
           </div>

@@ -388,7 +388,7 @@
 
 .recipients {
   margin-inline: var(--gutter);
-  padding: var(--section-y) max(var(--gutter), calc((100% - var(--max)) / 2));
+  padding: var(--section-y) max(var(--gutter), calc((100% - var(--max)) / 2 - var(--gutter)));
   border-radius: 32px;
   color: #fbf1e7;
   background:
@@ -620,7 +620,7 @@
 
 .featured {
   margin-inline: var(--gutter);
-  padding: var(--section-y) max(var(--gutter), calc((100% - var(--max)) / 2));
+  padding: var(--section-y) max(var(--gutter), calc((100% - var(--max)) / 2 - var(--gutter)));
   border-radius: 32px;
   background: var(--surface);
 }
@@ -726,7 +726,7 @@
 .testimonial {
   position: relative;
   margin-inline: var(--gutter);
-  padding: calc(var(--section-y) - 12px) max(var(--gutter), calc((100% - var(--max)) / 2));
+  padding: calc(var(--section-y) - 12px) max(var(--gutter), calc((100% - var(--max)) / 2 - var(--gutter)));
   overflow: hidden;
   border-radius: 32px;
   color: #f8f1e7;
